@@ -37,7 +37,7 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
   }
 
   void _load() {
-    future = Future<_DayBundle>(() {
+    future = Future<_DayBundle>.sync(() {
       final day = widget.panchang.buildDay(date, widget.location);
       final major = widget.festival.majorFestivalsForYear(date.year, widget.location);
       final events = widget.festival.lightweightForDate(

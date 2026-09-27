@@ -58,7 +58,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final dayKey = '${selectedDate.toIso8601String()}|${widget.location.id}';
     if (_futureKey != dayKey) {
       _futureKey = dayKey;
-      selectedFuture = Future<PanchangDay>(
+      selectedFuture = Future<PanchangDay>.sync(
         () => widget.panchang.buildDay(selectedDate, widget.location),
       );
     }
@@ -66,7 +66,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final majorKey = '${visibleMonth.year}|${widget.location.id}';
     if (_majorKey != majorKey) {
       _majorKey = majorKey;
-      majorFuture = Future<List<FestivalObservance>>(
+      majorFuture = Future<List<FestivalObservance>>.sync(
         () => widget.festival.majorFestivalsForYear(visibleMonth.year, widget.location),
       );
     }
