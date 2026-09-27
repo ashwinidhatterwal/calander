@@ -389,8 +389,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (cached != null) return cached;
 
     final value = widget.panchang.monthCell(d, widget.location);
+    final rawIndex = value.pakshaHi.startsWith('शुक्ल')
+        ? value.tithi.index
+        : value.tithi.index + 15;
     final cell = _CalendarCellData(
-      value.tithi,
+      TithiState(value.tithi, value.pakshaHi, value.pakshaEn, rawIndex),
       value.pakshaHi,
       value.pakshaEn,
       value.month,
