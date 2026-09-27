@@ -1,4 +1,4 @@
-name: Android build
+name: Android QA build
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'flutter_app/**'
+      - 'tools/**'
       - '.github/workflows/android.yml'
 
 jobs:
@@ -25,74 +26,7 @@ jobs:
 
       - name: Create Android platform scaffold
         shell: bash
-        run: |
-          set -euo pipefail
-          tmp="$(mktemp -d)"
-          flutter create --platforms=android --org in.hinducalendar --project-name hindu_calendar "$tmp/hindu_calendar"
-          cp -R "$tmp/hindu_calendar/android" ./android
-
-          sed -i 's/android:label="hindu_calendar"/android:label="हिन्दू कैलेंडर"/' android/app/src/main/AndroidManifest.xml
-          sed -i 's/android:launchMode="singleTop"/android:launchMode="singleTask"/' android/app/src/main/AndroidManifest.xml
-
-          # Replace Flutter's placeholder launcher icon with the Checkpoint 06 brand mark.
-          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
-            cp "assets/branding/mipmap-${density}/ic_launcher.png" "android/app/src/main/res/mipmap-${density}/ic_launcher.png"
-            cp "assets/branding/mipmap-${density}/ic_launcher_round.png" "android/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
-          done
-
-          # Warm launch background; Flutter immediately continues with the branded loading screen.
-          cat > android/app/src/main/res/values/launch_colors.xml <<'XML'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <color name="launch_background_color">#FFF8F1</color>
-          </resources>
-          XML
-          cat > android/app/src/main/res/drawable/launch_background.xml <<'XML'
-          <?xml version="1.0" encoding="utf-8"?>
-          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-              <item android:drawable="@color/launch_background_color" />
-          </layer-list>
-          XML
-          if [ -f android/app/src/main/res/drawable-v21/launch_background.xml ]; then
-            cp android/app/src/main/res/drawable/launch_background.xml android/app/src/main/res/drawable-v21/launch_background.xml
-          fi
-
-          # Theme-aware home-screen widgets.
-          cp -R android_widget/res/. android/app/src/main/res/
-          kotlin_dir="android/app/src/main/kotlin/in/hinducalendar/hindu_calendar"
-          mkdir -p "$kotlin_dir"
-          cp android_widget/kotlin/*.kt "$kotlin_dir/"
-
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('android/app/src/main/AndroidManifest.xml')
-          text = path.read_text(encoding='utf-8')
-          receivers = '''
-                  <receiver
-                      android:name=".TodayPanchangWidgetProvider"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                      </intent-filter>
-                      <meta-data
-                          android:name="android.appwidget.provider"
-                          android:resource="@xml/widget_today_info" />
-                  </receiver>
-                  <receiver
-                      android:name=".UpcomingWidgetProvider"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                      </intent-filter>
-                      <meta-data
-                          android:name="android.appwidget.provider"
-                          android:resource="@xml/widget_upcoming_info" />
-                  </receiver>
-          '''
-          if 'TodayPanchangWidgetProvider' not in text:
-              text = text.replace('    </application>', receivers + '    </application>')
-          path.write_text(text, encoding='utf-8')
-          PY
+        run: ../tools/prepare_android_scaffold.sh
 
       - name: Verify native widget package
         shell: bash
@@ -110,12 +44,56 @@ jobs:
       - name: Test calculation, UI and personal-calendar logic
         run: flutter test
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Validate production-source structure
+        working-directory: .
+        run: python tools/validate_checkpoint07.py
 
-      - name: Upload APK
+      - name: Build QA release APK
+        env:
+          SUPPORT_UPI_ID: ${{ secrets.SUPPORT_UPI_ID }}
+          SUPPORT_PAYEE_NAME: ${{ secrets.SUPPORT_PAYEE_NAME }}
+          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+        run: |
+          flutter build apk --release \
+            --dart-define=SUPPORT_UPI_ID="$SUPPORT_UPI_ID" \
+            --dart-define=SUPPORT_PAYEE_NAME="$SUPPORT_PAYEE_NAME" \
+            --dart-define=SUPPORT_EMAIL="$SUPPORT_EMAIL"
+
+      - name: Verify target API level
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool="$(find "$ANDROID_SDK_ROOT" -type f -name apkanalyzer 2>/dev/null | head -n 1 || true)"
+          if [ -z "$tool" ]; then
+            echo "::warning::apkanalyzer not found; target API verification skipped"
+            exit 0
+          fi
+          target="$($tool manifest target-sdk build/app/outputs/flutter-apk/app-release.apk | grep -oE '[0-9]+' | head -n1)"
+          echo "Target SDK: $target"
+          if [ "$target" -lt 36 ]; then
+            echo "::error::Google Play requires target API 36+ for new apps as of Aug 31, 2026"
+            exit 1
+          fi
+
+      - name: Audit Android permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool="$(find "$ANDROID_SDK_ROOT" -type f -name apkanalyzer 2>/dev/null | head -n 1 || true)"
+          if [ -z "$tool" ]; then
+            echo "::warning::apkanalyzer not found; permission audit skipped"
+            exit 0
+          fi
+          perms="$($tool manifest permissions build/app/outputs/flutter-apk/app-release.apk || true)"
+          echo "$perms"
+          if echo "$perms" | grep -Eq 'ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|CAMERA|RECORD_AUDIO|READ_CONTACTS|WRITE_CONTACTS|READ_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|MANAGE_EXTERNAL_STORAGE'; then
+            echo "::error::Unexpected sensitive Android permission found"
+            exit 1
+          fi
+
+      - name: Upload QA APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-checkpoint-06-apk
+          name: hindu-calendar-1.0.0-qa-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error

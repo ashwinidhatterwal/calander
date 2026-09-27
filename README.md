@@ -1,126 +1,86 @@
-# Hindu Calendar — Checkpoint 06
+# Hindu Calendar — Checkpoint 07 Production Candidate
 
-Checkpoint 06 turns the app from a Panchang viewer into the beginning of a **personal Hindu life calendar**.
+Checkpoint 07 prepares the app for a first Google Play release while preserving the product direction established in earlier checkpoints: a familiar daily calendar with Hindu Tithi/Panchang intelligence, personal Hindu-date events, useful widgets, and a Hindi-first interface.
 
-The trusted Panchang/festival calculation engine remains unchanged. This checkpoint adds a local personal-event layer and a proper startup experience.
+## Release identity
 
-## Main product addition — मेरे दिन / My Days
+- App name: `हिन्दू कैलेंडर` / Hindu Calendar
+- Version: `1.0.0+7`
+- Permanent Android application id: `in.hinducalendar.hindu_calendar`
+- Main Panchang profile: North India / Purnimanta
+- Backend/account required: No
+- Advertising: No
+- Paywall: No
 
-Users can create personal events such as:
+## Core app
 
-- जन्मदिन / Birthday
-- वर्षगाँठ / Anniversary
-- पूजा / Puja
-- व्रत / Vrat
-- परिवार / Family event
-- General event
+- Normal month calendar with large date tiles.
+- Tithi visible directly under each Gregorian date.
+- Major festival/vrat label inside the date tile.
+- Swipe left/right with resistance to change month.
+- Tap month/year to jump directly to another month or year.
+- Detailed Day page with Tithi, Paksha, Maas, Nakshatra, Yoga, Karana, Sun/Moon times and useful periods.
+- Major festival browser.
+- Personal **My Days** calendar.
+- Personal events can follow either a Gregorian date or Hindu Maas + Paksha + Tithi.
+- Local event persistence.
+- Selected language and city now persist across restarts.
+- Hindi and English.
+- System light/dark theme.
+- Theme-aware Android home-screen widgets.
+- Warm light/dark native launch screen followed by branded Flutter loading screen.
+- Single-task Android behavior to avoid duplicate Recents cards.
 
-Each event can follow either:
+## Optional developer support
 
-### 1. Normal Gregorian date
+The app is fully usable without payment. There is no premium tier.
 
-Example:
+A quiet **About** screen contains an optional voluntary developer-tip flow. It never opens automatically and never grants any digital feature, content, badge, theme, or status.
 
-```text
-12 March
-Repeat every year ✓
-```
+The production build can inject a UPI destination through GitHub Actions secrets. After supporting, a user may optionally request a **physical handwritten thank-you note** by opening their email app and sending a postal address to the developer. The app itself does not store that postal information.
 
-or a one-time exact Gregorian date.
+See `docs/SUPPORT_POLICY.md` and `docs/DATA_SAFETY_GUIDE.md`.
 
-### 2. Hindu Tithi
+## Privacy
 
-Example:
+Core calendar data stays on the device. The project contains no advertising SDK and no behavioral analytics SDK.
 
-```text
-कार्तिक
-कृष्ण पक्ष
-नवमी
-```
+A public privacy-policy page is included in `store_web/privacy.html`, plus a GitHub Pages deployment workflow.
 
-The app then matches that event against the Panchang engine each year instead of locking it to one Gregorian date.
+## Build workflows
 
-Tithi events also support an `अधिक मास` flag for events that specifically belong to an Adhik month.
-
-## Where personal events appear
-
-- New **मेरे दिन / My Days** bottom-navigation tab.
-- Upcoming personal-event list.
-- Calendar date tiles, alongside festival/vrat information.
-- Day Details page under a dedicated `मेरे दिन` card.
-- `+` shortcut in the main calendar header creates an event for the currently selected date.
-
-All personal events are stored **only on the device** using local preferences. No login, Firebase, server, or account is introduced.
-
-## Startup / loading screen
-
-The old startup path loaded an asset before `runApp()`, which could leave an empty/black frame while Flutter initialized.
-
-Checkpoint 06 now:
-
-1. calls `runApp()` immediately;
-2. renders a warm branded Hindi loading screen;
-3. loads festival overrides and personal events behind it;
-4. transitions into the calendar when ready.
-
-The GitHub Android workflow also replaces the generated Android launch background with the same warm background (`#FFF8F1`) so the native launch frame and Flutter loading screen feel continuous.
-
-## Calendar refinements retained/improved
-
-- Large card-style date tiles.
-- Gregorian date remains visually dominant.
-- Tithi remains visible under the date.
-- Major festival/vrat names remain visible directly inside tiles.
-- Personal event title can occupy the event area when there is no major festival on that date.
-- Event labels can use two lines instead of truncating immediately.
-- Extra bottom grid padding reduces bottom-row obstruction near Android navigation.
-
-## Day Details refinements
-
-- Personal events appear above Panchang details.
-- Festival cards are more compact.
-- Nakshatra/Yoga/Karana transition values use a deliberate two-line layout instead of awkwardly wrapping `तक` onto its own line.
-
-## Privacy / backend
-
-Checkpoint 06 still needs no backend for its core experience.
-
-Stored locally:
-
-- personal events
-
-Not stored remotely:
-
-- names
-- family events
-- birthdays
-- Hindu-Tithi recurrence rules
-
-## Known limitation
-
-Hindu personal-event recurrence currently matches the Tithi that prevails at local sunrise, using the North-Indian Purnimanta month profile already used by the app. This is deterministic and appropriate for ordinary calendar use, but a rare **Kshaya/skipped Tithi** can require tradition-specific handling. Such edge cases should be expanded before positioning the feature for formal ritual/legal scheduling.
-
-## Build
-
-Push this directory as the repository root. GitHub Actions runs:
+### QA APK
+Pushes to `main` run `.github/workflows/android.yml`:
 
 ```text
 flutter pub get
 flutter analyze
 flutter test
-flutter build apk --release
+production-source validator
+release QA APK
+Target API verification
 ```
 
 Expected artifact:
 
 ```text
-hindu-calendar-checkpoint-06-apk
+hindu-calendar-1.0.0-qa-apk
 ```
 
-App version: `0.6.0+6`.
+### Play Store AAB
+Run **Production Play bundle** manually after configuring release secrets. It creates a signed, obfuscated Android App Bundle plus Dart symbols.
 
-The Android package identity remains provisional: `in.hinducalendar.hindu_calendar`.
+Expected artifacts:
 
-## Checkpoint 06
+```text
+hindu-calendar-1.0.0-play-aab
+hindu-calendar-1.0.0-dart-symbols
+```
 
-Checkpoint 06 adds the final Android-shell polish around the existing calendar engine: branded launcher/loading icon, resisted month swiping, tap-to-jump month/year selection, single-task Recents behavior, and two theme-aware Android home-screen widgets (Today Panchang + Upcoming festival/My Day). See `docs/CHECKPOINT_06.md`.
+The upload keystore and passwords must never be committed to this public repository.
+
+See `docs/PLAY_STORE_RELEASE_CHECKLIST.md`.
+
+## Validation boundary
+
+Checkpoint 07 does not alter the Panchang astronomy/festival-rule engine. The existing reference regression suite remains the calculation trust boundary. Any future changes to Tithi/month/festival calculations should require regression coverage before release.

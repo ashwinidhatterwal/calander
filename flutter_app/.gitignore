@@ -6,3 +6,6 @@ android/.gradle/
 android/local.properties
 .idea/
 *.iml
+android/key.properties
+android/app/*.jks
+android/app/*.keystore

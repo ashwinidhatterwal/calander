@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/localization.dart';
 import 'core/locations.dart';
+import 'data/app_settings_store.dart';
 import 'data/personal_event_store.dart';
 import 'data/widget_sync_service.dart';
 import 'domain/festival_engine.dart';
@@ -31,6 +32,7 @@ class HinduCalendarBootstrap extends StatefulWidget {
 
 class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
   final PersonalEventStore _store = PersonalEventStore();
+  final AppSettingsStore _settingsStore = const AppSettingsStore();
   _BootstrapData? _data;
 
   @override
@@ -61,13 +63,20 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
     } catch (_) {
       // Local event storage failure must never block calendar startup.
     }
+
+    AppSettings settings = AppSettings(language: AppLanguage.hi, location: locations.first);
+    try {
+      settings = await _settingsStore.load();
+    } catch (_) {
+      // Preference storage failure must never block calendar startup.
+    }
     final elapsed = DateTime.now().difference(started);
     const minimumSplash = Duration(milliseconds: 260);
     if (elapsed < minimumSplash) {
       await Future<void>.delayed(minimumSplash - elapsed);
     }
     if (!mounted) return;
-    setState(() => _data = _BootstrapData(overrides, events));
+    setState(() => _data = _BootstrapData(overrides, events, settings));
   }
 
   @override
@@ -77,15 +86,20 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
     return HinduCalendarApp(
       holikaOverrides: data.overrides,
       initialEvents: data.events,
+      initialLanguage: data.settings.language,
+      initialLocation: data.settings.location,
       onEventsChanged: _store.save,
+      onLanguageChanged: _settingsStore.saveLanguage,
+      onLocationChanged: _settingsStore.saveLocation,
     );
   }
 }
 
 class _BootstrapData {
-  const _BootstrapData(this.overrides, this.events);
+  const _BootstrapData(this.overrides, this.events, this.settings);
   final Map<int, DateTime> overrides;
   final List<PersonalEvent> events;
+  final AppSettings settings;
 }
 
 class _LoadingApp extends StatelessWidget {
@@ -95,13 +109,10 @@ class _LoadingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF8D4B2D),
-        scaffoldBackgroundColor: const Color(0xFFFFF8F1),
-      ),
+      theme: _theme(Brightness.light),
+      darkTheme: _theme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const Scaffold(
-        backgroundColor: Color(0xFFFFF8F1),
         body: SafeArea(child: _LoadingScreen()),
       ),
     );
@@ -159,12 +170,20 @@ class HinduCalendarApp extends StatefulWidget {
     super.key,
     required this.holikaOverrides,
     this.initialEvents = const [],
+    this.initialLanguage = AppLanguage.hi,
+    this.initialLocation,
     this.onEventsChanged,
+    this.onLanguageChanged,
+    this.onLocationChanged,
   });
 
   final Map<int, DateTime> holikaOverrides;
   final List<PersonalEvent> initialEvents;
+  final AppLanguage initialLanguage;
+  final GeoLocation? initialLocation;
   final Future<void> Function(List<PersonalEvent>)? onEventsChanged;
+  final Future<void> Function(AppLanguage)? onLanguageChanged;
+  final Future<void> Function(GeoLocation)? onLocationChanged;
 
   @override
   State<HinduCalendarApp> createState() => _HinduCalendarAppState();
@@ -172,8 +191,8 @@ class HinduCalendarApp extends StatefulWidget {
 
 class _HinduCalendarAppState extends State<HinduCalendarApp> {
   final PanchangEngine panchang = const PanchangEngine();
-  AppLanguage language = AppLanguage.hi;
-  GeoLocation location = locations.first;
+  late AppLanguage language;
+  late GeoLocation location;
   int tab = 0;
   late final FestivalEngine festival;
   late List<PersonalEvent> personalEvents;
@@ -183,6 +202,8 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     super.initState();
     festival = FestivalEngine(panchang, holikaOverrides: widget.holikaOverrides);
     personalEvents = List<PersonalEvent>.of(widget.initialEvents);
+    language = widget.initialLanguage;
+    location = widget.initialLocation ?? locations.first;
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncHomeWidgets());
   }
 
@@ -200,11 +221,13 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
 
   void _changeLanguage(AppLanguage value) {
     setState(() => language = value);
+    unawaited(widget.onLanguageChanged?.call(value) ?? Future<void>.value());
     _syncHomeWidgets();
   }
 
   void _changeLocation(GeoLocation value) {
     setState(() => location = value);
+    unawaited(widget.onLocationChanged?.call(value) ?? Future<void>.value());
     _syncHomeWidgets();
   }
 
@@ -237,11 +260,9 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
       locale: language == AppLanguage.hi ? const Locale('hi', 'IN') : const Locale('en', 'IN'),
       supportedLocales: const [Locale('hi', 'IN'), Locale('en', 'IN')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF8D4B2D),
-        scaffoldBackgroundColor: const Color(0xFFFFFBF6),
-      ),
+      theme: _theme(Brightness.light),
+      darkTheme: _theme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: Scaffold(
         body: SafeArea(
           child: IndexedStack(
@@ -299,4 +320,22 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
       ),
     );
   }
+}
+
+ThemeData _theme(Brightness brightness) {
+  final scheme = ColorScheme.fromSeed(
+    seedColor: const Color(0xFF8D4B2D),
+    brightness: brightness,
+  );
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: scheme.surface,
+    navigationBarTheme: NavigationBarThemeData(backgroundColor: scheme.surfaceContainer),
+    cardTheme: CardThemeData(
+      elevation: 0.8,
+      color: scheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    ),
+  );
 }

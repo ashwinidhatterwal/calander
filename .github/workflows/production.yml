@@ -1,0 +1,104 @@
+name: Production Play bundle
+
+on:
+  workflow_dispatch:
+
+jobs:
+  production-bundle:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Check required release secrets
+        shell: bash
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          UPLOAD_STORE_PASSWORD: ${{ secrets.UPLOAD_STORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+          SUPPORT_UPI_ID: ${{ secrets.SUPPORT_UPI_ID }}
+          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+          SUPPORT_PAYEE_NAME: ${{ secrets.SUPPORT_PAYEE_NAME }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in UPLOAD_KEYSTORE_BASE64 UPLOAD_STORE_PASSWORD UPLOAD_KEY_ALIAS UPLOAD_KEY_PASSWORD SUPPORT_UPI_ID SUPPORT_PAYEE_NAME SUPPORT_EMAIL; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing GitHub Actions secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+
+      - name: Create Android platform scaffold
+        shell: bash
+        run: ../tools/prepare_android_scaffold.sh
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test calculation, UI and personal-calendar logic
+        run: flutter test
+
+      - name: Validate production-source structure
+        working-directory: .
+        run: python tools/validate_checkpoint07.py
+
+      - name: Configure upload-key signing
+        shell: bash
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          UPLOAD_STORE_PASSWORD: ${{ secrets.UPLOAD_STORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$UPLOAD_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<PROPS
+          storePassword=$UPLOAD_STORE_PASSWORD
+          keyPassword=$UPLOAD_KEY_PASSWORD
+          keyAlias=$UPLOAD_KEY_ALIAS
+          storeFile=$(pwd)/android/app/upload-keystore.jks
+          PROPS
+          python ../tools/configure_android_signing.py
+
+      - name: Build signed production AAB
+        env:
+          SUPPORT_UPI_ID: ${{ secrets.SUPPORT_UPI_ID }}
+          SUPPORT_PAYEE_NAME: ${{ secrets.SUPPORT_PAYEE_NAME }}
+          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+        run: |
+          flutter build appbundle --release --obfuscate --split-debug-info=build/symbols \
+            --dart-define=SUPPORT_UPI_ID="$SUPPORT_UPI_ID" \
+            --dart-define=SUPPORT_PAYEE_NAME="$SUPPORT_PAYEE_NAME" \
+            --dart-define=SUPPORT_EMAIL="$SUPPORT_EMAIL"
+
+      - name: Verify AAB signature
+        shell: bash
+        run: jarsigner -verify -certs build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload Play bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: hindu-calendar-1.0.0-play-aab
+          path: flutter_app/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      - name: Upload Dart symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: hindu-calendar-1.0.0-dart-symbols
+          path: flutter_app/build/symbols/**
+          if-no-files-found: error

@@ -7,6 +7,7 @@ import '../domain/festival_engine.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/personal_event.dart';
+import 'about_support_screen.dart';
 import 'day_details_screen.dart';
 import 'personal_event_editor_screen.dart';
 
@@ -148,6 +149,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ),
+              ),
+              IconButton(
+                tooltip: l.pick('ऐप के बारे में', 'About'),
+                onPressed: _openAboutSupport,
+                icon: const Icon(Icons.more_vert),
               ),
             ],
           ),
@@ -682,6 +688,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
     );
     if (choice != null) widget.onLocationChanged(choice);
+  }
+
+
+  void _openAboutSupport() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AboutSupportScreen(language: widget.language),
+      ),
+    );
   }
 
   Future<void> _addPersonalEvent() async {

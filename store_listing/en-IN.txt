@@ -1,0 +1,24 @@
+App name
+Hindu Calendar
+
+Short description
+A clean Hindu calendar with Tithi, Panchang, festivals, vrats and your personal days.
+
+Full description
+Hindu Calendar is a Hindi-first, offline-first daily calendar that makes Panchang information easy to understand without turning the app into a dense reference table.
+
+Highlights:
+• Familiar monthly calendar with Tithi on every date
+• Major festivals and vrats shown directly inside date tiles
+• Detailed day Panchang: Tithi, Paksha, Maas, Nakshatra, Yoga, Karana, sunrise/sunset, moonrise/moonset and useful daily periods
+• North Indian Purnimanta month profile
+• Hindi and English
+• Location-aware daily timings
+• Add birthdays, anniversaries, puja and family occasions
+• Repeat personal events by either Gregorian date or Hindu Maas–Paksha–Tithi
+• Android home-screen widgets
+• No advertising
+• No required account
+• Personal events are stored on the device
+
+The app is fully free. An optional voluntary developer-support option may be available under About; supporting never unlocks digital features.
