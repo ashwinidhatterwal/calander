@@ -41,7 +41,7 @@ jobs:
 
       - name: Create Android platform scaffold
         shell: bash
-        run: ../tools/prepare_android_scaffold.sh
+        run: bash ../tools/prepare_android_scaffold.sh
 
       - name: Install packages
         run: flutter pub get

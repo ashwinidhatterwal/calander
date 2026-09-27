@@ -26,7 +26,7 @@ jobs:
 
       - name: Create Android platform scaffold
         shell: bash
-        run: ../tools/prepare_android_scaffold.sh
+        run: bash ../tools/prepare_android_scaffold.sh
 
       - name: Verify native widget package
         shell: bash
