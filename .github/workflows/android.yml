@@ -94,6 +94,13 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
+      - name: Verify native widget package
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'package `in`.hinducalendar.hindu_calendar' android_widget/kotlin/TodayPanchangWidgetProvider.kt
+          grep -F 'package `in`.hinducalendar.hindu_calendar' android_widget/kotlin/UpcomingWidgetProvider.kt
+
       - name: Install packages
         run: flutter pub get
 

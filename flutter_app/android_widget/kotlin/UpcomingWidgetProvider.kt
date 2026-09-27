@@ -1,4 +1,4 @@
-package in.hinducalendar.hindu_calendar
+package `in`.hinducalendar.hindu_calendar
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
