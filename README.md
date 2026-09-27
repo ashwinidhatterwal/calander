@@ -1,12 +1,12 @@
-# Hindu Calendar — Checkpoint 07 Production Candidate
+# Hindu Calendar — Checkpoint 08 Production Polish
 
-Checkpoint 07 prepares the app for a first Google Play release while preserving the product direction established in earlier checkpoints: a familiar daily calendar with Hindu Tithi/Panchang intelligence, personal Hindu-date events, useful widgets, and a Hindi-first interface.
+Checkpoint 08 is a real-device visual and trust refinement of the 1.0 production candidate. It keeps the product simple: a familiar calendar with Hindu Tithi/Panchang intelligence, personal Hindu-date events, useful widgets, and a Hindi-first interface.
 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+7`
-- Permanent Android application id: `in.hinducalendar.hindu_calendar`
+- Version: `1.0.0+8`
+- Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No
 - Advertising: No
@@ -14,7 +14,7 @@ Checkpoint 07 prepares the app for a first Google Play release while preserving 
 
 ## Core app
 
-- Normal month calendar with large date tiles.
+- Normal month calendar with large, clearly separated date tiles.
 - Tithi visible directly under each Gregorian date.
 - Major festival/vrat label inside the date tile.
 - Swipe left/right with resistance to change month.
@@ -24,22 +24,24 @@ Checkpoint 07 prepares the app for a first Google Play release while preserving 
 - Personal **My Days** calendar.
 - Personal events can follow either a Gregorian date or Hindu Maas + Paksha + Tithi.
 - Local event persistence.
-- Selected language and city now persist across restarts.
+- Selected language, city, and appearance persist across restarts.
 - Hindi and English.
-- System light/dark theme.
-- Theme-aware Android home-screen widgets.
-- Warm light/dark native launch screen followed by branded Flutter loading screen.
+- **Light mode is the default.**
+- Optional dark mode is available under About → Appearance.
+- Android home-screen widgets continue to follow the phone's widget/system theme.
+- Widget picker previews use the real widget layouts with representative sample data.
+- Warm native launch surface followed by branded Flutter loading screen.
 - Single-task Android behavior to avoid duplicate Recents cards.
 
 ## Optional developer support
 
-The app is fully usable without payment. There is no premium tier.
+The app is fully usable without payment. There is no premium tier and no automatic support prompt.
 
-A quiet **About** screen contains an optional voluntary developer-tip flow. It never opens automatically and never grants any digital feature, content, badge, theme, or status.
+The support section lives quietly inside **About**. Its wording is intentionally personal rather than promotional: if the app is useful and the user wants to help future development, they can optionally send the developer a contribution of their choice through an external UPI app.
 
-The production build can inject a UPI destination through GitHub Actions secrets. After supporting, a user may optionally request a **physical handwritten thank-you note** by opening their email app and sending a postal address to the developer. The app itself does not store that postal information.
+Supporting never changes or unlocks any digital feature.
 
-See `docs/SUPPORT_POLICY.md` and `docs/DATA_SAFETY_GUIDE.md`.
+As a personal thank-you, a supporter may optionally email their name and postal address to request a physical handwritten note from the developer. The app itself does not store the postal address.
 
 ## Privacy
 
@@ -50,15 +52,17 @@ A public privacy-policy page is included in `store_web/privacy.html`, plus a Git
 ## Build workflows
 
 ### QA APK
+
 Pushes to `main` run `.github/workflows/android.yml`:
 
 ```text
 flutter pub get
 flutter analyze
 flutter test
-production-source validator
+Checkpoint 08 source validator
 release QA APK
 Target API verification
+permission audit
 ```
 
 Expected artifact:
@@ -68,6 +72,7 @@ hindu-calendar-1.0.0-qa-apk
 ```
 
 ### Play Store AAB
+
 Run **Production Play bundle** manually after configuring release secrets. It creates a signed, obfuscated Android App Bundle plus Dart symbols.
 
 Expected artifacts:
@@ -79,8 +84,6 @@ hindu-calendar-1.0.0-dart-symbols
 
 The upload keystore and passwords must never be committed to this public repository.
 
-See `docs/PLAY_STORE_RELEASE_CHECKLIST.md`.
-
 ## Validation boundary
 
-Checkpoint 07 does not alter the Panchang astronomy/festival-rule engine. The existing reference regression suite remains the calculation trust boundary. Any future changes to Tithi/month/festival calculations should require regression coverage before release.
+Checkpoint 08 changes presentation, theme behavior, widget previews, and wording only. It does **not** alter Panchang astronomy, Tithi/month calculations, festival-date selection rules, or personal-event matching.

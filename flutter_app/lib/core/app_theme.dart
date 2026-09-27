@@ -1,0 +1,4 @@
+enum AppThemePreference {
+  light,
+  dark,
+}

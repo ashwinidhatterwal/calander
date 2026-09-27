@@ -29,6 +29,7 @@
             android:id="@+id/widget_upcoming_kind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="पर्व / व्रत"
             android:textColor="@color/widget_accent"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -39,6 +40,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="शारदीय नवरात्रि आरम्भ"
             android:textColor="@color/widget_text"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -49,6 +51,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="11 अक्टूबर 2026"
             android:textColor="@color/widget_subtext"
             android:textSize="12sp" />
     </LinearLayout>

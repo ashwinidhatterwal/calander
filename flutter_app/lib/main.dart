@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'core/app_theme.dart';
 import 'core/localization.dart';
 import 'core/locations.dart';
 import 'data/app_settings_store.dart';
@@ -64,7 +65,11 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
       // Local event storage failure must never block calendar startup.
     }
 
-    AppSettings settings = AppSettings(language: AppLanguage.hi, location: locations.first);
+    AppSettings settings = AppSettings(
+      language: AppLanguage.hi,
+      location: locations.first,
+      theme: AppThemePreference.light,
+    );
     try {
       settings = await _settingsStore.load();
     } catch (_) {
@@ -88,9 +93,11 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
       initialEvents: data.events,
       initialLanguage: data.settings.language,
       initialLocation: data.settings.location,
+      initialTheme: data.settings.theme,
       onEventsChanged: _store.save,
       onLanguageChanged: _settingsStore.saveLanguage,
       onLocationChanged: _settingsStore.saveLocation,
+      onThemeChanged: _settingsStore.saveTheme,
     );
   }
 }
@@ -111,7 +118,7 @@ class _LoadingApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _theme(Brightness.light),
       darkTheme: _theme(Brightness.dark),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       home: const Scaffold(
         body: SafeArea(child: _LoadingScreen()),
       ),
@@ -172,18 +179,22 @@ class HinduCalendarApp extends StatefulWidget {
     this.initialEvents = const [],
     this.initialLanguage = AppLanguage.hi,
     this.initialLocation,
+    this.initialTheme = AppThemePreference.light,
     this.onEventsChanged,
     this.onLanguageChanged,
     this.onLocationChanged,
+    this.onThemeChanged,
   });
 
   final Map<int, DateTime> holikaOverrides;
   final List<PersonalEvent> initialEvents;
   final AppLanguage initialLanguage;
   final GeoLocation? initialLocation;
+  final AppThemePreference initialTheme;
   final Future<void> Function(List<PersonalEvent>)? onEventsChanged;
   final Future<void> Function(AppLanguage)? onLanguageChanged;
   final Future<void> Function(GeoLocation)? onLocationChanged;
+  final Future<void> Function(AppThemePreference)? onThemeChanged;
 
   @override
   State<HinduCalendarApp> createState() => _HinduCalendarAppState();
@@ -193,6 +204,7 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
   final PanchangEngine panchang = const PanchangEngine();
   late AppLanguage language;
   late GeoLocation location;
+  late AppThemePreference themePreference;
   int tab = 0;
   late final FestivalEngine festival;
   late List<PersonalEvent> personalEvents;
@@ -204,6 +216,7 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     personalEvents = List<PersonalEvent>.of(widget.initialEvents);
     language = widget.initialLanguage;
     location = widget.initialLocation ?? locations.first;
+    themePreference = widget.initialTheme;
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncHomeWidgets());
   }
 
@@ -229,6 +242,11 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     setState(() => location = value);
     unawaited(widget.onLocationChanged?.call(value) ?? Future<void>.value());
     _syncHomeWidgets();
+  }
+
+  void _changeTheme(AppThemePreference value) {
+    setState(() => themePreference = value);
+    unawaited(widget.onThemeChanged?.call(value) ?? Future<void>.value());
   }
 
   void _upsertEvent(PersonalEvent event) {
@@ -262,7 +280,9 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: _theme(Brightness.light),
       darkTheme: _theme(Brightness.dark),
-      themeMode: ThemeMode.system,
+      themeMode: themePreference == AppThemePreference.dark
+          ? ThemeMode.dark
+          : ThemeMode.light,
       home: Scaffold(
         body: SafeArea(
           child: IndexedStack(
@@ -277,6 +297,8 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
                 onUpsertPersonalEvent: _upsertEvent,
                 onLanguageChanged: _changeLanguage,
                 onLocationChanged: _changeLocation,
+                themePreference: themePreference,
+                onThemeChanged: _changeTheme,
               ),
               FestivalsScreen(
                 festival: festival,
@@ -323,19 +345,49 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
 }
 
 ThemeData _theme(Brightness brightness) {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: const Color(0xFF8D4B2D),
+  final isDark = brightness == Brightness.dark;
+  final base = ColorScheme.fromSeed(
+    seedColor: const Color(0xFF9A4E2D),
     brightness: brightness,
   );
+  final scaffold = isDark
+      ? const Color(0xFF17110F)
+      : const Color(0xFFFFFBF7);
+  final card = isDark
+      ? const Color(0xFF2A201C)
+      : const Color(0xFFFFF4ED);
+  final navigation = isDark
+      ? const Color(0xFF241B17)
+      : const Color(0xFFFFECE3);
+  final outline = isDark
+      ? const Color(0xFF4B3931)
+      : const Color(0xFFE8D3C7);
+
+  final scheme = base.copyWith(
+    surface: scaffold,
+    surfaceContainer: navigation,
+    surfaceContainerLow: card,
+    outlineVariant: outline,
+  );
+
   return ThemeData(
     useMaterial3: true,
     colorScheme: scheme,
-    scaffoldBackgroundColor: scheme.surface,
-    navigationBarTheme: NavigationBarThemeData(backgroundColor: scheme.surfaceContainer),
-    cardTheme: CardThemeData(
-      elevation: 0.8,
-      color: scheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    scaffoldBackgroundColor: scaffold,
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: navigation,
+      indicatorColor: isDark
+          ? const Color(0xFF6E4435)
+          : const Color(0xFFF6CDBC),
     ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: card,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: outline, width: 0.8),
+      ),
+    ),
+    dividerTheme: DividerThemeData(color: outline),
   );
 }

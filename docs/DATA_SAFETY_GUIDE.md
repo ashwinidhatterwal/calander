@@ -1,6 +1,6 @@
 # Google Play Data Safety Guide
 
-This is a conservative declaration guide for the current Checkpoint 07 design. Re-check the Play Console wording at submission time.
+This is a conservative declaration guide for the current Checkpoint 08 design. Re-check the Play Console wording at submission time.
 
 ## Core app
 - Ads: No

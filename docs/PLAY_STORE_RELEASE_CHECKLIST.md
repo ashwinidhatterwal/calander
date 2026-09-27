@@ -3,7 +3,7 @@
 ## Identity
 - Permanent Android application id: `in.hinducalendar.hindu_calendar`
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+7`
+- Version: `1.0.0+8`
 - Android launcher icon: Checkpoint 06/07 production icon
 
 Do not change the application id after the first Play release.
@@ -33,7 +33,7 @@ Then paste the resulting value into `UPLOAD_KEYSTORE_BASE64`.
 Never commit the keystore or any password to the public repository.
 
 ## Optional support configuration
-Checkpoint 07 intentionally has no paywall and no automatic support prompt.
+Checkpoint 08 intentionally has no paywall and no automatic support prompt.
 To activate voluntary developer support in production, configure:
 
 - `SUPPORT_UPI_ID`

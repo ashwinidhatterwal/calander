@@ -24,6 +24,7 @@
             android:id="@+id/widget_today_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="रवि • 27 सितंबर"
             android:textColor="@color/widget_subtext"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -34,6 +35,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="कृष्ण पक्ष प्रतिपदा"
             android:textColor="@color/widget_text"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -44,6 +46,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="आश्विन मास"
             android:textColor="@color/widget_subtext"
             android:textSize="12sp" />
 
@@ -52,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
+            android:text="☀ 06:25   ◒ 18:25"
             android:textColor="@color/widget_accent"
             android:textSize="11sp"
             android:textStyle="bold" />

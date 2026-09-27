@@ -31,7 +31,8 @@ mkdir -p android/app/src/main/res/values-night
 cat > android/app/src/main/res/values-night/launch_colors.xml <<'XML'
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="launch_background_color">#18120F</color>
+    <!-- The app defaults to light mode, so keep native launch consistent. -->
+    <color name="launch_background_color">#FFF8F1</color>
 </resources>
 XML
 cat > android/app/src/main/res/drawable/launch_background.xml <<'XML'

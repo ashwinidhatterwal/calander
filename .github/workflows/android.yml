@@ -46,7 +46,7 @@ jobs:
 
       - name: Validate production-source structure
         working-directory: .
-        run: python tools/validate_checkpoint07.py
+        run: python tools/validate_checkpoint08.py
 
       - name: Build QA release APK
         env:

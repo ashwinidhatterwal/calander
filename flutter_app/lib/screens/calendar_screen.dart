@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../core/app_theme.dart';
 import '../core/localization.dart';
 import '../core/locations.dart';
 import '../domain/festival_engine.dart';
@@ -22,6 +23,8 @@ class CalendarScreen extends StatefulWidget {
     required this.onUpsertPersonalEvent,
     required this.onLanguageChanged,
     required this.onLocationChanged,
+    required this.themePreference,
+    required this.onThemeChanged,
   });
 
   final PanchangEngine panchang;
@@ -32,6 +35,8 @@ class CalendarScreen extends StatefulWidget {
   final ValueChanged<PersonalEvent> onUpsertPersonalEvent;
   final ValueChanged<AppLanguage> onLanguageChanged;
   final ValueChanged<GeoLocation> onLocationChanged;
+  final AppThemePreference themePreference;
+  final ValueChanged<AppThemePreference> onThemeChanged;
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -327,13 +332,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final normalSub = scheme.onSurfaceVariant;
         final mutedSub = normalSub.withAlpha(70);
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final tileColor = isDark
+            ? const Color(0xFF2D221E)
+            : const Color(0xFFFFF0E7);
+        final tileBorder = isDark
+            ? const Color(0xFF523E35)
+            : const Color(0xFFE7CFC2);
+
         Color background;
         if (isSelected) {
-          background = scheme.primaryContainer;
+          background = isDark
+              ? const Color(0xFF6A321D)
+              : const Color(0xFFF5C9B5);
         } else if (isToday) {
-          background = scheme.secondaryContainer.withAlpha(150);
+          background = isDark
+              ? const Color(0xFF3A2B22)
+              : const Color(0xFFFFE0CF);
         } else if (inside) {
-          background = scheme.surfaceContainerLow.withAlpha(125);
+          background = tileColor;
         } else {
           background = Colors.transparent;
         }
@@ -356,11 +373,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               color: background,
               borderRadius: BorderRadius.circular(13),
               border: Border.all(
-                color: isToday
-                    ? scheme.primary.withAlpha(150)
-                    : (inside
-                        ? scheme.outlineVariant.withAlpha(65)
-                        : Colors.transparent),
+                color: isSelected
+                    ? scheme.primary.withAlpha(180)
+                    : isToday
+                        ? scheme.primary.withAlpha(145)
+                        : (inside ? tileBorder : Colors.transparent),
+                width: isSelected ? 1.2 : 0.8,
               ),
             ),
             child: Column(
@@ -694,7 +712,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _openAboutSupport() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => AboutSupportScreen(language: widget.language),
+        builder: (_) => AboutSupportScreen(
+          language: widget.language,
+          initialTheme: widget.themePreference,
+          onThemeChanged: widget.onThemeChanged,
+        ),
       ),
     );
   }

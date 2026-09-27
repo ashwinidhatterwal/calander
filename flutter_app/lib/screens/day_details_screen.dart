@@ -72,7 +72,7 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
     if (delta == 0) {
       prefix = l.pick('आज', 'Today');
     } else if (delta == 1) {
-      prefix = l.pick('कल', 'Tomorrow');
+      prefix = l.pick('अगले दिन', 'Next day');
     } else {
       final month = widget.language == AppLanguage.hi
           ? monthNamesHi[local.month - 1]
@@ -98,7 +98,27 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 : local.hour < 20
                     ? 'शाम'
                     : 'रात';
-    return '$prefix $dayPart $hour:$minute';
+    return '$prefix $dayPart $hour:$minute बजे';
+  }
+
+  String _festivalNote(FestivalObservance event) {
+    if (widget.language == AppLanguage.en) {
+      if (event.id == 'janmashtami') {
+        return 'This date follows the commonly used North Indian Panchang method. Some Vaishnava traditions may observe Janmashtami differently.';
+      }
+      if (event.id == 'holika_dahan') {
+        return 'Holika Dahan can depend on detailed Bhadra and Pradosha rules, so some traditions may show a different observance date.';
+      }
+      return event.notesEn ?? '';
+    }
+
+    if (event.id == 'janmashtami') {
+      return 'यह तिथि उत्तर भारत में प्रचलित पंचांग पद्धति के अनुसार है। कुछ वैष्णव परंपराओं में जन्माष्टमी की तिथि अलग हो सकती है।';
+    }
+    if (event.id == 'holika_dahan') {
+      return 'होलिका दहन में भद्रा और प्रदोष जैसे नियम महत्वपूर्ण होते हैं, इसलिए कुछ परंपराओं में तिथि अलग दिखाई दे सकती है।';
+    }
+    return event.notesHi ?? '';
   }
 
   @override
@@ -179,21 +199,10 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                       ],
                     ),
                     for (final event in bundle.events)
-                      if ((widget.language == AppLanguage.hi
-                                  ? event.notesHi
-                                  : event.notesEn) !=
-                              null &&
-                          (widget.language == AppLanguage.hi
-                                  ? event.notesHi!
-                                  : event.notesEn!)
-                              .isNotEmpty)
+                      if (_festivalNote(event).isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            widget.language == AppLanguage.hi
-                                ? event.notesHi!
-                                : event.notesEn!,
-                          ),
+                          child: Text(_festivalNote(event)),
                         ),
                   ],
                 )
