@@ -1,0 +1,6 @@
+[
+  {"id":"ekadashi","tithi":11,"name_hi":"एकादशी","name_en":"Ekadashi"},
+  {"id":"purnima","tithi":15,"paksha":"shukla","name_hi":"पूर्णिमा","name_en":"Purnima"},
+  {"id":"amavasya","tithi":15,"paksha":"krishna","name_hi":"अमावस्या","name_en":"Amavasya"},
+  {"id":"pradosh","tithi":13,"name_hi":"प्रदोष","name_en":"Pradosh"}
+]

@@ -1,0 +1,126 @@
+{
+  "profile": "north_india_purnimanta",
+  "reference_city": "Delhi, India",
+  "festival_dates": {
+    "2026": {
+      "maha_shivaratri": "2026-02-15",
+      "holika_dahan": "2026-03-03",
+      "holi": "2026-03-04",
+      "rama_navami": "2026-03-26",
+      "raksha_bandhan": "2026-08-28",
+      "janmashtami": "2026-09-04",
+      "ganesh_chaturthi": "2026-09-14",
+      "shardiya_navratri": "2026-10-11",
+      "vijayadashami": "2026-10-20",
+      "karwa_chauth": "2026-10-29",
+      "dhanteras": "2026-11-06",
+      "diwali": "2026-11-08",
+      "govardhan_puja": "2026-11-10",
+      "bhai_dooj": "2026-11-11"
+    },
+    "2027": {
+      "maha_shivaratri": "2027-03-06",
+      "holika_dahan": "2027-03-21",
+      "holi": "2027-03-22",
+      "rama_navami": "2027-04-15",
+      "raksha_bandhan": "2027-08-17",
+      "janmashtami": "2027-08-25",
+      "ganesh_chaturthi": "2027-09-04",
+      "shardiya_navratri": "2027-09-30",
+      "vijayadashami": "2027-10-09",
+      "karwa_chauth": "2027-10-18",
+      "dhanteras": "2027-10-27",
+      "diwali": "2027-10-29",
+      "govardhan_puja": "2027-10-30",
+      "bhai_dooj": "2027-10-31"
+    }
+  },
+  "timing_checks": [
+    {
+      "id": "karwa_chauth_2026_delhi_moonrise",
+      "date": "2026-10-29",
+      "expected_local": "20:17",
+      "tolerance_minutes": 8
+    },
+    {
+      "id": "janmashtami_2026_delhi_moonrise",
+      "date": "2026-09-04",
+      "expected_local": "23:29",
+      "tolerance_minutes": 8
+    }
+  ],
+  "sources": [
+    "Government of NCT Delhi 2026 holiday notification",
+    "Ministry of Parliamentary Affairs 2026 calendar",
+    "Drik Panchang city festival pages and Hindu festival calendar",
+    "Government / institutional holiday calendars used only as civil-date cross-checks"
+  ],
+  "source_records": [
+    {
+      "id": "drik_karwa_chauth_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/karwa-chauth/karwa-chauth-date-time.html?geoname-id=1261481&year=2026",
+      "supports": [
+        "karwa_chauth_2026",
+        "karwa_chauth_2026_delhi_moonrise"
+      ]
+    },
+    {
+      "id": "drik_iskcon_janmashtami_2026_delhi",
+      "url": "https://www.drikpanchang.com/iskcon/lord/krishna-janmashtami-date-time.html?geoname-id=1261481&year=2026",
+      "supports": [
+        "janmashtami_2026",
+        "janmashtami_2026_delhi_moonrise"
+      ]
+    },
+    {
+      "id": "drik_ganesh_chaturthi_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/ganesh-chaturthi/ganesh-chaturthi-date-time.html?geoname-id=1273294",
+      "supports": [
+        "ganesh_chaturthi_2026"
+      ]
+    },
+    {
+      "id": "drik_raksha_bandhan_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/raksha-bandhan/raksha-bandhan-date-time.html?geoname-id=1273294",
+      "supports": [
+        "raksha_bandhan_2026"
+      ]
+    },
+    {
+      "id": "drik_vijayadashami_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/vijayadashami/vijayadashami-date-time.html?geoname-id=1261481&year=2026",
+      "supports": [
+        "vijayadashami_2026"
+      ]
+    },
+    {
+      "id": "drik_diwali_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/lakshmipuja/festivals-lakshmipuja-timings.html?geoname-id=1273294",
+      "supports": [
+        "diwali_2026"
+      ]
+    },
+    {
+      "id": "drik_bhai_dooj_2026_delhi",
+      "url": "https://www.drikpanchang.com/festivals/bhai-dooj/bhai-dooj-date-time.html?geoname-id=1261481",
+      "supports": [
+        "bhai_dooj_2026"
+      ]
+    },
+    {
+      "id": "drik_hindu_calendar_2027_delhi",
+      "url": "https://www.drikpanchang.com/calendars/hindu/hinducalendar.html?geoname-id=1261481&year=2027",
+      "supports": [
+        "multiple_2027_major_festival_dates"
+      ]
+    },
+    {
+      "id": "drik_holika_dahan_2027_delhi",
+      "url": "https://www.drikpanchang.com/festivals/holi/festivals-holika-dahan-timings.html?geoname-id=1261481&year=2027",
+      "supports": [
+        "holika_dahan_2027",
+        "holi_2027"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/android/
+.DS_Store
