@@ -93,7 +93,7 @@ class _PersonalEventEditorScreenState extends State<PersonalEventEditorScreen> {
               autofocus: widget.initial == null,
               decoration: InputDecoration(
                 labelText: l.pick('नाम', 'Title'),
-                hintText: l.pick('जैसे: दादी की बरसी', 'e.g. Family remembrance'),
+                hintText: l.pick('जैसे: घर की वार्षिक पूजा', 'e.g. Annual family puja'),
                 border: const OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)

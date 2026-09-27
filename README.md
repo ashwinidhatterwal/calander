@@ -1,6 +1,6 @@
-# Hindu Calendar — Checkpoint 05
+# Hindu Calendar — Checkpoint 06
 
-Checkpoint 05 turns the app from a Panchang viewer into the beginning of a **personal Hindu life calendar**.
+Checkpoint 06 turns the app from a Panchang viewer into the beginning of a **personal Hindu life calendar**.
 
 The trusted Panchang/festival calculation engine remains unchanged. This checkpoint adds a local personal-event layer and a proper startup experience.
 
@@ -56,7 +56,7 @@ All personal events are stored **only on the device** using local preferences. N
 
 The old startup path loaded an asset before `runApp()`, which could leave an empty/black frame while Flutter initialized.
 
-Checkpoint 05 now:
+Checkpoint 06 now:
 
 1. calls `runApp()` immediately;
 2. renders a warm branded Hindi loading screen;
@@ -83,7 +83,7 @@ The GitHub Android workflow also replaces the generated Android launch backgroun
 
 ## Privacy / backend
 
-Checkpoint 05 still needs no backend for its core experience.
+Checkpoint 06 still needs no backend for its core experience.
 
 Stored locally:
 
@@ -114,9 +114,13 @@ flutter build apk --release
 Expected artifact:
 
 ```text
-hindu-calendar-checkpoint-05-apk
+hindu-calendar-checkpoint-06-apk
 ```
 
-App version: `0.5.0+5`.
+App version: `0.6.0+6`.
 
 The Android package identity remains provisional: `in.hinducalendar.hindu_calendar`.
+
+## Checkpoint 06
+
+Checkpoint 06 adds the final Android-shell polish around the existing calendar engine: branded launcher/loading icon, resisted month swiping, tap-to-jump month/year selection, single-task Recents behavior, and two theme-aware Android home-screen widgets (Today Panchang + Upcoming festival/My Day). See `docs/CHECKPOINT_06.md`.

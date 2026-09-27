@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/localization.dart';
 import '../core/locations.dart';
@@ -44,6 +45,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? _majorKey;
 
   final Map<String, _CalendarCellData> _cellCache = {};
+  double _monthDragDx = 0;
 
   @override
   void initState() {
@@ -117,12 +119,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           children: [
                             const Icon(Icons.location_on_outlined, size: 16),
                             const SizedBox(width: 4),
-                            Text(
-                              l.pick(
-                                widget.location.cityHi,
-                                widget.location.cityEn,
-                              ),
-                            ),
+                            Text(l.pick(widget.location.cityHi, widget.location.cityEn)),
                             const Icon(Icons.expand_more, size: 18),
                           ],
                         ),
@@ -166,85 +163,127 @@ class _CalendarScreenState extends State<CalendarScreen> {
             onTap: () => _openDay(selectedDate),
           ),
         ),
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () => _moveMonth(-1),
-                icon: const Icon(Icons.chevron_left),
-              ),
-              Expanded(
-                child: FutureBuilder<PanchangDay>(
-                  future: selectedFuture,
-                  builder: (context, snap) {
-                    final month = widget.language == AppLanguage.hi
-                        ? monthNamesHi[visibleMonth.month - 1]
-                        : monthNamesEn[visibleMonth.month - 1];
-                    final hinduMonth = snap.hasData
-                        ? l.pick(
-                            snap.data!.purnimantaMonth.hi,
-                            snap.data!.purnimantaMonth.en,
-                          )
-                        : '…';
-                    return Column(
-                      children: [
-                        Text(
-                          '$month ${visibleMonth.year}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w800),
-                        ),
-                        Text(
-                          '${snap.data?.adhikMonth == true ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              IconButton(
-                onPressed: () => _moveMonth(1),
-                icon: const Icon(Icons.chevron_right),
-              ),
-              TextButton(onPressed: _goToday, child: Text(l.today)),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              for (final w in (widget.language == AppLanguage.hi
-                  ? shortWeekHi
-                  : shortWeekEn))
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 7),
-                      child: Text(
-                        w,
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
+        const SizedBox(height: 8),
+        Expanded(child: _monthPanel(l)),
+      ],
+    );
+  }
+
+  Widget _monthPanel(L10n l) {
+    final resistedOffset = (_monthDragDx * 0.16).clamp(-18.0, 18.0).toDouble();
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragUpdate: (details) {
+        setState(() {
+          _monthDragDx = (_monthDragDx + details.delta.dx).clamp(-120.0, 120.0).toDouble();
+        });
+      },
+      onHorizontalDragCancel: () => setState(() => _monthDragDx = 0),
+      onHorizontalDragEnd: (details) {
+        final velocity = details.primaryVelocity ?? 0;
+        final shouldMove = _monthDragDx.abs() >= 58 || velocity.abs() >= 650;
+        final direction = _monthDragDx < 0 || velocity < -650 ? 1 : -1;
+        setState(() => _monthDragDx = 0);
+        if (shouldMove) {
+          HapticFeedback.selectionClick();
+          _moveMonth(direction);
+        }
+      },
+      child: AnimatedContainer(
+        duration: _monthDragDx == 0 ? const Duration(milliseconds: 180) : Duration.zero,
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.translationValues(resistedOffset, 0, 0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => _moveMonth(-1),
+                    icon: const Icon(Icons.chevron_left),
+                  ),
+                  Expanded(
+                    child: FutureBuilder<PanchangDay>(
+                      future: selectedFuture,
+                      builder: (context, snap) {
+                        final month = widget.language == AppLanguage.hi
+                            ? monthNamesHi[visibleMonth.month - 1]
+                            : monthNamesEn[visibleMonth.month - 1];
+                        final hinduMonth = snap.hasData
+                            ? l.pick(snap.data!.purnimantaMonth.hi, snap.data!.purnimantaMonth.en)
+                            : '…';
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: _pickMonthYear,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '$month ${visibleMonth.year}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(fontWeight: FontWeight.w800),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    const Icon(Icons.arrow_drop_down, size: 20),
+                                  ],
+                                ),
+                                Text(
+                                  '${snap.data?.adhikMonth == true ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-            ],
-          ),
+                  IconButton(
+                    onPressed: () => _moveMonth(1),
+                    icon: const Icon(Icons.chevron_right),
+                  ),
+                  TextButton(onPressed: _goToday, child: Text(l.today)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  for (final w in (widget.language == AppLanguage.hi ? shortWeekHi : shortWeekEn))
+                    Expanded(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 7),
+                          child: Text(
+                            w,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder<List<FestivalObservance>>(
+                future: majorFuture,
+                builder: (context, snap) => _calendarGrid(snap.data ?? const []),
+              ),
+            ),
+          ],
         ),
-        Expanded(
-          child: FutureBuilder<List<FestivalObservance>>(
-            future: majorFuture,
-            builder: (context, snap) => _calendarGrid(snap.data ?? const []),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -489,6 +528,118 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   bool _sameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  Future<void> _pickMonthYear() async {
+    var year = visibleMonth.year;
+    final selected = await showModalBottomSheet<DateTime>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final monthNames = widget.language == AppLanguage.hi ? monthNamesHi : monthNamesEn;
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.language == AppLanguage.hi ? 'महीना और वर्ष चुनें' : 'Choose month and year',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: widget.language == AppLanguage.hi ? 'आज' : 'Today',
+                          onPressed: () {
+                            final now = DateTime.now();
+                            Navigator.pop(context, DateTime.utc(now.year, now.month, 1));
+                          },
+                          icon: const Icon(Icons.today_outlined),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: year > 1900 ? () => setSheetState(() => year--) : null,
+                            icon: const Icon(Icons.chevron_left),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<int>(
+                                value: year,
+                                isExpanded: true,
+                                alignment: Alignment.center,
+                                items: [
+                                  for (var y = 1900; y <= 2100; y++)
+                                    DropdownMenuItem(value: y, child: Center(child: Text('$y'))),
+                                ],
+                                onChanged: (value) {
+                                  if (value != null) setSheetState(() => year = value);
+                                },
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: year < 2100 ? () => setSheetState(() => year++) : null,
+                            icon: const Icon(Icons.chevron_right),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 2.2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                      ),
+                      itemCount: 12,
+                      itemBuilder: (context, i) {
+                        final active = i + 1 == visibleMonth.month && year == visibleMonth.year;
+                        return FilledButton.tonal(
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            backgroundColor: active ? Theme.of(context).colorScheme.primaryContainer : null,
+                          ),
+                          onPressed: () => Navigator.pop(context, DateTime.utc(year, i + 1, 1)),
+                          child: Text(monthNames[i], textAlign: TextAlign.center),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+    if (selected == null) return;
+    setState(() {
+      visibleMonth = selected;
+      selectedDate = selected;
+      _futureKey = null;
+      _majorKey = null;
+      _monthDragDx = 0;
+    });
+  }
 
   void _moveMonth(int delta) {
     setState(() {

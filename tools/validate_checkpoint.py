@@ -9,10 +9,12 @@ APP = ROOT / 'flutter_app'
 required = [
     APP/'pubspec.yaml', APP/'lib/main.dart', APP/'lib/domain/panchang_engine.dart',
     APP/'lib/domain/festival_engine.dart', APP/'lib/domain/personal_event.dart',
-    APP/'lib/data/personal_event_store.dart', APP/'lib/screens/calendar_screen.dart',
+    APP/'lib/data/personal_event_store.dart', APP/'lib/data/widget_sync_service.dart', APP/'lib/screens/calendar_screen.dart',
     APP/'lib/screens/day_details_screen.dart', APP/'lib/screens/my_days_screen.dart',
     APP/'lib/screens/personal_event_editor_screen.dart', APP/'assets/data/festival_overrides.json',
     APP/'test/fixtures/panchang_reference.json', APP/'test/fixtures/festival_reference.json',
+    APP/'assets/branding/app_icon.png', APP/'android_widget/kotlin/TodayPanchangWidgetProvider.kt',
+    APP/'android_widget/kotlin/UpcomingWidgetProvider.kt',
     ROOT/'.github/workflows/android.yml', ROOT/'reference_python/src/panchang_engine.py',
 ]
 missing = [str(x.relative_to(ROOT)) for x in required if not x.exists()]
@@ -20,10 +22,12 @@ if missing:
     raise SystemExit('Missing required files: ' + ', '.join(missing))
 
 pubspec = (APP/'pubspec.yaml').read_text(encoding='utf-8')
-if 'version: 0.5.0+5' not in pubspec:
-    raise SystemExit('Checkpoint 05 app version missing')
+if 'version: 0.6.0+6' not in pubspec:
+    raise SystemExit('Checkpoint 06 app version missing')
 if 'shared_preferences:' not in pubspec:
     raise SystemExit('Local personal-event persistence dependency missing')
+if 'home_widget:' not in pubspec:
+    raise SystemExit('Home-screen widget dependency missing')
 
 for f in APP.rglob('*.json'):
     json.loads(f.read_text(encoding='utf-8'))

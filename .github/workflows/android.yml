@@ -26,10 +26,21 @@ jobs:
       - name: Create Android platform scaffold
         shell: bash
         run: |
+          set -euo pipefail
           tmp="$(mktemp -d)"
           flutter create --platforms=android --org in.hinducalendar --project-name hindu_calendar "$tmp/hindu_calendar"
           cp -R "$tmp/hindu_calendar/android" ./android
+
           sed -i 's/android:label="hindu_calendar"/android:label="हिन्दू कैलेंडर"/' android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:launchMode="singleTop"/android:launchMode="singleTask"/' android/app/src/main/AndroidManifest.xml
+
+          # Replace Flutter's placeholder launcher icon with the Checkpoint 06 brand mark.
+          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            cp "assets/branding/mipmap-${density}/ic_launcher.png" "android/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            cp "assets/branding/mipmap-${density}/ic_launcher_round.png" "android/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
+          done
+
+          # Warm launch background; Flutter immediately continues with the branded loading screen.
           cat > android/app/src/main/res/values/launch_colors.xml <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
@@ -46,13 +57,50 @@ jobs:
             cp android/app/src/main/res/drawable/launch_background.xml android/app/src/main/res/drawable-v21/launch_background.xml
           fi
 
+          # Theme-aware home-screen widgets.
+          cp -R android_widget/res/. android/app/src/main/res/
+          kotlin_dir="android/app/src/main/kotlin/in/hinducalendar/hindu_calendar"
+          mkdir -p "$kotlin_dir"
+          cp android_widget/kotlin/*.kt "$kotlin_dir/"
+
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('android/app/src/main/AndroidManifest.xml')
+          text = path.read_text(encoding='utf-8')
+          receivers = '''
+                  <receiver
+                      android:name=".TodayPanchangWidgetProvider"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                      </intent-filter>
+                      <meta-data
+                          android:name="android.appwidget.provider"
+                          android:resource="@xml/widget_today_info" />
+                  </receiver>
+                  <receiver
+                      android:name=".UpcomingWidgetProvider"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                      </intent-filter>
+                      <meta-data
+                          android:name="android.appwidget.provider"
+                          android:resource="@xml/widget_upcoming_info" />
+                  </receiver>
+          '''
+          if 'TodayPanchangWidgetProvider' not in text:
+              text = text.replace('    </application>', receivers + '    </application>')
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Install packages
         run: flutter pub get
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Test calculation and personal-calendar logic
+      - name: Test calculation, UI and personal-calendar logic
         run: flutter test
 
       - name: Build release APK
@@ -61,6 +109,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-checkpoint-05-apk
+          name: hindu-calendar-checkpoint-06-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error

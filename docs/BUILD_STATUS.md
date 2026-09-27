@@ -1,13 +1,14 @@
-# Build Status — Checkpoint 05
+# Build Status — Checkpoint 06
 
 ## Verified in this environment
 
 - Python Panchang/festival reference tests: **16/16 passing**.
 - Checkpoint structural validator: **PASS**.
+- Panchang astronomy, Hindu month handling and festival rules unchanged from the verified engine.
 - No paid/commercial astronomy runtime introduced.
 - No web/API dependency introduced for calendar operation.
-- Personal event data model/persistence source included.
-- GitHub Android build workflow updated for Checkpoint 05.
+- Personal event data remains local-only.
+- Checkpoint includes launcher/loading branding, month swipe/picker UX, single-task Android behavior, and native Android widget templates.
 
 ## Requires GitHub Actions after push
 
@@ -23,15 +24,18 @@ flutter build apk --release
 The workflow should produce:
 
 ```text
-hindu-calendar-checkpoint-05-apk
+hindu-calendar-checkpoint-06-apk
 ```
 
 ## Device QA focus
 
-1. No black launch screen; warm loading screen should appear.
-2. Add a normal yearly birthday and confirm it reappears on the calendar tile.
-3. Add a Hindu-Tithi event and confirm it appears on the matching Tithi.
-4. Close/reopen the app and confirm personal events persist.
-5. Edit/delete an event from My Days.
-6. Confirm personal events appear in Day Details.
-7. Verify large calendar tiles/festival labels still behave correctly on the target phone.
+1. Launcher and Recents show the new Hindu Calendar icon.
+2. Warm branded loading screen appears without a black frame.
+3. Swipe left/right across the calendar: slight resisted movement, then one-month change only after a deliberate swipe.
+4. Tap the month/year title and jump directly to another month/year.
+5. Event editor example reads `घर की वार्षिक पूजा` rather than the previous remembrance example.
+6. Dismiss any old duplicate Recents card once, then confirm subsequent launches keep a single Hindu Calendar task.
+7. Add **Today Panchang** and **Upcoming** widgets from the Android widget picker.
+8. Verify widgets update after opening the app and after changing language/location or personal events.
+9. Switch the phone between light/dark theme; widgets should follow it. On Android 12+ they should also use the phone's dynamic Material You palette.
+10. Confirm all prior personal event persistence, festival labels and Day Details behavior still work.

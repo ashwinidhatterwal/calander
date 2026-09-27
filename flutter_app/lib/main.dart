@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/localization.dart';
 import 'core/locations.dart';
 import 'data/personal_event_store.dart';
+import 'data/widget_sync_service.dart';
 import 'domain/festival_engine.dart';
 import 'domain/models.dart';
 import 'domain/panchang_engine.dart';
@@ -125,7 +127,13 @@ class _LoadingScreen extends StatelessWidget {
                 color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(26),
               ),
-              child: Icon(Icons.calendar_month_rounded, size: 44, color: scheme.onPrimaryContainer),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Image.asset(
+                  'assets/branding/app_icon.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             const SizedBox(height: 22),
             Text(
@@ -175,6 +183,29 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     super.initState();
     festival = FestivalEngine(panchang, holikaOverrides: widget.holikaOverrides);
     personalEvents = List<PersonalEvent>.of(widget.initialEvents);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncHomeWidgets());
+  }
+
+  void _syncHomeWidgets() {
+    unawaited(
+      WidgetSyncService.sync(
+        panchang: panchang,
+        festival: festival,
+        location: location,
+        language: language,
+        personalEvents: personalEvents,
+      ),
+    );
+  }
+
+  void _changeLanguage(AppLanguage value) {
+    setState(() => language = value);
+    _syncHomeWidgets();
+  }
+
+  void _changeLocation(GeoLocation value) {
+    setState(() => location = value);
+    _syncHomeWidgets();
   }
 
   void _upsertEvent(PersonalEvent event) {
@@ -187,12 +218,14 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     }
     setState(() => personalEvents = next);
     widget.onEventsChanged?.call(List<PersonalEvent>.unmodifiable(next));
+    _syncHomeWidgets();
   }
 
   void _deleteEvent(String id) {
     final next = personalEvents.where((x) => x.id != id).toList(growable: false);
     setState(() => personalEvents = next);
     widget.onEventsChanged?.call(List<PersonalEvent>.unmodifiable(next));
+    _syncHomeWidgets();
   }
 
   @override
@@ -221,8 +254,8 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
                 location: location,
                 personalEvents: personalEvents,
                 onUpsertPersonalEvent: _upsertEvent,
-                onLanguageChanged: (v) => setState(() => language = v),
-                onLocationChanged: (v) => setState(() => location = v),
+                onLanguageChanged: _changeLanguage,
+                onLocationChanged: _changeLocation,
               ),
               FestivalsScreen(
                 festival: festival,
