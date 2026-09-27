@@ -1,20 +1,25 @@
-# Build Status — Checkpoint 03
+# Build Status — Checkpoint 04
 
-## Passed in this environment
+## Previous checkpoint verified externally
 
-- Python reference regression suite: **16/16 passed**
+Checkpoint 03 successfully completed GitHub Actions and produced a release APK. The APK was installed on a physical Android phone and the calendar, Day Details, and festival screens rendered successfully.
+
+## Checkpoint 04 validation in this environment
+
+- Frozen Python reference suite: **16/16 passed**
 - Checkpoint structure/data validator: **PASS**
-- Dart parity fixture generation: **10 Panchang day fixtures + 2026/2027 festival fixtures**
-- No paid/commercial astronomy runtime dependency detected
-- No app runtime web/API dependency detected
+- Panchang/festival calculation source intentionally unchanged
+- No paid/commercial astronomy runtime dependency
+- No runtime web/API dependency for core calendar
 
-## Pending external build runner
+## Requires GitHub Actions after push
 
-Because Flutter and Android SDK are not present in this container:
+This execution environment still does not contain Flutter/Android SDK, therefore Checkpoint 04 must be compiler-verified through the included workflow:
 
-- `flutter analyze`: pending GitHub Actions
-- `flutter test`: pending GitHub Actions
-- `flutter build apk --release`: pending GitHub Actions
-- physical Android installation: pending APK build/device test
+- `flutter analyze`
+- `flutter test`
+- `flutter build apk --release`
 
-This distinction is intentional: the project is a build-ready Android source checkpoint, not yet a claimed device-verified release.
+Successful output artifact should be:
+
+`hindu-calendar-checkpoint-04-apk`

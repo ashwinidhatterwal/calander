@@ -1,54 +1,71 @@
-# Hindu Calendar — Checkpoint 03
+# Hindu Calendar — Checkpoint 04
 
-Checkpoint 03 turns the validated Python reference engine into the first **real Flutter Android application source tree**.
+Checkpoint 04 is the first **real-device UX and utility pass** on the Hindi-first Flutter Android app.
+
+The Panchang and festival calculation foundation from Checkpoint 03 is intentionally unchanged. This checkpoint focuses on making the calendar easier to read and more useful without opening every date.
+
+## Main calendar changes
+
+- Larger card-style date tiles.
+- Every tile still prioritizes the normal Gregorian date and Tithi.
+- Important dates now show a **short festival/vrat label directly inside the tile**.
+- Major festival examples: `दीपावली`, `जन्माष्टमी`, `करवा चौथ`, `दशहरा`, `नवरात्रि`.
+- Recurring high-utility observances shown directly: `एकादशी`, `पूर्णिमा`, `अमावस्या`.
+- Removed the unexplained colored-dot-only presentation.
+- Added a small per-location Tithi cell cache so calendar redraws do not repeatedly recalculate the same visible dates.
+
+## Day Details changes
+
+Transition timings are now written in human language.
+
+Examples:
+
+```text
+उत्तर भाद्रपद — आज सुबह 11:09 तक
+कृष्ण प्रतिपदा — आज रात 9:00 तक
+```
+
+If the transition is after midnight the app explicitly says `कल` / `Tomorrow` instead of showing an ambiguous clock time.
+
+Festival/vrat information is visually emphasized at the top of the Day page.
+
+## Festival browser changes
+
+- More compact festival rows.
+- `आगामी / Upcoming` view.
+- `पूरा वर्ष / Full year` view.
+- Year navigation remains available.
+- Festival rows still open the full Day Details page.
 
 ## Product direction
 
-- Hindi-first interface; English switch available in-app.
-- Familiar monthly Gregorian calendar.
-- Each date shows its Hindu Tithi.
-- Hindu month is visible in the main calendar header/today card.
-- Major festival/vrat dates are marked in the calendar.
-- Tapping a date opens a separate Day Details page.
-- The Day page contains Panchang, Sun/Moon, Muhurat, Rahu Kaal, Samvat, and anomaly information.
-- Core calculations run locally; there is no paid Panchang API or commercial astronomy runtime.
+- Hindi first; English switch in-app.
+- Familiar Gregorian monthly calendar.
+- Tithi, Hindu month, festival/vrat context visible with minimal navigation.
+- Detailed Panchang remains on a separate Day page.
+- Offline-first.
+- No paid Panchang API.
+- No commercial astronomy runtime.
+- No login/backend required for the core experience.
 
 ## Repository layout
 
 ```text
 flutter_app/       Production Flutter/Dart app source
-reference_python/  Frozen Checkpoint-02 reference engine and validation suite
+reference_python/  Frozen reference engine and validation suite
 tools/             Checkpoint validation + parity-fixture generator
 .github/            GitHub Actions Android test/build pipeline
-docs/               Checkpoint documentation
+docs/               Current checkpoint documentation
 ```
 
-## What is verified here
+## Build
 
-- The frozen Python engine still passes all 16 Checkpoint-02 tests.
-- 10 cross-language parity fixtures were generated directly from the Python reference engine.
-- 2026 and 2027 major-festival parity fixtures are included.
-- The checkpoint structural validator passes.
-- Flutter source has no paid astronomy dependency and no runtime web/API dependency.
+Push this directory as the repository root. GitHub Actions runs analysis/tests and builds a release APK artifact named:
 
-## What is not verified in this container
+```text
+hindu-calendar-checkpoint-04-apk
+```
 
-Flutter and the Android SDK are not installed in this execution environment, so `flutter analyze`, `flutter test`, and `flutter build apk` cannot be executed locally here.
+App version: `0.4.0+4`.
 
-The included GitHub Actions workflow installs stable Flutter, generates the Android platform scaffold, runs analysis/tests, builds a release APK, and uploads that APK as an Actions artifact.
-
-## Build through GitHub Actions
-
-Push this entire checkpoint directory as the repository root. Then either push to `main` or run **Android build** manually from GitHub Actions.
-
-The workflow will:
-
-1. install stable Flutter;
-2. generate the Android platform folder;
-3. apply the Hindi app label;
-4. run `flutter analyze`;
-5. run the Python-to-Dart parity tests;
-6. build `app-release.apk`;
-7. upload it as `hindu-calendar-checkpoint-03-apk`.
-
-The Android package identity is currently provisional: `in.hinducalendar.hindu_calendar`. Choose the final brand/package ID before Play Store publication.
+The Android package identity remains provisional: `in.hinducalendar.hindu_calendar`.

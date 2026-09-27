@@ -37,6 +37,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? _futureKey;
   String? _majorKey;
 
+  final Map<String, _CalendarCellData> _cellCache = {};
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (oldWidget.location.id != widget.location.id) {
       _futureKey = null;
       _majorKey = null;
+      _cellCache.clear();
     }
   }
 
@@ -67,7 +70,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (_majorKey != majorKey) {
       _majorKey = majorKey;
       majorFuture = Future<List<FestivalObservance>>.sync(
-        () => widget.festival.majorFestivalsForYear(visibleMonth.year, widget.location),
+        () => widget.festival.majorFestivalsForYear(
+          visibleMonth.year,
+          widget.location,
+        ),
       );
     }
   }
@@ -89,7 +95,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   children: [
                     Text(
                       l.appName,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 2),
                     InkWell(
@@ -102,7 +111,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           children: [
                             const Icon(Icons.location_on_outlined, size: 16),
                             const SizedBox(width: 4),
-                            Text(l.pick(widget.location.cityHi, widget.location.cityEn)),
+                            Text(
+                              l.pick(
+                                widget.location.cityHi,
+                                widget.location.cityEn,
+                              ),
+                            ),
                             const Icon(Icons.expand_more, size: 18),
                           ],
                         ),
@@ -137,15 +151,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
             l: l,
             panchang: widget.panchang,
             location: widget.location,
+            selectedDate: selectedDate,
             onTap: () => _openDay(selectedDate),
           ),
         ),
         const SizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             children: [
-              IconButton(onPressed: () => _moveMonth(-1), icon: const Icon(Icons.chevron_left)),
+              IconButton(
+                onPressed: () => _moveMonth(-1),
+                icon: const Icon(Icons.chevron_left),
+              ),
               Expanded(
                 child: FutureBuilder<PanchangDay>(
                   future: selectedFuture,
@@ -154,13 +172,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ? monthNamesHi[visibleMonth.month - 1]
                         : monthNamesEn[visibleMonth.month - 1];
                     final hinduMonth = snap.hasData
-                        ? l.pick(snap.data!.purnimantaMonth.hi, snap.data!.purnimantaMonth.en)
+                        ? l.pick(
+                            snap.data!.purnimantaMonth.hi,
+                            snap.data!.purnimantaMonth.en,
+                          )
                         : '…';
                     return Column(
                       children: [
                         Text(
                           '$month ${visibleMonth.year}',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         Text(
                           '${snap.data?.adhikMonth == true ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
@@ -171,21 +195,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   },
                 ),
               ),
-              IconButton(onPressed: () => _moveMonth(1), icon: const Icon(Icons.chevron_right)),
+              IconButton(
+                onPressed: () => _moveMonth(1),
+                icon: const Icon(Icons.chevron_right),
+              ),
               TextButton(onPressed: _goToday, child: Text(l.today)),
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             children: [
-              for (final w in (widget.language == AppLanguage.hi ? shortWeekHi : shortWeekEn))
+              for (final w in (widget.language == AppLanguage.hi
+                  ? shortWeekHi
+                  : shortWeekEn))
                 Expanded(
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(w, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      padding: const EdgeInsets.symmetric(vertical: 7),
+                      child: Text(
+                        w,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
                     ),
                   ),
                 ),
@@ -209,31 +244,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final now = DateTime.now();
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 18),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 18),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: .72,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+        childAspectRatio: .57,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 5,
       ),
       itemCount: 42,
       itemBuilder: (context, i) {
         final d = start.add(Duration(days: i));
         final inside = d.month == visibleMonth.month;
-        final sunrise = widget.panchang.sunriseSunset(d, widget.location)[0];
-        final tithi = widget.panchang.tithiAt(sunrise);
-        final events = major.where((x) => _sameDate(x.localDate, d)).toList();
-        final recurring = tithi.value.index == 11 || tithi.rawIndex == 15 || tithi.rawIndex == 30;
+        final cell = _cellData(d);
+        final majorEvents = major.where((x) => _sameDate(x.localDate, d)).toList();
+        final eventLabel = _eventLabel(cell, majorEvents);
         final isSelected = _sameDate(d, selectedDate);
         final isToday = d.year == now.year && d.month == now.month && d.day == now.day;
 
-        final normalText = Theme.of(context).colorScheme.onSurface;
-        final mutedText = normalText.withAlpha(90);
-        final normalSub = Theme.of(context).colorScheme.onSurfaceVariant;
-        final mutedSub = normalSub.withAlpha(82);
+        final scheme = Theme.of(context).colorScheme;
+        final normalText = scheme.onSurface;
+        final mutedText = normalText.withAlpha(80);
+        final normalSub = scheme.onSurfaceVariant;
+        final mutedSub = normalSub.withAlpha(70);
+
+        Color background;
+        if (isSelected) {
+          background = scheme.primaryContainer;
+        } else if (isToday) {
+          background = scheme.secondaryContainer.withAlpha(150);
+        } else if (inside) {
+          background = scheme.surfaceContainerLow.withAlpha(125);
+        } else {
+          background = Colors.transparent;
+        }
 
         return InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(13),
           onTap: () {
             setState(() {
               selectedDate = d;
@@ -244,39 +290,70 @@ class _CalendarScreenState extends State<CalendarScreen> {
             _openDay(d);
           },
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.fromLTRB(3, 6, 3, 5),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : (isToday ? Theme.of(context).colorScheme.secondaryContainer.withAlpha(140) : Colors.transparent),
-              borderRadius: BorderRadius.circular(12),
-              border: isToday ? Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(128)) : null,
+              color: background,
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                color: isToday
+                    ? scheme.primary.withAlpha(150)
+                    : (inside
+                        ? scheme.outlineVariant.withAlpha(65)
+                        : Colors.transparent),
+              ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Text(
                   '${d.day}',
-                  style: TextStyle(fontWeight: FontWeight.w800, color: inside ? normalText : mutedText),
+                  style: TextStyle(
+                    fontSize: 17,
+                    height: 1,
+                    fontWeight: FontWeight.w900,
+                    color: inside ? normalText : mutedText,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
-                  widget.language == AppLanguage.hi ? tithi.value.hi : tithi.value.en,
+                  widget.language == AppLanguage.hi
+                      ? cell.tithi.value.hi
+                      : cell.tithi.value.en,
                   maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 10, height: 1.1, color: inside ? normalSub : mutedSub),
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    height: 1.05,
+                    fontWeight: FontWeight.w500,
+                    color: inside ? normalSub : mutedSub,
+                  ),
                 ),
                 const Spacer(),
-                if (events.isNotEmpty || recurring)
+                if (eventLabel != null && inside)
                   Container(
-                    width: 6,
-                    height: 6,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: events.isNotEmpty
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.tertiary,
+                      color: majorEvents.isNotEmpty
+                          ? scheme.primaryContainer.withAlpha(190)
+                          : scheme.tertiaryContainer.withAlpha(170),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      eventLabel,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 8.5,
+                        height: 1,
+                        fontWeight: FontWeight.w800,
+                        color: majorEvents.isNotEmpty
+                            ? scheme.onPrimaryContainer
+                            : scheme.onTertiaryContainer,
+                      ),
                     ),
                   ),
               ],
@@ -287,7 +364,83 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  bool _sameDate(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
+  _CalendarCellData _cellData(DateTime d) {
+    final key = '${d.year}-${d.month}-${d.day}|${widget.location.id}';
+    final cached = _cellCache[key];
+    if (cached != null) return cached;
+
+    final sunrise = widget.panchang.sunriseSunset(d, widget.location)[0];
+    final value = _CalendarCellData(widget.panchang.tithiAt(sunrise));
+    _cellCache[key] = value;
+
+    if (_cellCache.length > 160) {
+      final keep = _cellCache.entries.toList().reversed.take(100).toList().reversed;
+      _cellCache
+        ..clear()
+        ..addEntries(keep);
+    }
+    return value;
+  }
+
+  String? _eventLabel(
+    _CalendarCellData cell,
+    List<FestivalObservance> majorEvents,
+  ) {
+    if (majorEvents.isNotEmpty) {
+      return _shortEventName(majorEvents.first);
+    }
+    if (cell.tithi.value.index == 11) {
+      return widget.language == AppLanguage.hi ? 'एकादशी' : 'Ekadashi';
+    }
+    if (cell.tithi.rawIndex == 15) {
+      return widget.language == AppLanguage.hi ? 'पूर्णिमा' : 'Purnima';
+    }
+    if (cell.tithi.rawIndex == 30) {
+      return widget.language == AppLanguage.hi ? 'अमावस्या' : 'Amavasya';
+    }
+    return null;
+  }
+
+  String _shortEventName(FestivalObservance event) {
+    const hi = <String, String>{
+      'maha_shivaratri': 'शिवरात्रि',
+      'holika_dahan': 'होलिका',
+      'holi': 'होली',
+      'rama_navami': 'राम नवमी',
+      'raksha_bandhan': 'राखी',
+      'janmashtami': 'जन्माष्टमी',
+      'ganesh_chaturthi': 'गणेश चतुर्थी',
+      'shardiya_navratri': 'नवरात्रि',
+      'vijayadashami': 'दशहरा',
+      'karwa_chauth': 'करवा चौथ',
+      'dhanteras': 'धनतेरस',
+      'diwali': 'दीपावली',
+      'govardhan_puja': 'गोवर्धन',
+      'bhai_dooj': 'भाई दूज',
+    };
+    const en = <String, String>{
+      'maha_shivaratri': 'Shivaratri',
+      'holika_dahan': 'Holika',
+      'holi': 'Holi',
+      'rama_navami': 'Ram Navami',
+      'raksha_bandhan': 'Rakhi',
+      'janmashtami': 'Janmashtami',
+      'ganesh_chaturthi': 'Ganesh Ch.',
+      'shardiya_navratri': 'Navratri',
+      'vijayadashami': 'Dussehra',
+      'karwa_chauth': 'Karwa Chauth',
+      'dhanteras': 'Dhanteras',
+      'diwali': 'Diwali',
+      'govardhan_puja': 'Govardhan',
+      'bhai_dooj': 'Bhai Dooj',
+    };
+    return widget.language == AppLanguage.hi
+        ? (hi[event.id] ?? event.nameHi)
+        : (en[event.id] ?? event.nameEn);
+  }
+
+  bool _sameDate(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   void _moveMonth(int delta) {
     setState(() {
@@ -318,8 +471,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ListTile(
               leading: const Icon(Icons.location_city_outlined),
               title: Text(widget.language == AppLanguage.hi ? x.cityHi : x.cityEn),
-              subtitle: Text(widget.language == AppLanguage.hi ? x.stateHi : x.stateEn),
-              trailing: x.id == widget.location.id ? const Icon(Icons.check) : null,
+              subtitle: Text(
+                widget.language == AppLanguage.hi ? x.stateHi : x.stateEn,
+              ),
+              trailing: x.id == widget.location.id
+                  ? const Icon(Icons.check)
+                  : null,
               onTap: () => Navigator.pop(context, x),
             ),
         ],
@@ -343,12 +500,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 }
 
+class _CalendarCellData {
+  const _CalendarCellData(this.tithi);
+  final TithiState tithi;
+}
+
 class _TodayCard extends StatelessWidget {
   const _TodayCard({
     required this.day,
     required this.l,
     required this.panchang,
     required this.location,
+    required this.selectedDate,
     required this.onTap,
   });
 
@@ -356,10 +519,19 @@ class _TodayCard extends StatelessWidget {
   final L10n l;
   final PanchangEngine panchang;
   final GeoLocation location;
+  final DateTime selectedDate;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final isToday = selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day;
+    final title = isToday
+        ? l.today
+        : '${selectedDate.day} ${l.language == AppLanguage.hi ? monthNamesHi[selectedDate.month - 1] : monthNamesEn[selectedDate.month - 1]}';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Card(
@@ -369,29 +541,44 @@ class _TodayCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: day == null
-                ? const SizedBox(height: 70, child: Center(child: CircularProgressIndicator()))
+                ? const SizedBox(
+                    height: 70,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
                 : Row(
                     children: [
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${l.today} · ${l.pick(day!.weekdayHi, day!.weekdayEn)}', style: Theme.of(context).textTheme.labelLarge),
+                            Text(
+                              '$title · ${l.pick(day!.weekdayHi, day!.weekdayEn)}',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
                             const SizedBox(height: 6),
                             Text(
                               '${l.pick(day!.pakshaHi, day!.pakshaEn)} ${l.pick(day!.tithi.hi, day!.tithi.en)}',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 2),
-                            Text('${day!.adhikMonth ? '${l.adhik} ' : ''}${l.pick(day!.purnimantaMonth.hi, day!.purnimantaMonth.en)} ${l.month}'),
+                            Text(
+                              '${day!.adhikMonth ? '${l.adhik} ' : ''}${l.pick(day!.purnimantaMonth.hi, day!.purnimantaMonth.en)} ${l.month}',
+                            ),
                           ],
                         ),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('${l.sunrise} ${panchang.hhmm(day!.sunriseUtc, location)}'),
-                          Text('${l.sunset} ${panchang.hhmm(day!.sunsetUtc, location)}'),
+                          Text(
+                            '${l.sunrise} ${panchang.hhmm(day!.sunriseUtc, location)}',
+                          ),
+                          Text(
+                            '${l.sunset} ${panchang.hhmm(day!.sunsetUtc, location)}',
+                          ),
                           const SizedBox(height: 8),
                           const Icon(Icons.chevron_right),
                         ],

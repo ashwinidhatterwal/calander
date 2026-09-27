@@ -56,6 +56,46 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
     });
   }
 
+  String _until(DateTime utc) {
+    final l = L10n(widget.language);
+    final local = utc.add(widget.location.offset);
+    final shown = DateTime.utc(date.year, date.month, date.day);
+    final target = DateTime.utc(local.year, local.month, local.day);
+    final delta = target.difference(shown).inDays;
+
+    String prefix;
+    if (delta == 0) {
+      prefix = l.pick('आज', 'Today');
+    } else if (delta == 1) {
+      prefix = l.pick('कल', 'Tomorrow');
+    } else {
+      final month = widget.language == AppLanguage.hi
+          ? monthNamesHi[local.month - 1]
+          : monthNamesEn[local.month - 1];
+      prefix = '${local.day} $month';
+    }
+
+    if (widget.language == AppLanguage.en) {
+      final hour = local.hour % 12 == 0 ? 12 : local.hour % 12;
+      final minute = local.minute.toString().padLeft(2, '0');
+      final suffix = local.hour < 12 ? 'AM' : 'PM';
+      return '$prefix $hour:$minute $suffix';
+    }
+
+    final hour = local.hour % 12 == 0 ? 12 : local.hour % 12;
+    final minute = local.minute.toString().padLeft(2, '0');
+    final dayPart = local.hour < 4
+        ? 'रात'
+        : local.hour < 12
+            ? 'सुबह'
+            : local.hour < 17
+                ? 'दोपहर'
+                : local.hour < 20
+                    ? 'शाम'
+                    : 'रात';
+    return '$prefix $dayPart $hour:$minute';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L10n(widget.language);
@@ -63,8 +103,16 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
       appBar: AppBar(
         title: Text(l.dayDetails),
         actions: [
-          IconButton(onPressed: () => _move(-1), icon: const Icon(Icons.chevron_left)),
-          IconButton(onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
+          IconButton(
+            tooltip: l.pick('पिछला दिन', 'Previous day'),
+            onPressed: () => _move(-1),
+            icon: const Icon(Icons.chevron_left),
+          ),
+          IconButton(
+            tooltip: l.pick('अगला दिन', 'Next day'),
+            onPressed: () => _move(1),
+            icon: const Icon(Icons.chevron_right),
+          ),
         ],
       ),
       body: FutureBuilder<_DayBundle>(
@@ -84,12 +132,44 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 _InfoCard(
                   title: l.pick('आज का पर्व / व्रत', 'Festival / observance'),
                   icon: Icons.celebration_outlined,
+                  emphasized: true,
                   children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final event in bundle.events)
+                          Chip(
+                            avatar: Icon(
+                              event.category == 'vrat'
+                                  ? Icons.self_improvement_outlined
+                                  : Icons.celebration_outlined,
+                              size: 18,
+                            ),
+                            label: Text(
+                              l.pick(event.nameHi, event.nameEn),
+                              style: const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                      ],
+                    ),
                     for (final event in bundle.events)
-                      _ValueRow(
-                        label: event.category == 'vrat' ? l.pick('व्रत', 'Vrat') : l.festivals,
-                        value: l.pick(event.nameHi, event.nameEn),
-                      ),
+                      if ((widget.language == AppLanguage.hi
+                                  ? event.notesHi
+                                  : event.notesEn) !=
+                              null &&
+                          (widget.language == AppLanguage.hi
+                                  ? event.notesHi!
+                                  : event.notesEn!)
+                              .isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            widget.language == AppLanguage.hi
+                                ? event.notesHi!
+                                : event.notesEn!,
+                          ),
+                        ),
                   ],
                 )
               else
@@ -103,19 +183,63 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 title: l.panchang,
                 icon: Icons.auto_awesome_outlined,
                 children: [
-                  _ValueRow(label: l.tithi, value: '${l.pick(p.pakshaHi, p.pakshaEn)} ${l.pick(p.tithi.hi, p.tithi.en)}'),
-                  _ValueRow(label: l.pick('तिथि समाप्त', 'Tithi ends'), value: widget.panchang.hhmm(p.tithiEndUtc, widget.location)),
-                  _ValueRow(label: l.pick('अगली तिथि', 'Next Tithi'), value: l.pick(p.nextTithi.hi, p.nextTithi.en)),
-                  _ValueRow(label: l.month, value: '${p.adhikMonth ? '${l.adhik} ' : ''}${l.pick(p.purnimantaMonth.hi, p.purnimantaMonth.en)}'),
-                  _ValueRow(label: l.nakshatra, value: '${l.pick(p.nakshatra.hi, p.nakshatra.en)} · ${widget.panchang.hhmm(p.nakshatraEndUtc, widget.location)}'),
-                  _ValueRow(label: l.yoga, value: '${l.pick(p.yoga.hi, p.yoga.en)} · ${widget.panchang.hhmm(p.yogaEndUtc, widget.location)}'),
-                  _ValueRow(label: l.karana, value: '${l.pick(p.karana.hi, p.karana.en)} · ${widget.panchang.hhmm(p.karanaEndUtc, widget.location)}'),
+                  _ValueRow(
+                    label: l.tithi,
+                    value:
+                        '${l.pick(p.pakshaHi, p.pakshaEn)} ${l.pick(p.tithi.hi, p.tithi.en)}',
+                  ),
+                  _ValueRow(
+                    label: l.pick('तिथि समाप्त', 'Tithi ends'),
+                    value: '${_until(p.tithiEndUtc)} ${l.pick('तक', '')}'.trim(),
+                  ),
+                  _ValueRow(
+                    label: l.pick('अगली तिथि', 'Next Tithi'),
+                    value: l.pick(p.nextTithi.hi, p.nextTithi.en),
+                  ),
+                  _ValueRow(
+                    label: l.month,
+                    value:
+                        '${p.adhikMonth ? '${l.adhik} ' : ''}${l.pick(p.purnimantaMonth.hi, p.purnimantaMonth.en)}',
+                  ),
+                  _ValueRow(
+                    label: l.nakshatra,
+                    value:
+                        '${l.pick(p.nakshatra.hi, p.nakshatra.en)} — ${_until(p.nakshatraEndUtc)} ${l.pick('तक', '')}'.trim(),
+                  ),
+                  _ValueRow(
+                    label: l.yoga,
+                    value:
+                        '${l.pick(p.yoga.hi, p.yoga.en)} — ${_until(p.yogaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                  ),
+                  _ValueRow(
+                    label: l.karana,
+                    value:
+                        '${l.pick(p.karana.hi, p.karana.en)} — ${_until(p.karanaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                  ),
                   if (p.tithiStatus == 'kshaya')
-                    _ValueRow(label: l.kshayaTithi, value: l.pick(p.skippedTithi?.hi ?? '—', p.skippedTithi?.en ?? '—')),
+                    _ValueRow(
+                      label: l.kshayaTithi,
+                      value: l.pick(
+                        p.skippedTithi?.hi ?? '—',
+                        p.skippedTithi?.en ?? '—',
+                      ),
+                    ),
                   if (p.tithiStatus == 'vriddhi')
-                    _ValueRow(label: l.vriddhiTithi, value: l.pick('यह तिथि दो सूर्योदय पर रहती है', 'This Tithi spans two sunrises')),
+                    _ValueRow(
+                      label: l.vriddhiTithi,
+                      value: l.pick(
+                        'यह तिथि दो सूर्योदय पर रहती है',
+                        'This Tithi spans two sunrises',
+                      ),
+                    ),
                   if (p.kshayaMonthAfter != null)
-                    _ValueRow(label: l.pick('क्षय मास', 'Kshaya Maas'), value: l.pick(p.kshayaMonthAfter!.hi, p.kshayaMonthAfter!.en)),
+                    _ValueRow(
+                      label: l.pick('क्षय मास', 'Kshaya Maas'),
+                      value: l.pick(
+                        p.kshayaMonthAfter!.hi,
+                        p.kshayaMonthAfter!.en,
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -123,12 +247,30 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 title: l.sunMoon,
                 icon: Icons.wb_sunny_outlined,
                 children: [
-                  _ValueRow(label: l.sunrise, value: widget.panchang.hhmm(p.sunriseUtc, widget.location)),
-                  _ValueRow(label: l.sunset, value: widget.panchang.hhmm(p.sunsetUtc, widget.location)),
-                  _ValueRow(label: l.moonrise, value: widget.panchang.hhmm(p.moonriseUtc, widget.location)),
-                  _ValueRow(label: l.moonset, value: widget.panchang.hhmm(p.moonsetUtc, widget.location)),
-                  _ValueRow(label: l.pick('सूर्य राशि', 'Sun Rashi'), value: l.pick(p.sunRashi.hi, p.sunRashi.en)),
-                  _ValueRow(label: l.pick('चंद्र राशि', 'Moon Rashi'), value: l.pick(p.moonRashi.hi, p.moonRashi.en)),
+                  _ValueRow(
+                    label: l.sunrise,
+                    value: widget.panchang.hhmm(p.sunriseUtc, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.sunset,
+                    value: widget.panchang.hhmm(p.sunsetUtc, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.moonrise,
+                    value: widget.panchang.hhmm(p.moonriseUtc, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.moonset,
+                    value: widget.panchang.hhmm(p.moonsetUtc, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.pick('सूर्य राशि', 'Sun Rashi'),
+                    value: l.pick(p.sunRashi.hi, p.sunRashi.en),
+                  ),
+                  _ValueRow(
+                    label: l.pick('चंद्र राशि', 'Moon Rashi'),
+                    value: l.pick(p.moonRashi.hi, p.moonRashi.en),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -136,8 +278,14 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 title: l.auspicious,
                 icon: Icons.light_mode_outlined,
                 children: [
-                  _ValueRow(label: l.abhijit, value: widget.panchang.range(p.abhijit, widget.location)),
-                  _ValueRow(label: l.brahma, value: widget.panchang.range(p.brahmaMuhurta, widget.location)),
+                  _ValueRow(
+                    label: l.abhijit,
+                    value: widget.panchang.range(p.abhijit, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.brahma,
+                    value: widget.panchang.range(p.brahmaMuhurta, widget.location),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -145,9 +293,18 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 title: l.caution,
                 icon: Icons.schedule_outlined,
                 children: [
-                  _ValueRow(label: l.rahu, value: widget.panchang.range(p.rahuKalam, widget.location)),
-                  _ValueRow(label: l.yamaganda, value: widget.panchang.range(p.yamaganda, widget.location)),
-                  _ValueRow(label: l.gulika, value: widget.panchang.range(p.gulika, widget.location)),
+                  _ValueRow(
+                    label: l.rahu,
+                    value: widget.panchang.range(p.rahuKalam, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.yamaganda,
+                    value: widget.panchang.range(p.yamaganda, widget.location),
+                  ),
+                  _ValueRow(
+                    label: l.gulika,
+                    value: widget.panchang.range(p.gulika, widget.location),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -155,8 +312,14 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 title: l.samvat,
                 icon: Icons.history_outlined,
                 children: [
-                  _ValueRow(label: l.pick('विक्रम संवत', 'Vikram Samvat'), value: '${p.vikramSamvat}'),
-                  _ValueRow(label: l.pick('शक संवत', 'Shaka Samvat'), value: '${p.shakaSamvat}'),
+                  _ValueRow(
+                    label: l.pick('विक्रम संवत', 'Vikram Samvat'),
+                    value: '${p.vikramSamvat}',
+                  ),
+                  _ValueRow(
+                    label: l.pick('शक संवत', 'Shaka Samvat'),
+                    value: '${p.shakaSamvat}',
+                  ),
                 ],
               ),
             ],
@@ -174,23 +337,42 @@ class _DayBundle {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.p, required this.l, required this.language});
+  const _Header({
+    required this.p,
+    required this.l,
+    required this.language,
+  });
+
   final PanchangDay p;
   final L10n l;
   final AppLanguage language;
 
   @override
   Widget build(BuildContext context) {
-    final month = language == AppLanguage.hi ? monthNamesHi[p.localDate.month - 1] : monthNamesEn[p.localDate.month - 1];
+    final month = language == AppLanguage.hi
+        ? monthNamesHi[p.localDate.month - 1]
+        : monthNamesEn[p.localDate.month - 1];
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l.pick(p.weekdayHi, p.weekdayEn), style: Theme.of(context).textTheme.labelLarge),
-          Text('${p.localDate.day} $month ${p.localDate.year}', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900)),
+          Text(
+            l.pick(p.weekdayHi, p.weekdayEn),
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          Text(
+            '${p.localDate.day} $month ${p.localDate.year}',
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 4),
-          Text('${l.pick(p.purnimantaMonth.hi, p.purnimantaMonth.en)} · ${l.pick(p.pakshaHi, p.pakshaEn)} ${l.pick(p.tithi.hi, p.tithi.en)}', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            '${l.pick(p.purnimantaMonth.hi, p.purnimantaMonth.en)} · ${l.pick(p.pakshaHi, p.pakshaEn)} ${l.pick(p.tithi.hi, p.tithi.en)}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ],
       ),
     );
@@ -198,20 +380,44 @@ class _Header extends StatelessWidget {
 }
 
 class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.title, required this.icon, required this.children});
+  const _InfoCard({
+    required this.title,
+    required this.icon,
+    required this.children,
+    this.emphasized = false,
+  });
+
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final bool emphasized;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: emphasized
+          ? Theme.of(context).colorScheme.primaryContainer.withAlpha(80)
+          : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))]),
+            Row(
+              children: [
+                Icon(icon, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
             ...children,
           ],
@@ -233,9 +439,22 @@ class _ValueRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
           const SizedBox(width: 12),
-          Flexible(child: Text(value, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w700))),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
         ],
       ),
     );
