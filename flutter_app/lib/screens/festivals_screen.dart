@@ -4,6 +4,7 @@ import '../core/localization.dart';
 import '../domain/festival_engine.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
+import '../domain/personal_event.dart';
 import 'day_details_screen.dart';
 
 class FestivalsScreen extends StatefulWidget {
@@ -12,11 +13,13 @@ class FestivalsScreen extends StatefulWidget {
     required this.festival,
     required this.language,
     required this.location,
+    this.personalEvents = const [],
   });
 
   final FestivalEngine festival;
   final AppLanguage language;
   final GeoLocation location;
+  final List<PersonalEvent> personalEvents;
 
   @override
   State<FestivalsScreen> createState() => _FestivalsScreenState();
@@ -184,6 +187,7 @@ class _FestivalsScreenState extends State<FestivalsScreen> {
                             festival: widget.festival,
                             language: widget.language,
                             location: widget.location,
+                            personalEvents: widget.personalEvents,
                           ),
                         ),
                       ),

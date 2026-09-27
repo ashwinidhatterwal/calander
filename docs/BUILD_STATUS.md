@@ -1,25 +1,37 @@
-# Build Status — Checkpoint 04
+# Build Status — Checkpoint 05
 
-## Previous checkpoint verified externally
+## Verified in this environment
 
-Checkpoint 03 successfully completed GitHub Actions and produced a release APK. The APK was installed on a physical Android phone and the calendar, Day Details, and festival screens rendered successfully.
-
-## Checkpoint 04 validation in this environment
-
-- Frozen Python reference suite: **16/16 passed**
-- Checkpoint structure/data validator: **PASS**
-- Panchang/festival calculation source intentionally unchanged
-- No paid/commercial astronomy runtime dependency
-- No runtime web/API dependency for core calendar
+- Python Panchang/festival reference tests: **16/16 passing**.
+- Checkpoint structural validator: **PASS**.
+- No paid/commercial astronomy runtime introduced.
+- No web/API dependency introduced for calendar operation.
+- Personal event data model/persistence source included.
+- GitHub Android build workflow updated for Checkpoint 05.
 
 ## Requires GitHub Actions after push
 
-This execution environment still does not contain Flutter/Android SDK, therefore Checkpoint 04 must be compiler-verified through the included workflow:
+This environment does not contain Flutter/Android SDK, so these must run on the repository workflow:
 
-- `flutter analyze`
-- `flutter test`
-- `flutter build apk --release`
+```text
+flutter pub get
+flutter analyze
+flutter test
+flutter build apk --release
+```
 
-Successful output artifact should be:
+The workflow should produce:
 
-`hindu-calendar-checkpoint-04-apk`
+```text
+hindu-calendar-checkpoint-05-apk
+```
+
+## Device QA focus
+
+1. No black launch screen; warm loading screen should appear.
+2. Add a normal yearly birthday and confirm it reappears on the calendar tile.
+3. Add a Hindu-Tithi event and confirm it appears on the matching Tithi.
+4. Close/reopen the app and confirm personal events persist.
+5. Edit/delete an event from My Days.
+6. Confirm personal events appear in Day Details.
+7. Verify large calendar tiles/festival labels still behave correctly on the target phone.

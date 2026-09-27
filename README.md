@@ -1,71 +1,122 @@
-# Hindu Calendar — Checkpoint 04
+# Hindu Calendar — Checkpoint 05
 
-Checkpoint 04 is the first **real-device UX and utility pass** on the Hindi-first Flutter Android app.
+Checkpoint 05 turns the app from a Panchang viewer into the beginning of a **personal Hindu life calendar**.
 
-The Panchang and festival calculation foundation from Checkpoint 03 is intentionally unchanged. This checkpoint focuses on making the calendar easier to read and more useful without opening every date.
+The trusted Panchang/festival calculation engine remains unchanged. This checkpoint adds a local personal-event layer and a proper startup experience.
 
-## Main calendar changes
+## Main product addition — मेरे दिन / My Days
 
-- Larger card-style date tiles.
-- Every tile still prioritizes the normal Gregorian date and Tithi.
-- Important dates now show a **short festival/vrat label directly inside the tile**.
-- Major festival examples: `दीपावली`, `जन्माष्टमी`, `करवा चौथ`, `दशहरा`, `नवरात्रि`.
-- Recurring high-utility observances shown directly: `एकादशी`, `पूर्णिमा`, `अमावस्या`.
-- Removed the unexplained colored-dot-only presentation.
-- Added a small per-location Tithi cell cache so calendar redraws do not repeatedly recalculate the same visible dates.
+Users can create personal events such as:
 
-## Day Details changes
+- जन्मदिन / Birthday
+- वर्षगाँठ / Anniversary
+- पूजा / Puja
+- व्रत / Vrat
+- परिवार / Family event
+- General event
 
-Transition timings are now written in human language.
+Each event can follow either:
 
-Examples:
+### 1. Normal Gregorian date
 
-```text
-उत्तर भाद्रपद — आज सुबह 11:09 तक
-कृष्ण प्रतिपदा — आज रात 9:00 तक
-```
-
-If the transition is after midnight the app explicitly says `कल` / `Tomorrow` instead of showing an ambiguous clock time.
-
-Festival/vrat information is visually emphasized at the top of the Day page.
-
-## Festival browser changes
-
-- More compact festival rows.
-- `आगामी / Upcoming` view.
-- `पूरा वर्ष / Full year` view.
-- Year navigation remains available.
-- Festival rows still open the full Day Details page.
-
-## Product direction
-
-- Hindi first; English switch in-app.
-- Familiar Gregorian monthly calendar.
-- Tithi, Hindu month, festival/vrat context visible with minimal navigation.
-- Detailed Panchang remains on a separate Day page.
-- Offline-first.
-- No paid Panchang API.
-- No commercial astronomy runtime.
-- No login/backend required for the core experience.
-
-## Repository layout
+Example:
 
 ```text
-flutter_app/       Production Flutter/Dart app source
-reference_python/  Frozen reference engine and validation suite
-tools/             Checkpoint validation + parity-fixture generator
-.github/            GitHub Actions Android test/build pipeline
-docs/               Current checkpoint documentation
+12 March
+Repeat every year ✓
 ```
+
+or a one-time exact Gregorian date.
+
+### 2. Hindu Tithi
+
+Example:
+
+```text
+कार्तिक
+कृष्ण पक्ष
+नवमी
+```
+
+The app then matches that event against the Panchang engine each year instead of locking it to one Gregorian date.
+
+Tithi events also support an `अधिक मास` flag for events that specifically belong to an Adhik month.
+
+## Where personal events appear
+
+- New **मेरे दिन / My Days** bottom-navigation tab.
+- Upcoming personal-event list.
+- Calendar date tiles, alongside festival/vrat information.
+- Day Details page under a dedicated `मेरे दिन` card.
+- `+` shortcut in the main calendar header creates an event for the currently selected date.
+
+All personal events are stored **only on the device** using local preferences. No login, Firebase, server, or account is introduced.
+
+## Startup / loading screen
+
+The old startup path loaded an asset before `runApp()`, which could leave an empty/black frame while Flutter initialized.
+
+Checkpoint 05 now:
+
+1. calls `runApp()` immediately;
+2. renders a warm branded Hindi loading screen;
+3. loads festival overrides and personal events behind it;
+4. transitions into the calendar when ready.
+
+The GitHub Android workflow also replaces the generated Android launch background with the same warm background (`#FFF8F1`) so the native launch frame and Flutter loading screen feel continuous.
+
+## Calendar refinements retained/improved
+
+- Large card-style date tiles.
+- Gregorian date remains visually dominant.
+- Tithi remains visible under the date.
+- Major festival/vrat names remain visible directly inside tiles.
+- Personal event title can occupy the event area when there is no major festival on that date.
+- Event labels can use two lines instead of truncating immediately.
+- Extra bottom grid padding reduces bottom-row obstruction near Android navigation.
+
+## Day Details refinements
+
+- Personal events appear above Panchang details.
+- Festival cards are more compact.
+- Nakshatra/Yoga/Karana transition values use a deliberate two-line layout instead of awkwardly wrapping `तक` onto its own line.
+
+## Privacy / backend
+
+Checkpoint 05 still needs no backend for its core experience.
+
+Stored locally:
+
+- personal events
+
+Not stored remotely:
+
+- names
+- family events
+- birthdays
+- Hindu-Tithi recurrence rules
+
+## Known limitation
+
+Hindu personal-event recurrence currently matches the Tithi that prevails at local sunrise, using the North-Indian Purnimanta month profile already used by the app. This is deterministic and appropriate for ordinary calendar use, but a rare **Kshaya/skipped Tithi** can require tradition-specific handling. Such edge cases should be expanded before positioning the feature for formal ritual/legal scheduling.
 
 ## Build
 
-Push this directory as the repository root. GitHub Actions runs analysis/tests and builds a release APK artifact named:
+Push this directory as the repository root. GitHub Actions runs:
 
 ```text
-hindu-calendar-checkpoint-04-apk
+flutter pub get
+flutter analyze
+flutter test
+flutter build apk --release
 ```
 
-App version: `0.4.0+4`.
+Expected artifact:
+
+```text
+hindu-calendar-checkpoint-05-apk
+```
+
+App version: `0.5.0+5`.
 
 The Android package identity remains provisional: `in.hinducalendar.hindu_calendar`.

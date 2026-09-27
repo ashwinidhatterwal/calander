@@ -5,7 +5,9 @@ import '../core/locations.dart';
 import '../domain/festival_engine.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
+import '../domain/personal_event.dart';
 import 'day_details_screen.dart';
+import 'personal_event_editor_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({
@@ -14,6 +16,8 @@ class CalendarScreen extends StatefulWidget {
     required this.festival,
     required this.language,
     required this.location,
+    required this.personalEvents,
+    required this.onUpsertPersonalEvent,
     required this.onLanguageChanged,
     required this.onLocationChanged,
   });
@@ -22,6 +26,8 @@ class CalendarScreen extends StatefulWidget {
   final FestivalEngine festival;
   final AppLanguage language;
   final GeoLocation location;
+  final List<PersonalEvent> personalEvents;
+  final ValueChanged<PersonalEvent> onUpsertPersonalEvent;
   final ValueChanged<AppLanguage> onLanguageChanged;
   final ValueChanged<GeoLocation> onLocationChanged;
 
@@ -124,6 +130,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                tooltip: l.pick('कार्यक्रम जोड़ें', 'Add event'),
+                onPressed: _addPersonalEvent,
+                icon: const Icon(Icons.add_circle_outline),
               ),
               PopupMenuButton<AppLanguage>(
                 tooltip: l.languageLabel,
@@ -244,10 +255,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final now = DateTime.now();
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 18),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 96),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: .57,
+        childAspectRatio: .62,
         mainAxisSpacing: 6,
         crossAxisSpacing: 5,
       ),
@@ -257,7 +268,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final inside = d.month == visibleMonth.month;
         final cell = _cellData(d);
         final majorEvents = major.where((x) => _sameDate(x.localDate, d)).toList();
-        final eventLabel = _eventLabel(cell, majorEvents);
+        final personalForDay = widget.personalEvents
+            .where((event) => _personalEventMatches(event, d, cell))
+            .toList(growable: false);
+        final eventLabel = _eventLabel(cell, majorEvents, personalForDay);
+        final personalOnly = majorEvents.isEmpty && personalForDay.isNotEmpty;
         final isSelected = _sameDate(d, selectedDate);
         final isToday = d.year == now.year && d.month == now.month && d.day == now.day;
 
@@ -338,21 +353,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     decoration: BoxDecoration(
                       color: majorEvents.isNotEmpty
                           ? scheme.primaryContainer.withAlpha(190)
-                          : scheme.tertiaryContainer.withAlpha(170),
+                          : personalOnly
+                              ? scheme.secondaryContainer.withAlpha(190)
+                              : scheme.tertiaryContainer.withAlpha(170),
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Text(
                       eventLabel,
-                      maxLines: 1,
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 8.5,
-                        height: 1,
+                        fontSize: 8.3,
+                        height: 1.05,
                         fontWeight: FontWeight.w800,
                         color: majorEvents.isNotEmpty
                             ? scheme.onPrimaryContainer
-                            : scheme.onTertiaryContainer,
+                            : personalOnly
+                                ? scheme.onSecondaryContainer
+                                : scheme.onTertiaryContainer,
                       ),
                     ),
                   ),
@@ -369,9 +388,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final cached = _cellCache[key];
     if (cached != null) return cached;
 
-    final sunrise = widget.panchang.sunriseSunset(d, widget.location)[0];
-    final value = _CalendarCellData(widget.panchang.tithiAt(sunrise));
-    _cellCache[key] = value;
+    final value = widget.panchang.monthCell(d, widget.location);
+    final cell = _CalendarCellData(
+      value.tithi,
+      value.pakshaHi,
+      value.pakshaEn,
+      value.month,
+      value.adhik,
+    );
+    _cellCache[key] = cell;
 
     if (_cellCache.length > 160) {
       final keep = _cellCache.entries.toList().reversed.take(100).toList().reversed;
@@ -379,15 +404,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ..clear()
         ..addEntries(keep);
     }
-    return value;
+    return cell;
   }
 
   String? _eventLabel(
     _CalendarCellData cell,
     List<FestivalObservance> majorEvents,
+    List<PersonalEvent> personalEvents,
   ) {
     if (majorEvents.isNotEmpty) {
       return _shortEventName(majorEvents.first);
+    }
+    if (personalEvents.isNotEmpty) {
+      return personalEvents.first.title;
     }
     if (cell.tithi.value.index == 11) {
       return widget.language == AppLanguage.hi ? 'एकादशी' : 'Ekadashi';
@@ -399,6 +428,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
       return widget.language == AppLanguage.hi ? 'अमावस्या' : 'Amavasya';
     }
     return null;
+  }
+
+  bool _personalEventMatches(
+    PersonalEvent event,
+    DateTime date,
+    _CalendarCellData cell,
+  ) {
+    if (event.basis == PersonalEventBasis.gregorian) {
+      if (event.gregorianMonth != date.month || event.gregorianDay != date.day) return false;
+      return event.repeatYearly || event.gregorianYear == date.year;
+    }
+    final isShukla = cell.pakshaHi.startsWith('शुक्ल');
+    return event.hinduMonth == cell.month.index &&
+        event.hinduTithi == cell.tithi.value.index &&
+        event.adhikMonth == cell.adhik &&
+        (event.hinduPaksha == PersonalEventPaksha.shukla) == isShukla;
   }
 
   String _shortEventName(FestivalObservance event) {
@@ -485,6 +530,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (choice != null) widget.onLocationChanged(choice);
   }
 
+  Future<void> _addPersonalEvent() async {
+    final result = await Navigator.of(context).push<PersonalEvent>(
+      MaterialPageRoute(
+        builder: (_) => PersonalEventEditorScreen(
+          language: widget.language,
+          location: widget.location,
+          panchang: widget.panchang,
+          initialDate: selectedDate,
+        ),
+      ),
+    );
+    if (result != null) widget.onUpsertPersonalEvent(result);
+  }
+
   void _openDay(DateTime d) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -494,6 +553,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           festival: widget.festival,
           language: widget.language,
           location: widget.location,
+          personalEvents: widget.personalEvents,
         ),
       ),
     );
@@ -501,8 +561,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 }
 
 class _CalendarCellData {
-  const _CalendarCellData(this.tithi);
+  const _CalendarCellData(this.tithi, this.pakshaHi, this.pakshaEn, this.month, this.adhik);
   final TithiState tithi;
+  final String pakshaHi;
+  final String pakshaEn;
+  final NamedValue month;
+  final bool adhik;
 }
 
 class _TodayCard extends StatelessWidget {

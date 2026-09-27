@@ -4,6 +4,7 @@ import '../core/localization.dart';
 import '../domain/festival_engine.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
+import '../domain/personal_event.dart';
 
 class DayDetailsScreen extends StatefulWidget {
   const DayDetailsScreen({
@@ -13,6 +14,7 @@ class DayDetailsScreen extends StatefulWidget {
     required this.festival,
     required this.language,
     required this.location,
+    this.personalEvents = const [],
   });
 
   final DateTime date;
@@ -20,6 +22,7 @@ class DayDetailsScreen extends StatefulWidget {
   final FestivalEngine festival;
   final AppLanguage language;
   final GeoLocation location;
+  final List<PersonalEvent> personalEvents;
 
   @override
   State<DayDetailsScreen> createState() => _DayDetailsScreenState();
@@ -45,7 +48,9 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
         widget.location,
         major: major,
       );
-      return _DayBundle(day, events);
+      final personal = PersonalEventMatcher(widget.panchang)
+          .eventsOnDate(widget.personalEvents, date, widget.location);
+      return _DayBundle(day, events, personal);
     });
   }
 
@@ -128,11 +133,31 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
             children: [
               _Header(p: p, l: l, language: widget.language),
               const SizedBox(height: 12),
+              if (bundle.personalEvents.isNotEmpty) ...[
+                _InfoCard(
+                  title: l.myDays,
+                  icon: Icons.event_repeat_outlined,
+                  emphasized: true,
+                  compact: true,
+                  children: [
+                    for (final event in bundle.personalEvents)
+                      ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.bookmark_outline),
+                        title: Text(event.title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                        subtitle: event.note.isEmpty ? null : Text(event.note),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
               if (bundle.events.isNotEmpty)
                 _InfoCard(
                   title: l.pick('आज का पर्व / व्रत', 'Festival / observance'),
                   icon: Icons.celebration_outlined,
                   emphasized: true,
+                  compact: true,
                   children: [
                     Wrap(
                       spacing: 8,
@@ -204,17 +229,17 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                   _ValueRow(
                     label: l.nakshatra,
                     value:
-                        '${l.pick(p.nakshatra.hi, p.nakshatra.en)} — ${_until(p.nakshatraEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.nakshatra.hi, p.nakshatra.en)}\n${_until(p.nakshatraEndUtc)} ${l.pick('तक', '')}'.trim(),
                   ),
                   _ValueRow(
                     label: l.yoga,
                     value:
-                        '${l.pick(p.yoga.hi, p.yoga.en)} — ${_until(p.yogaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.yoga.hi, p.yoga.en)}\n${_until(p.yogaEndUtc)} ${l.pick('तक', '')}'.trim(),
                   ),
                   _ValueRow(
                     label: l.karana,
                     value:
-                        '${l.pick(p.karana.hi, p.karana.en)} — ${_until(p.karanaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.karana.hi, p.karana.en)}\n${_until(p.karanaEndUtc)} ${l.pick('तक', '')}'.trim(),
                   ),
                   if (p.tithiStatus == 'kshaya')
                     _ValueRow(
@@ -331,9 +356,10 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
 }
 
 class _DayBundle {
-  const _DayBundle(this.day, this.events);
+  const _DayBundle(this.day, this.events, this.personalEvents);
   final PanchangDay day;
   final List<FestivalObservance> events;
+  final List<PersonalEvent> personalEvents;
 }
 
 class _Header extends StatelessWidget {
@@ -385,12 +411,14 @@ class _InfoCard extends StatelessWidget {
     required this.icon,
     required this.children,
     this.emphasized = false,
+    this.compact = false,
   });
 
   final String title;
   final IconData icon;
   final List<Widget> children;
   final bool emphasized;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -399,7 +427,7 @@ class _InfoCard extends StatelessWidget {
           ? Theme.of(context).colorScheme.primaryContainer.withAlpha(80)
           : null,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(compact ? 12 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -418,7 +446,7 @@ class _InfoCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: compact ? 7 : 12),
             ...children,
           ],
         ),

@@ -30,6 +30,21 @@ jobs:
           flutter create --platforms=android --org in.hinducalendar --project-name hindu_calendar "$tmp/hindu_calendar"
           cp -R "$tmp/hindu_calendar/android" ./android
           sed -i 's/android:label="hindu_calendar"/android:label="हिन्दू कैलेंडर"/' android/app/src/main/AndroidManifest.xml
+          cat > android/app/src/main/res/values/launch_colors.xml <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="launch_background_color">#FFF8F1</color>
+          </resources>
+          XML
+          cat > android/app/src/main/res/drawable/launch_background.xml <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:drawable="@color/launch_background_color" />
+          </layer-list>
+          XML
+          if [ -f android/app/src/main/res/drawable-v21/launch_background.xml ]; then
+            cp android/app/src/main/res/drawable/launch_background.xml android/app/src/main/res/drawable-v21/launch_background.xml
+          fi
 
       - name: Install packages
         run: flutter pub get
@@ -37,7 +52,7 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Test Python-to-Dart parity
+      - name: Test calculation and personal-calendar logic
         run: flutter test
 
       - name: Build release APK
@@ -46,6 +61,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-checkpoint-04-apk
+          name: hindu-calendar-checkpoint-05-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error

@@ -10,6 +10,7 @@ class L10n {
   String get appName => pick('हिन्दू कैलेंडर', 'Hindu Calendar');
   String get calendar => pick('कैलेंडर', 'Calendar');
   String get festivals => pick('त्योहार', 'Festivals');
+  String get myDays => pick('मेरे दिन', 'My Days');
   String get today => pick('आज', 'Today');
   String get tithi => pick('तिथि', 'Tithi');
   String get month => pick('मास', 'Month');
