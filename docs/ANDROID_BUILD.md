@@ -1,0 +1,32 @@
+# Android Build Guide
+
+## Recommended route: GitHub Actions
+
+1. Create a GitHub repository.
+2. Put the contents of this checkpoint at the repository root.
+3. Push to the `main` branch.
+4. Open **Actions → Android build**.
+5. Run the workflow if it did not start automatically.
+6. After success, open the workflow run's **Artifacts** section.
+7. Download `hindu-calendar-checkpoint-03-apk`.
+8. Extract and install `app-release.apk` on an Android test device.
+
+## Current Android identity
+
+```text
+App label: हिन्दू कैलेंडर
+Package ID: in.hinducalendar.hindu_calendar
+Version: 0.3.0+3
+```
+
+The package ID is provisional. Change it before public Play Store publication if a final brand/domain is selected.
+
+## Store release later
+
+For Google Play, do not use the CI template's development signing identity. Before production release:
+
+- finalize package ID;
+- create/store the production upload keystore securely;
+- configure release signing through GitHub secrets or a trusted local build machine;
+- build a signed `.aab` with `flutter build appbundle --release`;
+- preserve the signing credentials for all future updates.

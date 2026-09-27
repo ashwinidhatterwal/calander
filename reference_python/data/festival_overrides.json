@@ -1,0 +1,13 @@
+[
+  {
+    "festival_id": "holika_dahan",
+    "profile": "north_india_purnimanta",
+    "year": 2026,
+    "date": "2026-03-03",
+    "reason": "Bhadra/Pradosha edge year; pin reviewed North-India civil date until the dedicated Bhadra rule layer is implemented.",
+    "sources": [
+      "https://wcd.delhi.gov.in/sites/default/files/WCD/generic_multiple_files/holidays_list_2026_under_gnctd.pdf",
+      "https://www.drikpanchang.com/hindu-festivals/holi/holika-dahan.html"
+    ]
+  }
+]

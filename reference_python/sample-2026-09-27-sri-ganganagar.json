@@ -1,0 +1,86 @@
+{
+  "local_date": "2026-09-27",
+  "weekday_hi": "रविवार",
+  "weekday_en": "Sunday",
+  "sunrise": "2026-09-27T06:25:25.076648+05:30",
+  "sunset": "2026-09-27T18:25:15.930686+05:30",
+  "moonrise": "2026-09-27T18:37:58.689304+05:30",
+  "moonset": "2026-09-27T06:51:00.963958+05:30",
+  "tithi": {
+    "index": 1,
+    "hi": "प्रतिपदा",
+    "en": "Pratipada"
+  },
+  "paksha_hi": "कृष्ण पक्ष",
+  "paksha_en": "Krishna Paksha",
+  "tithi_end": "2026-09-27T21:00:07.028119+05:30",
+  "next_tithi": {
+    "index": 2,
+    "hi": "द्वितीया",
+    "en": "Dwitiya"
+  },
+  "nakshatra": {
+    "index": 26,
+    "hi": "उत्तर भाद्रपद",
+    "en": "Uttara Bhadrapada"
+  },
+  "nakshatra_end": "2026-09-27T11:09:06.197849+05:30",
+  "yoga": {
+    "index": 11,
+    "hi": "वृद्धि",
+    "en": "Vriddhi"
+  },
+  "yoga_end": "2026-09-27T11:17:44.355208+05:30",
+  "karana": {
+    "index": 31,
+    "hi": "बालव",
+    "en": "Balava"
+  },
+  "karana_end": "2026-09-27T09:43:37.942744+05:30",
+  "amanta_month": {
+    "index": 6,
+    "hi": "भाद्रपद",
+    "en": "Bhadrapada"
+  },
+  "purnimanta_month": {
+    "index": 7,
+    "hi": "आश्विन",
+    "en": "Ashwin"
+  },
+  "adhik_month": false,
+  "kshaya_month_after": null,
+  "tithi_status": "normal",
+  "skipped_tithi": null,
+  "vikram_samvat": 2083,
+  "shaka_samvat": 1948,
+  "sun_rashi": {
+    "index": 6,
+    "hi": "कन्या",
+    "en": "Kanya"
+  },
+  "moon_rashi": {
+    "index": 12,
+    "hi": "मीन",
+    "en": "Meena"
+  },
+  "rahu_kalam": {
+    "start": "2026-09-27T16:55:17.073933+05:30",
+    "end": "2026-09-27T18:25:15.930688+05:30"
+  },
+  "yamaganda": {
+    "start": "2026-09-27T12:25:20.503668+05:30",
+    "end": "2026-09-27T13:55:19.360423+05:30"
+  },
+  "gulika": {
+    "start": "2026-09-27T15:25:18.217178+05:30",
+    "end": "2026-09-27T16:55:17.073933+05:30"
+  },
+  "abhijit": {
+    "start": "2026-09-27T12:01:20.808533+05:30",
+    "end": "2026-09-27T12:49:20.198801+05:30"
+  },
+  "brahma_muhurta": {
+    "start": "2026-09-27T04:49:25.076648+05:30",
+    "end": "2026-09-27T05:37:25.076648+05:30"
+  }
+}

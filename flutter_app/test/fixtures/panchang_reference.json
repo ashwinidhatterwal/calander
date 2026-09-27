@@ -1,0 +1,884 @@
+[
+  {
+    "local_date": "2026-09-27",
+    "weekday_hi": "रविवार",
+    "weekday_en": "Sunday",
+    "sunrise": "2026-09-27T06:25:25.076648+05:30",
+    "sunset": "2026-09-27T18:25:15.930686+05:30",
+    "moonrise": "2026-09-27T18:37:58.689304+05:30",
+    "moonset": "2026-09-27T06:51:00.963958+05:30",
+    "tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2026-09-27T21:00:07.028119+05:30",
+    "next_tithi": {
+      "index": 2,
+      "hi": "द्वितीया",
+      "en": "Dwitiya"
+    },
+    "nakshatra": {
+      "index": 26,
+      "hi": "उत्तर भाद्रपद",
+      "en": "Uttara Bhadrapada"
+    },
+    "nakshatra_end": "2026-09-27T11:09:06.197849+05:30",
+    "yoga": {
+      "index": 11,
+      "hi": "वृद्धि",
+      "en": "Vriddhi"
+    },
+    "yoga_end": "2026-09-27T11:17:44.355208+05:30",
+    "karana": {
+      "index": 31,
+      "hi": "बालव",
+      "en": "Balava"
+    },
+    "karana_end": "2026-09-27T09:43:37.942744+05:30",
+    "amanta_month": {
+      "index": 6,
+      "hi": "भाद्रपद",
+      "en": "Bhadrapada"
+    },
+    "purnimanta_month": {
+      "index": 7,
+      "hi": "आश्विन",
+      "en": "Ashwin"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2083,
+    "shaka_samvat": 1948,
+    "sun_rashi": {
+      "index": 6,
+      "hi": "कन्या",
+      "en": "Kanya"
+    },
+    "moon_rashi": {
+      "index": 12,
+      "hi": "मीन",
+      "en": "Meena"
+    },
+    "rahu_kalam": {
+      "start": "2026-09-27T16:55:17.073933+05:30",
+      "end": "2026-09-27T18:25:15.930688+05:30"
+    },
+    "yamaganda": {
+      "start": "2026-09-27T12:25:20.503668+05:30",
+      "end": "2026-09-27T13:55:19.360423+05:30"
+    },
+    "gulika": {
+      "start": "2026-09-27T15:25:18.217178+05:30",
+      "end": "2026-09-27T16:55:17.073933+05:30"
+    },
+    "abhijit": {
+      "start": "2026-09-27T12:01:20.808533+05:30",
+      "end": "2026-09-27T12:49:20.198801+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2026-09-27T04:49:25.076648+05:30",
+      "end": "2026-09-27T05:37:25.076648+05:30"
+    },
+    "location_key": "sri_ganganagar"
+  },
+  {
+    "local_date": "2026-09-04",
+    "weekday_hi": "शुक्रवार",
+    "weekday_en": "Friday",
+    "sunrise": "2026-09-04T06:00:37.604273+05:30",
+    "sunset": "2026-09-04T18:39:30.172203+05:30",
+    "moonrise": "2026-09-04T23:23:58.698782+05:30",
+    "moonset": "2026-09-04T13:09:38.866726+05:30",
+    "tithi": {
+      "index": 8,
+      "hi": "अष्टमी",
+      "en": "Ashtami"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2026-09-05T00:15:22.889858+05:30",
+    "next_tithi": {
+      "index": 9,
+      "hi": "नवमी",
+      "en": "Navami"
+    },
+    "nakshatra": {
+      "index": 4,
+      "hi": "रोहिणी",
+      "en": "Rohini"
+    },
+    "nakshatra_end": "2026-09-04T23:05:21.832822+05:30",
+    "yoga": {
+      "index": 14,
+      "hi": "हर्षण",
+      "en": "Harshana"
+    },
+    "yoga_end": "2026-09-04T15:44:37.814920+05:30",
+    "karana": {
+      "index": 45,
+      "hi": "बालव",
+      "en": "Balava"
+    },
+    "karana_end": "2026-09-04T13:22:31.317253+05:30",
+    "amanta_month": {
+      "index": 5,
+      "hi": "श्रावण",
+      "en": "Shravana"
+    },
+    "purnimanta_month": {
+      "index": 6,
+      "hi": "भाद्रपद",
+      "en": "Bhadrapada"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2083,
+    "shaka_samvat": 1948,
+    "sun_rashi": {
+      "index": 5,
+      "hi": "सिंह",
+      "en": "Simha"
+    },
+    "moon_rashi": {
+      "index": 2,
+      "hi": "वृषभ",
+      "en": "Vrishabha"
+    },
+    "rahu_kalam": {
+      "start": "2026-09-04T10:45:12.317246+05:30",
+      "end": "2026-09-04T12:20:03.888237+05:30"
+    },
+    "yamaganda": {
+      "start": "2026-09-04T15:29:47.030219+05:30",
+      "end": "2026-09-04T17:04:38.601210+05:30"
+    },
+    "gulika": {
+      "start": "2026-09-04T07:35:29.175264+05:30",
+      "end": "2026-09-04T09:10:20.746255+05:30"
+    },
+    "abhijit": {
+      "start": "2026-09-04T11:54:46.135974+05:30",
+      "end": "2026-09-04T12:45:21.640502+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2026-09-04T04:24:37.604273+05:30",
+      "end": "2026-09-04T05:12:37.604273+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "2026-10-29",
+    "weekday_hi": "गुरुवार",
+    "weekday_en": "Thursday",
+    "sunrise": "2026-10-29T06:30:47.444977+05:30",
+    "sunset": "2026-10-29T17:38:32.888325+05:30",
+    "moonrise": "2026-10-29T20:11:54.961207+05:30",
+    "moonset": "2026-10-29T09:56:55.050229+05:30",
+    "tithi": {
+      "index": 4,
+      "hi": "चतुर्थी",
+      "en": "Chaturthi"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2026-10-29T22:11:54.879346+05:30",
+    "next_tithi": {
+      "index": 5,
+      "hi": "पंचमी",
+      "en": "Panchami"
+    },
+    "nakshatra": {
+      "index": 4,
+      "hi": "रोहिणी",
+      "en": "Rohini"
+    },
+    "nakshatra_end": "2026-10-29T11:12:38.671692+05:30",
+    "yoga": {
+      "index": 19,
+      "hi": "परिघ",
+      "en": "Parigha"
+    },
+    "yoga_end": "2026-10-30T00:06:52.162715+05:30",
+    "karana": {
+      "index": 37,
+      "hi": "बव",
+      "en": "Bava"
+    },
+    "karana_end": "2026-10-29T11:39:13.821398+05:30",
+    "amanta_month": {
+      "index": 7,
+      "hi": "आश्विन",
+      "en": "Ashwin"
+    },
+    "purnimanta_month": {
+      "index": 8,
+      "hi": "कार्तिक",
+      "en": "Kartika"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2083,
+    "shaka_samvat": 1948,
+    "sun_rashi": {
+      "index": 7,
+      "hi": "तुला",
+      "en": "Tula"
+    },
+    "moon_rashi": {
+      "index": 2,
+      "hi": "वृषभ",
+      "en": "Vrishabha"
+    },
+    "rahu_kalam": {
+      "start": "2026-10-29T13:28:08.347067+05:30",
+      "end": "2026-10-29T14:51:36.527485+05:30"
+    },
+    "yamaganda": {
+      "start": "2026-10-29T06:30:47.444977+05:30",
+      "end": "2026-10-29T07:54:15.625395+05:30"
+    },
+    "gulika": {
+      "start": "2026-10-29T09:17:43.805813+05:30",
+      "end": "2026-10-29T10:41:11.986231+05:30"
+    },
+    "abhijit": {
+      "start": "2026-10-29T11:42:24.651873+05:30",
+      "end": "2026-10-29T12:26:55.681429+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2026-10-29T04:54:47.444977+05:30",
+      "end": "2026-10-29T05:42:47.444977+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "2026-11-08",
+    "weekday_hi": "रविवार",
+    "weekday_en": "Sunday",
+    "sunrise": "2026-11-08T06:38:04.188074+05:30",
+    "sunset": "2026-11-08T17:31:18.101296+05:30",
+    "moonrise": "2026-11-08T05:36:49.404157+05:30",
+    "moonset": "2026-11-08T16:39:06.904933+05:30",
+    "tithi": {
+      "index": 14,
+      "hi": "चतुर्दशी",
+      "en": "Chaturdashi"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2026-11-08T11:29:44.262588+05:30",
+    "next_tithi": {
+      "index": 15,
+      "hi": "अमावस्या",
+      "en": "Amavasya"
+    },
+    "nakshatra": {
+      "index": 15,
+      "hi": "स्वाती",
+      "en": "Swati"
+    },
+    "nakshatra_end": "2026-11-09T07:25:16.598071+05:30",
+    "yoga": {
+      "index": 3,
+      "hi": "आयुष्मान",
+      "en": "Ayushman"
+    },
+    "yoga_end": "2026-11-09T03:03:51.711109+05:30",
+    "karana": {
+      "index": 58,
+      "hi": "शकुनि",
+      "en": "Shakuni"
+    },
+    "karana_end": "2026-11-08T11:29:44.262588+05:30",
+    "amanta_month": {
+      "index": 7,
+      "hi": "आश्विन",
+      "en": "Ashwin"
+    },
+    "purnimanta_month": {
+      "index": 8,
+      "hi": "कार्तिक",
+      "en": "Kartika"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2083,
+    "shaka_samvat": 1948,
+    "sun_rashi": {
+      "index": 7,
+      "hi": "तुला",
+      "en": "Tula"
+    },
+    "moon_rashi": {
+      "index": 7,
+      "hi": "तुला",
+      "en": "Tula"
+    },
+    "rahu_kalam": {
+      "start": "2026-11-08T16:09:38.862145+05:30",
+      "end": "2026-11-08T17:31:18.101298+05:30"
+    },
+    "yamaganda": {
+      "start": "2026-11-08T12:04:41.144686+05:30",
+      "end": "2026-11-08T13:26:20.383839+05:30"
+    },
+    "gulika": {
+      "start": "2026-11-08T14:47:59.622992+05:30",
+      "end": "2026-11-08T16:09:38.862145+05:30"
+    },
+    "abhijit": {
+      "start": "2026-11-08T11:42:54.680911+05:30",
+      "end": "2026-11-08T12:26:27.608459+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2026-11-08T05:02:04.188074+05:30",
+      "end": "2026-11-08T05:50:04.188074+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "2026-03-04",
+    "weekday_hi": "बुधवार",
+    "weekday_en": "Wednesday",
+    "sunrise": "2026-03-04T06:48:07.323686+05:30",
+    "sunset": "2026-03-04T18:29:25.303025+05:30",
+    "moonrise": "2026-03-04T19:26:22.724166+05:30",
+    "moonset": "2026-03-04T07:08:16.986542+05:30",
+    "tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2026-03-04T16:51:22.610176+05:30",
+    "next_tithi": {
+      "index": 2,
+      "hi": "द्वितीया",
+      "en": "Dwitiya"
+    },
+    "nakshatra": {
+      "index": 11,
+      "hi": "पूर्व फाल्गुनी",
+      "en": "Purva Phalguni"
+    },
+    "nakshatra_end": "2026-03-04T07:40:08.792427+05:30",
+    "yoga": {
+      "index": 8,
+      "hi": "धृति",
+      "en": "Dhriti"
+    },
+    "yoga_end": "2026-03-04T08:52:44.057800+05:30",
+    "karana": {
+      "index": 32,
+      "hi": "कौलव",
+      "en": "Kaulava"
+    },
+    "karana_end": "2026-03-04T16:51:22.610176+05:30",
+    "amanta_month": {
+      "index": 12,
+      "hi": "फाल्गुन",
+      "en": "Phalguna"
+    },
+    "purnimanta_month": {
+      "index": 1,
+      "hi": "चैत्र",
+      "en": "Chaitra"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2082,
+    "shaka_samvat": 1947,
+    "sun_rashi": {
+      "index": 11,
+      "hi": "कुंभ",
+      "en": "Kumbha"
+    },
+    "moon_rashi": {
+      "index": 5,
+      "hi": "सिंह",
+      "en": "Simha"
+    },
+    "rahu_kalam": {
+      "start": "2026-03-04T12:38:46.313354+05:30",
+      "end": "2026-03-04T14:06:26.060771+05:30"
+    },
+    "yamaganda": {
+      "start": "2026-03-04T08:15:47.071103+05:30",
+      "end": "2026-03-04T09:43:26.818520+05:30"
+    },
+    "gulika": {
+      "start": "2026-03-04T11:11:06.565937+05:30",
+      "end": "2026-03-04T12:38:46.313354+05:30"
+    },
+    "abhijit": {
+      "start": "2026-03-04T12:15:23.714044+05:30",
+      "end": "2026-03-04T13:02:08.912668+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2026-03-04T05:12:07.323686+05:30",
+      "end": "2026-03-04T06:00:07.323686+05:30"
+    },
+    "location_key": "jaipur"
+  },
+  {
+    "local_date": "2027-07-04",
+    "weekday_hi": "रविवार",
+    "weekday_en": "Sunday",
+    "sunrise": "2027-07-04T05:27:55.718102+05:30",
+    "sunset": "2027-07-04T19:23:01.568505+05:30",
+    "moonrise": "2027-07-04T05:17:31.641698+05:30",
+    "moonset": "2027-07-04T19:51:18.863707+05:30",
+    "tithi": {
+      "index": 15,
+      "hi": "अमावस्या",
+      "en": "Amavasya"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2027-07-04T08:33:33.233062+05:30",
+    "next_tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "nakshatra": {
+      "index": 6,
+      "hi": "आर्द्रा",
+      "en": "Ardra"
+    },
+    "nakshatra_end": "2027-07-04T12:10:59.393440+05:30",
+    "yoga": {
+      "index": 12,
+      "hi": "ध्रुव",
+      "en": "Dhruva"
+    },
+    "yoga_end": "2027-07-04T15:22:30.387197+05:30",
+    "karana": {
+      "index": 60,
+      "hi": "नाग",
+      "en": "Naga"
+    },
+    "karana_end": "2027-07-04T08:33:33.233062+05:30",
+    "amanta_month": {
+      "index": 3,
+      "hi": "ज्येष्ठ",
+      "en": "Jyeshtha"
+    },
+    "purnimanta_month": {
+      "index": 4,
+      "hi": "आषाढ़",
+      "en": "Ashadha"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "kshaya",
+    "skipped_tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "vikram_samvat": 2084,
+    "shaka_samvat": 1949,
+    "sun_rashi": {
+      "index": 3,
+      "hi": "मिथुन",
+      "en": "Mithuna"
+    },
+    "moon_rashi": {
+      "index": 3,
+      "hi": "मिथुन",
+      "en": "Mithuna"
+    },
+    "rahu_kalam": {
+      "start": "2027-07-04T17:38:38.337202+05:30",
+      "end": "2027-07-04T19:23:01.568502+05:30"
+    },
+    "yamaganda": {
+      "start": "2027-07-04T12:25:28.643302+05:30",
+      "end": "2027-07-04T14:09:51.874602+05:30"
+    },
+    "gulika": {
+      "start": "2027-07-04T15:54:15.105902+05:30",
+      "end": "2027-07-04T17:38:38.337202+05:30"
+    },
+    "abhijit": {
+      "start": "2027-07-04T11:57:38.448290+05:30",
+      "end": "2027-07-04T12:53:18.838318+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2027-07-04T03:51:55.718102+05:30",
+      "end": "2027-07-04T04:39:55.718102+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "2027-09-30",
+    "weekday_hi": "गुरुवार",
+    "weekday_en": "Thursday",
+    "sunrise": "2027-09-30T06:13:21.721703+05:30",
+    "sunset": "2027-09-30T18:08:50.823624+05:30",
+    "moonrise": "2027-09-30T06:14:41.975133+05:30",
+    "moonset": "2027-09-30T18:03:50.612825+05:30",
+    "tithi": {
+      "index": 15,
+      "hi": "अमावस्या",
+      "en": "Amavasya"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2027-09-30T08:07:27.126007+05:30",
+    "next_tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "nakshatra": {
+      "index": 13,
+      "hi": "हस्त",
+      "en": "Hasta"
+    },
+    "nakshatra_end": "2027-10-01T02:12:22.517927+05:30",
+    "yoga": {
+      "index": 25,
+      "hi": "ब्रह्म",
+      "en": "Brahma"
+    },
+    "yoga_end": "2027-09-30T21:09:18.217405+05:30",
+    "karana": {
+      "index": 60,
+      "hi": "नाग",
+      "en": "Naga"
+    },
+    "karana_end": "2027-09-30T08:07:27.126007+05:30",
+    "amanta_month": {
+      "index": 6,
+      "hi": "भाद्रपद",
+      "en": "Bhadrapada"
+    },
+    "purnimanta_month": {
+      "index": 7,
+      "hi": "आश्विन",
+      "en": "Ashwin"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": null,
+    "tithi_status": "kshaya",
+    "skipped_tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "vikram_samvat": 2084,
+    "shaka_samvat": 1949,
+    "sun_rashi": {
+      "index": 6,
+      "hi": "कन्या",
+      "en": "Kanya"
+    },
+    "moon_rashi": {
+      "index": 6,
+      "hi": "कन्या",
+      "en": "Kanya"
+    },
+    "rahu_kalam": {
+      "start": "2027-09-30T13:40:32.410403+05:30",
+      "end": "2027-09-30T15:09:58.548143+05:30"
+    },
+    "yamaganda": {
+      "start": "2027-09-30T06:13:21.721703+05:30",
+      "end": "2027-09-30T07:42:47.859443+05:30"
+    },
+    "gulika": {
+      "start": "2027-09-30T09:12:13.997183+05:30",
+      "end": "2027-09-30T10:41:40.134923+05:30"
+    },
+    "abhijit": {
+      "start": "2027-09-30T11:47:15.302599+05:30",
+      "end": "2027-09-30T12:34:57.242727+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2027-09-30T04:37:21.721703+05:30",
+      "end": "2027-09-30T05:25:21.721703+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "2023-08-15",
+    "weekday_hi": "मंगलवार",
+    "weekday_en": "Tuesday",
+    "sunrise": "2023-08-15T05:50:08.149579+05:30",
+    "sunset": "2023-08-15T19:00:58.231990+05:30",
+    "moonrise": "2023-08-15T04:33:58.863112+05:30",
+    "moonset": "2023-08-15T18:43:57.113350+05:30",
+    "tithi": {
+      "index": 14,
+      "hi": "चतुर्दशी",
+      "en": "Chaturdashi"
+    },
+    "paksha_hi": "कृष्ण पक्ष",
+    "paksha_en": "Krishna Paksha",
+    "tithi_end": "2023-08-15T12:44:17.856348+05:30",
+    "next_tithi": {
+      "index": 15,
+      "hi": "अमावस्या",
+      "en": "Amavasya"
+    },
+    "nakshatra": {
+      "index": 8,
+      "hi": "पुष्य",
+      "en": "Pushya"
+    },
+    "nakshatra_end": "2023-08-15T13:59:56.153719+05:30",
+    "yoga": {
+      "index": 17,
+      "hi": "व्यतीपात",
+      "en": "Vyatipata"
+    },
+    "yoga_end": "2023-08-15T17:33:48.889908+05:30",
+    "karana": {
+      "index": 58,
+      "hi": "शकुनि",
+      "en": "Shakuni"
+    },
+    "karana_end": "2023-08-15T12:44:17.856348+05:30",
+    "amanta_month": {
+      "index": 5,
+      "hi": "श्रावण",
+      "en": "Shravana"
+    },
+    "purnimanta_month": {
+      "index": 5,
+      "hi": "श्रावण",
+      "en": "Shravana"
+    },
+    "adhik_month": true,
+    "kshaya_month_after": null,
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2080,
+    "shaka_samvat": 1945,
+    "sun_rashi": {
+      "index": 4,
+      "hi": "कर्क",
+      "en": "Karka"
+    },
+    "moon_rashi": {
+      "index": 4,
+      "hi": "कर्क",
+      "en": "Karka"
+    },
+    "rahu_kalam": {
+      "start": "2023-08-15T15:43:15.711385+05:30",
+      "end": "2023-08-15T17:22:06.971686+05:30"
+    },
+    "yamaganda": {
+      "start": "2023-08-15T09:07:50.670181+05:30",
+      "end": "2023-08-15T10:46:41.930482+05:30"
+    },
+    "gulika": {
+      "start": "2023-08-15T12:25:33.190783+05:30",
+      "end": "2023-08-15T14:04:24.451084+05:30"
+    },
+    "abhijit": {
+      "start": "2023-08-15T11:59:11.521371+05:30",
+      "end": "2023-08-15T12:51:54.860199+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "2023-08-15T04:14:08.149579+05:30",
+      "end": "2023-08-15T05:02:08.149579+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "1983-01-15",
+    "weekday_hi": "शनिवार",
+    "weekday_en": "Saturday",
+    "sunrise": "1983-01-15T07:15:09.355709+05:30",
+    "sunset": "1983-01-15T17:45:50.217916+05:30",
+    "moonrise": "1983-01-15T08:04:10.387344+05:30",
+    "moonset": "1983-01-15T18:45:04.141593+05:30",
+    "tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "paksha_hi": "शुक्ल पक्ष",
+    "paksha_en": "Shukla Paksha",
+    "tithi_end": "1983-01-15T13:20:22.407512+05:30",
+    "next_tithi": {
+      "index": 2,
+      "hi": "द्वितीया",
+      "en": "Dwitiya"
+    },
+    "nakshatra": {
+      "index": 21,
+      "hi": "उत्तराषाढ़ा",
+      "en": "Uttara Ashadha"
+    },
+    "nakshatra_end": "1983-01-15T07:18:26.631717+05:30",
+    "yoga": {
+      "index": 15,
+      "hi": "वज्र",
+      "en": "Vajra"
+    },
+    "yoga_end": "1983-01-16T00:38:33.694586+05:30",
+    "karana": {
+      "index": 2,
+      "hi": "बव",
+      "en": "Bava"
+    },
+    "karana_end": "1983-01-15T13:20:22.407512+05:30",
+    "amanta_month": {
+      "index": 10,
+      "hi": "पौष",
+      "en": "Pausha"
+    },
+    "purnimanta_month": {
+      "index": 10,
+      "hi": "पौष",
+      "en": "Pausha"
+    },
+    "adhik_month": false,
+    "kshaya_month_after": {
+      "index": 11,
+      "hi": "माघ",
+      "en": "Magha"
+    },
+    "tithi_status": "normal",
+    "skipped_tithi": null,
+    "vikram_samvat": 2039,
+    "shaka_samvat": 1904,
+    "sun_rashi": {
+      "index": 10,
+      "hi": "मकर",
+      "en": "Makara"
+    },
+    "moon_rashi": {
+      "index": 10,
+      "hi": "मकर",
+      "en": "Makara"
+    },
+    "rahu_kalam": {
+      "start": "1983-01-15T09:52:49.571261+05:30",
+      "end": "1983-01-15T11:11:39.679037+05:30"
+    },
+    "yamaganda": {
+      "start": "1983-01-15T13:49:19.894589+05:30",
+      "end": "1983-01-15T15:08:10.002365+05:30"
+    },
+    "gulika": {
+      "start": "1983-01-15T07:15:09.355709+05:30",
+      "end": "1983-01-15T08:33:59.463485+05:30"
+    },
+    "abhijit": {
+      "start": "1983-01-15T12:09:28.424739+05:30",
+      "end": "1983-01-15T12:51:31.148887+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "1983-01-15T05:39:09.355709+05:30",
+      "end": "1983-01-15T06:27:09.355709+05:30"
+    },
+    "location_key": "delhi"
+  },
+  {
+    "local_date": "1983-02-13",
+    "weekday_hi": "रविवार",
+    "weekday_en": "Sunday",
+    "sunrise": "1983-02-13T07:01:51.616922+05:30",
+    "sunset": "1983-02-13T18:09:25.152293+05:30",
+    "moonrise": "1983-02-13T07:22:42.029245+05:30",
+    "moonset": "1983-02-13T18:28:15.591441+05:30",
+    "tithi": {
+      "index": 1,
+      "hi": "प्रतिपदा",
+      "en": "Pratipada"
+    },
+    "paksha_hi": "शुक्ल पक्ष",
+    "paksha_en": "Shukla Paksha",
+    "tithi_end": "1983-02-14T08:03:51.045143+05:30",
+    "next_tithi": {
+      "index": 2,
+      "hi": "द्वितीया",
+      "en": "Dwitiya"
+    },
+    "nakshatra": {
+      "index": 23,
+      "hi": "धनिष्ठा",
+      "en": "Dhanishtha"
+    },
+    "nakshatra_end": "1983-02-13T19:06:43.815815+05:30",
+    "yoga": {
+      "index": 19,
+      "hi": "परिघ",
+      "en": "Parigha"
+    },
+    "yoga_end": "1983-02-14T06:05:52.354228+05:30",
+    "karana": {
+      "index": 1,
+      "hi": "किंस्तुघ्न",
+      "en": "Kimstughna"
+    },
+    "karana_end": "1983-02-13T19:05:54.194881+05:30",
+    "amanta_month": {
+      "index": 12,
+      "hi": "फाल्गुन",
+      "en": "Phalguna"
+    },
+    "purnimanta_month": {
+      "index": 12,
+      "hi": "फाल्गुन",
+      "en": "Phalguna"
+    },
+    "adhik_month": true,
+    "kshaya_month_after": null,
+    "tithi_status": "vriddhi",
+    "skipped_tithi": null,
+    "vikram_samvat": 2039,
+    "shaka_samvat": 1904,
+    "sun_rashi": {
+      "index": 11,
+      "hi": "कुंभ",
+      "en": "Kumbha"
+    },
+    "moon_rashi": {
+      "index": 11,
+      "hi": "कुंभ",
+      "en": "Kumbha"
+    },
+    "rahu_kalam": {
+      "start": "1983-02-13T16:45:58.460369+05:30",
+      "end": "1983-02-13T18:09:25.152290+05:30"
+    },
+    "yamaganda": {
+      "start": "1983-02-13T12:35:38.384606+05:30",
+      "end": "1983-02-13T13:59:05.076527+05:30"
+    },
+    "gulika": {
+      "start": "1983-02-13T15:22:31.768448+05:30",
+      "end": "1983-02-13T16:45:58.460369+05:30"
+    },
+    "abhijit": {
+      "start": "1983-02-13T12:13:23.266762+05:30",
+      "end": "1983-02-13T12:57:53.502454+05:30"
+    },
+    "brahma_muhurta": {
+      "start": "1983-02-13T05:25:51.616922+05:30",
+      "end": "1983-02-13T06:13:51.616922+05:30"
+    },
+    "location_key": "delhi"
+  }
+]

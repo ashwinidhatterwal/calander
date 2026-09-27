@@ -1,0 +1,24 @@
+{
+  "checkpoint": "02",
+  "profile": "north_india_purnimanta",
+  "cities": [
+    "Sri Ganganagar",
+    "Delhi",
+    "Jaipur",
+    "Varanasi",
+    "Lucknow",
+    "Bhopal",
+    "Chandigarh"
+  ],
+  "sample_dates_per_city": 30,
+  "panchang_days_checked": 210,
+  "major_festival_records_resolved": 28,
+  "tithi_status_counts": {
+    "normal": 176,
+    "vriddhi": 7,
+    "kshaya": 27
+  },
+  "failures": [],
+  "passed": true,
+  "elapsed_seconds": 25.89
+}
