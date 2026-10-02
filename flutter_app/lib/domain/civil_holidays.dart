@@ -1,5 +1,5 @@
-/// Civil holidays are deliberately independent of Hindu festival selection.
-/// Bundled 2026 reference dates cover all 28 states and 8 union territories.
+// Civil holidays are deliberately independent of Hindu festival selection.
+// Bundled 2026 reference dates cover all 28 states and 8 union territories.
 import 'state_holidays_2026.dart';
 export 'state_holidays_2026.dart' show holidayRegionAliases;
 class CivilHoliday {
