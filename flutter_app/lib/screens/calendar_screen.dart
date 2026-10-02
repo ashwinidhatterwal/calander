@@ -847,6 +847,22 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
+  void _showLocationDiagnostics(String report) {
+    final l = L10n(widget.language);
+    showDialog<void>(context: context, builder: (context) => AlertDialog(
+      title: Text(l.pick('स्थान जाँच', 'Location diagnostics')),
+      content: SingleChildScrollView(child: SelectableText(report)),
+      actions: [
+        TextButton(onPressed: () async {
+          await Clipboard.setData(ClipboardData(text: report));
+          if (context.mounted) Navigator.pop(context);
+        }, child: Text(l.pick('कॉपी करें', 'Copy'))),
+        TextButton(onPressed: () => Navigator.pop(context),
+            child: Text(l.pick('बंद करें', 'Close'))),
+      ],
+    ));
+  }
+
   Future<void> _useCurrentLocation() async {
     if (_locating) return;
     setState(() => _locating = true);
@@ -854,17 +870,38 @@ class _CalendarScreenState extends State<CalendarScreen>
     try {
       final value = await const CurrentLocationService().obtain();
       if (!mounted) return;
-      await widget.onLocationChanged(value);
+      try {
+        await widget.onLocationChanged(value);
+      } catch (error) {
+        LocationDiagnostics.error('Save/update failed', error);
+        throw const CurrentLocationException('saveFailed');
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l.pick('स्थान सहेजा गया। गणना IST में है।',
-              'Location saved. Calculations use IST.'))));
+              'Location saved. Calculations use IST.')),
+          action: SnackBarAction(label: l.pick('विवरण', 'Details'),
+              onPressed: () => _showLocationDiagnostics(LocationDiagnostics.report))));
     } catch (error) {
+      LocationDiagnostics.error('Location flow stopped', error);
       if (!mounted) return;
       final code =
-          error is CurrentLocationException ? error.code : 'unavailable';
+          error is CurrentLocationException ? error.code
+              : error is TimeoutException ? 'timeout' : 'unavailable';
       final message = switch (code) {
+        'noProvider' => l.pick(
+            'GPS या नेटवर्क स्थान उपलब्ध नहीं है। फ़ोन का स्थान और सटीक अनुमति जाँचें।',
+            'No GPS/network provider is available. Check device location and precise permission.'),
+        'provider' => l.pick(
+            'फ़ोन की स्थान सेवा ने त्रुटि दी। विवरण देखें या दोबारा कोशिश करें।',
+            'The phone location provider returned an error. View details or retry.'),
+        'saveFailed' => l.pick(
+            'स्थान मिल गया, लेकिन सहेजा नहीं जा सका। दोबारा कोशिश करें।',
+            'Location found, but could not be saved. Please retry.'),
+        'timeout' => l.pick(
+            'फ़ोन से स्थान मिलने में समय लगा। खुली जगह में दोबारा कोशिश करें; सटीक स्थान अनुमति से मदद मिलेगी।',
+            'The phone could not get a location fix in time. Retry outdoors; precise location permission can help.'),
         'disabled' => l.pick('फ़ोन का स्थान चालू करें या शहर चुनें।',
             'Turn on device location or choose a city.'),
         'deniedForever' => l.pick(
@@ -877,7 +914,10 @@ class _CalendarScreenState extends State<CalendarScreen>
       };
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+          .showSnackBar(SnackBar(content: Text(message),
+              duration: const Duration(seconds: 12),
+              action: SnackBarAction(label: l.pick('विवरण', 'Details'),
+                  onPressed: () => _showLocationDiagnostics(LocationDiagnostics.report))));
     } finally {
       if (mounted) setState(() => _locating = false);
     }
@@ -1005,10 +1045,10 @@ class _TodayCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${l.sunrise} ${panchang.hhmm(day!.sunriseUtc, location)}',
+                            '${l.sunrise} ${panchang.time12(day!.sunriseUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
                           ),
                           Text(
-                            '${l.sunset} ${panchang.time12(day!.sunsetUtc, location)}',
+                            '${l.sunset} ${panchang.time12(day!.sunsetUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
                           ),
                           const SizedBox(height: 8),
                           const Icon(Icons.chevron_right),

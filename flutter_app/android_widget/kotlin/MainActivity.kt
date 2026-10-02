@@ -21,11 +21,15 @@ class MainActivity : FlutterActivity() {
             if (info.taskId != taskId && info.baseIntent.component?.packageName == packageName) task.finishAndRemoveTask()
         }
     }
+    private val deviceLocation by lazy { DeviceLocation(this) }
+    override fun onDestroy() { deviceLocation.close(); super.onDestroy() }
     private var permissionReply: MethodChannel.Result? = null
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
         MethodChannel(engine.dartExecutor.binaryMessenger, CalendarAlerts.CHANNEL).setMethodCallHandler { call, reply ->
             when (call.method) {
+                "currentPosition" -> deviceLocation.request(reply)
+                "locationStatus" -> reply.success(deviceLocation.status())
                 "district" -> {
                     val lat = call.argument<Double>("latitude")!!
                     val lon = call.argument<Double>("longitude")!!

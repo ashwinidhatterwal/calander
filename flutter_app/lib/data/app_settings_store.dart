@@ -90,7 +90,7 @@ class AppSettingsStore {
     }
     if (location.id == 'current') {
       // Write the complete payload before pointing the selected ID at it.
-      await prefs.setString(
+      final payloadSaved = await prefs.setString(
         _customLocationKey,
         jsonEncode({
           'cityHi': location.cityHi,
@@ -103,10 +103,13 @@ class AppSettingsStore {
           'utcOffsetMinutes': location.utcOffsetMinutes,
         }),
       );
+      if (!payloadSaved) throw StateError('Location payload write failed');
     } else if (!locations.any((x) => x.id == location.id)) {
       throw ArgumentError('Unknown manual location');
     }
-    await prefs.setString(_locationKey, location.id);
+    if (!await prefs.setString(_locationKey, location.id)) {
+      throw StateError('Location selection write failed');
+    }
   }
 
   Future<void> markLocationOfferSeen() async {

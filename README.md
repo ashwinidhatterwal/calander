@@ -1,11 +1,11 @@
-# Hindu Calendar — Checkpoint 11 Reminder and Location Refinements
+# Hindu Calendar — Checkpoint 12 Location Reliability and Today Times
 
-Build 1.0.0+11 defaults morning reminders on (preserving explicit opt-outs), removes special alarm access, consolidates Android tasks, repairs division labels using saved coordinates, and combines national and regional holidays. Bundled 2026 reference dates cover all 28 states and 8 union territories. See `docs/CHECKPOINT_11.md` and `docs/CHECKPOINT_11_VERIFICATION.md` for scope and pending verification.
+Build 1.0.0+12 adds explicit GPS/network acquisition, visible failure diagnostics, coordinate-based districts, and localized 12-hour sunrise/sunset. Includes prior reminder, holiday and UI fixes. See `docs/CHECKPOINT_12.md` for research, scope and verification status.
 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+11`
+- Version: `1.0.0+12`
 - Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No
@@ -62,7 +62,7 @@ Pushes to `main` run `.github/workflows/android.yml`:
 flutter pub get
 flutter analyze
 flutter test
-Checkpoint 11 source validator
+Checkpoint 12 source validator
 release QA APK
 Target API verification
 permission audit

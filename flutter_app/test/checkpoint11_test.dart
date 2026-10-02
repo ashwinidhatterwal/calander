@@ -39,6 +39,10 @@ void main() {
     expect(engine.time12(DateTime.utc(2026, 10, 2, 12, 48), location), '6:18 PM');
     expect(engine.time12(DateTime.utc(2026, 10, 2, 6, 30), location), '12:00 PM');
     expect(engine.time12(DateTime.utc(2026, 10, 1, 18, 30), location), '12:00 AM');
+    expect(engine.time12(DateTime.utc(2026, 10, 2, 12, 48), location,
+        amLabel: 'पु.', pmLabel: 'अप.'), '6:18 अप.');
+    expect(engine.time12(DateTime.utc(2026, 10, 2, 0, 58), location,
+        amLabel: 'पु.', pmLabel: 'अप.'), '6:28 पु.');
     expect(engine.time12(null, location), '—');
   });
   test('valid saved district does not require lookup or GPS', () async {

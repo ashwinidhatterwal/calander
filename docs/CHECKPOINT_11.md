@@ -24,8 +24,8 @@ Package remains `in.hinducalendar.hindu_calendar`.
   appearance changes are retained. Astronomy source is unchanged.
 
 District fallback adds about 5.6 MB uncompressed; it is loaded only for missing or
-division labels. Native valid district names take precedence, particularly after
-district reorganizations. Fallback names outside the explicitly translated districts
+division labels. District boundaries take precedence for a newly acquired coordinate fix;
+native names are retained when the bundled coverage has no match. Fallback names outside the explicitly translated districts
 may appear in English in Hindi mode rather than inventing a translation.
 
 ## Build and release

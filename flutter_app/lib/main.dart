@@ -283,8 +283,7 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
   }
 
   Future<void> _changeLocation(GeoLocation value) async {
-    // Keep the current calendar responsive until the new location is ready.
-    await festival.majorFestivalsAsync(DateTime.now().year, value);
+    // Persist the coordinate fix independently of optional year calculations.
     await widget.onLocationChanged?.call(value);
     if (!mounted) return;
     if (location.cacheKey != value.cacheKey) {

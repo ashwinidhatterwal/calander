@@ -50,3 +50,23 @@ publish this candidate until those checks and device tests pass.
 - Added Dart regressions for saved Hindi division repair and noon/midnight.
   Flutter analysis, tests, Android compilation, and device validation remain
   pending for this patch. Earlier GitHub build success does not validate it.
+
+## Location acquisition and Hindi time patch
+
+The screenshot's generic error does not establish a specific GPS/provider fault.
+The source previously had one medium-accuracy request limited to 20 seconds.
+On failure this patch accepts only a device fix no older than two minutes with
+accuracy at most 2 km, or retries using Android LocationManager at high accuracy
+for up to 30 seconds. Startup never requests GPS and no location stream exists.
+Native naming failure does not prevent saving valid coordinates. Newly acquired
+coordinates are resolved against offline district geometry even if the native
+geocoder returns a plausible but wrong administrative name. Geometry reflects
+the bundled dataset and may need updates following district reorganizations.
+Timeout and saving failures have separate messages. No preset city is chosen
+as a successful result of a failed GPS acquisition.
+
+Hindi sunset uses पु. / अप.; English uses AM / PM. Sunrise retains its current
+format because the request concerned sunset. Added Flutter regressions cover
+provider retry, recent cached fixes, stale cached rejection, actual district
+resolution, and Hindi time suffixes. These tests still require GitHub execution;
+Flutter is not installed in this workspace. Source and permission checks passed.

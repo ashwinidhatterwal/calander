@@ -64,7 +64,7 @@ gradle.write_text(gradle.read_text(encoding='utf-8').replace(
     '"`in`.hinducalendar.hindu_calendar"', '"in.hinducalendar.hindu_calendar"'), encoding='utf-8')
 
 with gradle.open('a', encoding='utf-8') as output:
-    output.write('\ndependencies { implementation("androidx.work:work-runtime-ktx:2.11.2") }\n')
+    output.write('\ndependencies { implementation("androidx.work:work-runtime-ktx:2.11.2"); implementation("androidx.core:core:1.13.1") }\n')
 
 path = Path('android/app/src/main/AndroidManifest.xml')
 text = path.read_text(encoding='utf-8')

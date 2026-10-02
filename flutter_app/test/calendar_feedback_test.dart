@@ -76,6 +76,24 @@ void main() {
     });
   }
 
+  for (final language in AppLanguage.values) {
+    testWidgets('Today sunrise and sunset use local 12-hour suffixes in ${language.name}',
+        (tester) async {
+      await tester.pumpWidget(HinduCalendarApp(
+          holikaOverrides: {}, initialLanguage: language));
+      await settleCalendar(tester);
+      final hindi = language == AppLanguage.hi;
+      final card = find.byKey(const ValueKey('today-panchang-card'));
+      expect(find.descendant(of: card, matching: find.textContaining(
+          RegExp(hindi ? r'सूर्योदय [0-9]{1,2}:[0-9]{2} पु\.'
+              : r'Sunrise [0-9]{1,2}:[0-9]{2} AM'))), findsOneWidget);
+      expect(find.descendant(of: card, matching: find.textContaining(
+          RegExp(hindi ? r'सूर्यास्त [0-9]{1,2}:[0-9]{2} अप\.'
+              : r'Sunset [0-9]{1,2}:[0-9]{2} PM'))), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   testWidgets('month/year picker does not highlight its first day', (tester) async {
     await tester.binding.setSurfaceSize(const Size(480, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
