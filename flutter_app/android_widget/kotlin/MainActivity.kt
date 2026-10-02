@@ -38,7 +38,7 @@ class MainActivity : FlutterActivity() {
                                     val address = Geocoder(this, Locale(language, "IN")).getFromLocation(lat, lon, 1)?.firstOrNull()
                                     address?.let {
                                         // Providers sometimes put an administrative division here.
-                                        val division = Regex("(^|[\\s,/-])(?:division|संभाग|मंडल)(?=$|[\\s,/-])", RegexOption.IGNORE_CASE)
+                                        val division = Regex("(^|[\\s,/-])(?:division|संभाग|मंडल|ड[िी]व[िी](?:ज़|ज)न)(?=$|[\\s,/-])", RegexOption.IGNORE_CASE)
                                         it.subAdminArea?.takeIf { name -> name.isNotBlank() && !division.containsMatchIn(name) }?.let { name -> names["district$suffix"] = name }
                                         it.adminArea?.let { state -> names["state$suffix"] = state }
                                         it.countryCode?.let { code -> names["countryCode"] = code }

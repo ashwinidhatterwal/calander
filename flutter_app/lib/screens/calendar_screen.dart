@@ -1008,7 +1008,7 @@ class _TodayCard extends StatelessWidget {
                             '${l.sunrise} ${panchang.hhmm(day!.sunriseUtc, location)}',
                           ),
                           Text(
-                            '${l.sunset} ${panchang.hhmm(day!.sunsetUtc, location)}',
+                            '${l.sunset} ${panchang.time12(day!.sunsetUtc, location)}',
                           ),
                           const SizedBox(height: 8),
                           const Icon(Icons.chevron_right),

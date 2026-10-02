@@ -323,5 +323,13 @@ class PanchangEngine {
   }
 
   String hhmm(DateTime? utc,GeoLocation loc){if(utc==null)return '—'; final w=localWall(utc,loc); return '${w.hour.toString().padLeft(2,'0')}:${w.minute.toString().padLeft(2,'0')}';}
+  String time12(DateTime? utc, GeoLocation loc) {
+    if (utc == null) return '—';
+    final wall = localWall(utc, loc);
+    final hour = wall.hour % 12 == 0 ? 12 : wall.hour % 12;
+    final minute = wall.minute.toString().padLeft(2, '0');
+    final period = wall.hour < 12 ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
   String range(TimeRange r,GeoLocation loc)=>'${hhmm(r.startUtc,loc)}–${hhmm(r.endUtc,loc)}';
 }

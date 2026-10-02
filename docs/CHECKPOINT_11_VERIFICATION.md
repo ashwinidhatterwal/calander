@@ -11,8 +11,8 @@ Passed in this continuation:
 - Shell syntax validation for the Android scaffold script.
 - All 16 Python reference astronomy/festival test functions, executed directly
   because pytest is absent. This is not the Flutter parity test suite.
-- Panchang astronomy file byte comparison with checkpoint 10 source: unchanged.
-  SHA-256: 195f401fbd82e18e842c1a9976d882f5947482659f3022cf460000a5e1cb6ce0.
+- Panchang calculation methods retained. The latest patch adds a display-only
+  12-hour formatter; the engine file is therefore no longer byte-identical.
 - 36 distinct state/UT codes present in bundled 2026 reference holidays.
 
 Added, but NOT executed here: checkpoint11_test.dart covers district geometry,
@@ -39,3 +39,14 @@ repository push or Play upload has been performed.
 Run Android QA build and Production Play bundle after applying this source. Both
 workflows validate build 11. Remain on the existing closed-testing track. Do not
 publish this candidate until those checks and device tests pass.
+
+## District spelling and sunset display patch
+
+- Native and Dart division checks now reject Hindi डिवीजन / डीवीजन variants.
+- Existing saved division names are repaired on launch from saved coordinates.
+- Today sunset uses 12-hour AM/PM display with the location time offset.
+- Prior lint and scrolling-test fixes are included.
+- Source validator, five permission tests, and spelling checks passed locally.
+- Added Dart regressions for saved Hindi division repair and noon/midnight.
+  Flutter analysis, tests, Android compilation, and device validation remain
+  pending for this patch. Earlier GitHub build success does not validate it.

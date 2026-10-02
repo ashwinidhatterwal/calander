@@ -11,7 +11,7 @@ Future<String?> offlineDistrict(double latitude, double longitude) async {
 }
 
 bool isDivisionLabel(String label) => RegExp(
-      r'(^|[\s,/-])(?:division|संभाग|मंडल)(?=$|[\s,/-])',
+      r'(^|[\s,/-])(?:division|संभाग|मंडल|ड[िी]व[िी](?:ज़|ज)न)(?=$|[\s,/-])',
       caseSensitive: false,
     ).hasMatch(label);
 
