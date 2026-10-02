@@ -45,21 +45,36 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('national holidays have their own bilingual category', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const HinduCalendarApp(holikaOverrides: {}));
-    await settleCalendar(tester);
-    await tester.tap(find.byIcon(Icons.celebration_outlined));
-    await settleCalendar(tester);
-    await tester.tap(find.text('अवकाश'));
-    await tester.tap(find.text('पूरा वर्ष'));
-    await settleCalendar(tester);
-    expect(find.text('गणतंत्र दिवस'), findsOneWidget);
-    expect(find.text('स्वतंत्रता दिवस'), findsOneWidget);
-    expect(find.text('गांधी जयंती'), findsOneWidget);
-    await tester.pumpWidget(const SizedBox());
-  });
+  for (final language in AppLanguage.values) {
+    testWidgets('combined Holidays list shows national entries in ${language.name}',
+        (tester) async {
+      await tester.pumpWidget(HinduCalendarApp(
+        holikaOverrides: {}, initialLanguage: language,
+      ));
+      await settleCalendar(tester);
+      await tester.tap(find.byIcon(Icons.celebration_outlined));
+      await settleCalendar(tester);
+      final hindi = language == AppLanguage.hi;
+      await tester.tap(find.text(hindi ? 'अवकाश' : 'Holidays'));
+      await tester.tap(find.text(hindi ? 'पूरा वर्ष' : 'Full year'));
+      await settleCalendar(tester);
+      final scrollable = find.descendant(
+        of: find.byType(ListView), matching: find.byType(Scrollable),
+      );
+      expect(scrollable, findsOneWidget);
+      for (final name in hindi
+          ? ['गणतंत्र दिवस', 'स्वतंत्रता दिवस', 'गांधी जयंती']
+          : ['Republic Day', 'Independence Day', 'Gandhi Jayanti']) {
+        // The combined regional list builds off-screen entries lazily.
+        await tester.scrollUntilVisible(
+          find.text(name), 200, scrollable: scrollable, maxScrolls: 60,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(name), findsOneWidget);
+      }
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   testWidgets('month/year picker does not highlight its first day', (tester) async {
     await tester.binding.setSurfaceSize(const Size(480, 1000));
