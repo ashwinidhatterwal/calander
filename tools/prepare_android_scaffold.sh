@@ -6,7 +6,11 @@ set -euo pipefail
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
-flutter create --platforms=android --org in.hinducalendar --project-name hindu_calendar "$tmp/hindu_calendar"
+create_args=()
+if [ "${CALENDAR_SCAFFOLD_OFFLINE:-false}" = "true" ]; then
+  create_args+=(--offline)
+fi
+flutter --suppress-analytics create "${create_args[@]}" --platforms=android --org in.hinducalendar --project-name hindu_calendar "$tmp/hindu_calendar"
 rm -rf ./android
 cp -R "$tmp/hindu_calendar/android" ./android
 
@@ -53,8 +57,35 @@ cp android_widget/kotlin/*.kt "$kotlin_dir/"
 
 python - <<'PY'
 from pathlib import Path
+# Kotlin escapes the reserved word `in` in source packages, but those escapes
+# must never leak into Android namespace/applicationId strings.
+gradle = Path('android/app/build.gradle.kts')
+gradle.write_text(gradle.read_text(encoding='utf-8').replace(
+    '"`in`.hinducalendar.hindu_calendar"', '"in.hinducalendar.hindu_calendar"'), encoding='utf-8')
+
+with gradle.open('a', encoding='utf-8') as output:
+    output.write('\ndependencies { implementation("androidx.work:work-runtime-ktx:2.11.2") }\n')
+
 path = Path('android/app/src/main/AndroidManifest.xml')
 text = path.read_text(encoding='utf-8')
+text = text.replace('android:taskAffinity=""', 'android:taskAffinity="in.hinducalendar.hindu_calendar"')
+text = text.replace('android:launchMode="singleTask"', 'android:launchMode="singleTask" android:documentLaunchMode="never"')
+# geolocator's optional foreground service is not used by this one-shot feature.
+# Remove its service permissions from the merged manifest explicitly.
+text = text.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">',
+    '<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">')
+text = text.replace('    <application', '''
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
+    <application''', 1)
+
+
+text = text.replace('    <application', '''    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <application''', 1)
 
 queries = '''
     <queries>
@@ -72,6 +103,15 @@ if '<queries>' not in text:
     text = text.replace('    <application', queries + '    <application', 1)
 
 receivers = '''
+        <receiver android:name=".CalendarAlarmReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".TodayPanchangWidgetProvider"
             android:exported="true">

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,10 +7,13 @@ import '../core/app_theme.dart';
 import '../core/localization.dart';
 import '../core/locations.dart';
 import '../domain/festival_engine.dart';
+import '../domain/civil_holidays.dart';
+import '../data/current_location_service.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/personal_event.dart';
 import 'about_support_screen.dart';
+import 'notifications_screen.dart';
 import 'day_details_screen.dart';
 import 'personal_event_editor_screen.dart';
 
@@ -25,8 +30,14 @@ class CalendarScreen extends StatefulWidget {
     required this.onLocationChanged,
     required this.themePreference,
     required this.onThemeChanged,
+    this.offerCurrentLocation = false,
+    this.onRefreshNotifications,
+    this.onLocationOfferSeen,
   });
 
+  final Future<void> Function()? onRefreshNotifications;
+  final bool offerCurrentLocation;
+  final Future<void> Function()? onLocationOfferSeen;
   final PanchangEngine panchang;
   final FestivalEngine festival;
   final AppLanguage language;
@@ -34,7 +45,7 @@ class CalendarScreen extends StatefulWidget {
   final List<PersonalEvent> personalEvents;
   final ValueChanged<PersonalEvent> onUpsertPersonalEvent;
   final ValueChanged<AppLanguage> onLanguageChanged;
-  final ValueChanged<GeoLocation> onLocationChanged;
+  final Future<void> Function(GeoLocation) onLocationChanged;
   final AppThemePreference themePreference;
   final ValueChanged<AppThemePreference> onThemeChanged;
 
@@ -42,10 +53,17 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen>
+    with WidgetsBindingObserver {
   late DateTime visibleMonth;
-  late DateTime selectedDate;
-  Future<PanchangDay>? selectedFuture;
+  DateTime get todayDate {
+    final now = DateTime.now();
+    return DateTime.utc(now.year, now.month, now.day);
+  }
+
+  Timer? _midnightTimer;
+  bool _locating = false;
+  Future<PanchangDay>? todayFuture;
   Future<List<FestivalObservance>>? majorFuture;
   String? _futureKey;
   String? _majorKey;
@@ -57,14 +75,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    selectedDate = DateTime.utc(now.year, now.month, now.day);
+
     visibleMonth = DateTime.utc(now.year, now.month, 1);
+    WidgetsBinding.instance.addObserver(this);
+    _scheduleMidnight();
+    if (widget.offerCurrentLocation) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        await widget.onLocationOfferSeen?.call();
+        if (mounted) _pickLocation();
+      });
+    }
+  }
+
+  void _scheduleMidnight() {
+    _midnightTimer?.cancel();
+    final now = DateTime.now();
+    _midnightTimer =
+        Timer(DateTime(now.year, now.month, now.day + 1).difference(now), () {
+      if (mounted) setState(() => _futureKey = null);
+      _scheduleMidnight();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {});
+      _scheduleMidnight();
+    }
+  }
+
+  @override
+  void dispose() {
+    _midnightTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant CalendarScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.location.id != widget.location.id) {
+    if (oldWidget.location.cacheKey != widget.location.cacheKey) {
       _futureKey = null;
       _majorKey = null;
       _cellCache.clear();
@@ -72,23 +124,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _ensureFutures() {
-    final dayKey = '${selectedDate.toIso8601String()}|${widget.location.id}';
+    final dayKey = '${todayDate.toIso8601String()}|${widget.location.cacheKey}';
     if (_futureKey != dayKey) {
       _futureKey = dayKey;
-      selectedFuture = Future<PanchangDay>.sync(
-        () => widget.panchang.buildDay(selectedDate, widget.location),
+      todayFuture = Future<PanchangDay>.sync(
+        () => widget.panchang.buildDay(todayDate, widget.location),
       );
     }
 
-    final majorKey = '${visibleMonth.year}|${widget.location.id}';
+    final majorKey = '${visibleMonth.year}|${widget.location.cacheKey}';
     if (_majorKey != majorKey) {
       _majorKey = majorKey;
-      majorFuture = Future<List<FestivalObservance>>.sync(
-        () => widget.festival.majorFestivalsForYear(
-          visibleMonth.year,
-          widget.location,
-        ),
-      );
+      majorFuture = widget.festival
+          .majorFestivalsAsync(visibleMonth.year, widget.location);
     }
   }
 
@@ -123,9 +171,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.location_on_outlined, size: 16),
+                            if (_locating)
+                              const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2))
+                            else
+                              const Icon(Icons.location_on_outlined, size: 16),
                             const SizedBox(width: 4),
-                            Text(l.pick(widget.location.cityHi, widget.location.cityEn)),
+                            Flexible(
+                                child: Text(
+                                    l.pick(widget.location.cityHi,
+                                        widget.location.cityEn),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis)),
                             const Icon(Icons.expand_more, size: 18),
                           ],
                         ),
@@ -155,23 +215,43 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
               ),
-              IconButton(
-                tooltip: l.pick('ऐप के बारे में', 'About'),
-                onPressed: _openAboutSupport,
+              PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'about') {
+                    _openAboutSupport();
+                    return;
+                  }
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => NotificationsScreen(
+                              language: widget.language,
+                              onRefresh: widget.onRefreshNotifications ??
+                                  () async {})));
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                      value: 'notifications',
+                      child: Text(l.pick('सूचनाएँ', 'Notifications'))),
+                  PopupMenuItem(
+                      value: 'about',
+                      child: Text(l.pick(
+                          'सेटिंग और ऐप के बारे में', 'Settings & About'))),
+                ],
               ),
             ],
           ),
         ),
         FutureBuilder<PanchangDay>(
-          future: selectedFuture,
+          future: todayFuture,
           builder: (context, snap) => _TodayCard(
             day: snap.data,
             l: l,
             panchang: widget.panchang,
             location: widget.location,
-            selectedDate: selectedDate,
-            onTap: () => _openDay(selectedDate),
+            todayDate: todayDate,
+            onTap: () => _openDay(todayDate),
           ),
         ),
         const SizedBox(height: 8),
@@ -186,7 +266,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       behavior: HitTestBehavior.translucent,
       onHorizontalDragUpdate: (details) {
         setState(() {
-          _monthDragDx = (_monthDragDx + details.delta.dx).clamp(-120.0, 120.0).toDouble();
+          _monthDragDx =
+              (_monthDragDx + details.delta.dx).clamp(-120.0, 120.0).toDouble();
         });
       },
       onHorizontalDragCancel: () => setState(() => _monthDragDx = 0),
@@ -201,7 +282,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         }
       },
       child: AnimatedContainer(
-        duration: _monthDragDx == 0 ? const Duration(milliseconds: 180) : Duration.zero,
+        duration: _monthDragDx == 0
+            ? const Duration(milliseconds: 180)
+            : Duration.zero,
         curve: Curves.easeOutCubic,
         transform: Matrix4.translationValues(resistedOffset, 0, 0),
         child: Column(
@@ -216,37 +299,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                   Expanded(
                     child: FutureBuilder<PanchangDay>(
-                      future: selectedFuture,
+                      future: todayFuture,
                       builder: (context, snap) {
                         final month = widget.language == AppLanguage.hi
                             ? monthNamesHi[visibleMonth.month - 1]
                             : monthNamesEn[visibleMonth.month - 1];
-                        final hinduMonth = snap.hasData
-                            ? l.pick(snap.data!.purnimantaMonth.hi, snap.data!.purnimantaMonth.en)
-                            : '…';
+                        final monthCell = _cellData(visibleMonth);
+                        final hinduMonth =
+                            l.pick(monthCell.month.hi, monthCell.month.en);
                         return InkWell(
                           borderRadius: BorderRadius.circular(14),
                           onTap: _pickMonthYear,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             child: Column(
                               children: [
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
+                                    Flexible(
+                                        child: Text(
                                       '$month ${visibleMonth.year}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
-                                          ?.copyWith(fontWeight: FontWeight.w800),
-                                    ),
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w800),
+                                    )),
                                     const SizedBox(width: 3),
                                     const Icon(Icons.arrow_drop_down, size: 20),
                                   ],
                                 ),
                                 Text(
-                                  '${snap.data?.adhikMonth == true ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
+                                  '${monthCell.adhik ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -268,7 +356,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  for (final w in (widget.language == AppLanguage.hi ? shortWeekHi : shortWeekEn))
+                  for (final w in (widget.language == AppLanguage.hi
+                      ? shortWeekHi
+                      : shortWeekEn))
                     Expanded(
                       child: Center(
                         child: Padding(
@@ -289,7 +379,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             Expanded(
               child: FutureBuilder<List<FestivalObservance>>(
                 future: majorFuture,
-                builder: (context, snap) => _calendarGrid(snap.data ?? const []),
+                builder: (context, snap) =>
+                    _calendarGrid(snap.data ?? const []),
               ),
             ),
           ],
@@ -317,14 +408,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final d = start.add(Duration(days: i));
         final inside = d.month == visibleMonth.month;
         final cell = _cellData(d);
-        final majorEvents = major.where((x) => _sameDate(x.localDate, d)).toList();
+        final majorEvents =
+            major.where((x) => _sameDate(x.localDate, d)).toList();
         final personalForDay = widget.personalEvents
             .where((event) => _personalEventMatches(event, d, cell))
             .toList(growable: false);
-        final eventLabel = _eventLabel(cell, majorEvents, personalForDay);
+        final holiday =
+            nationalHolidays.where((h) => h.occursOn(d)).firstOrNull;
+        final eventLabel = _eventLabel(cell, majorEvents, personalForDay) ??
+            (holiday == null
+                ? null
+                : L10n(widget.language).pick(holiday.nameHi, holiday.nameEn));
         final personalOnly = majorEvents.isEmpty && personalForDay.isNotEmpty;
-        final isSelected = _sameDate(d, selectedDate);
-        final isToday = d.year == now.year && d.month == now.month && d.day == now.day;
+        final isToday =
+            d.year == now.year && d.month == now.month && d.day == now.day;
 
         final scheme = Theme.of(context).colorScheme;
         final normalText = scheme.onSurface;
@@ -333,22 +430,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final mutedSub = normalSub.withAlpha(70);
 
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final tileColor = isDark
-            ? const Color(0xFF2D221E)
-            : const Color(0xFFFFF0E7);
-        final tileBorder = isDark
-            ? const Color(0xFF523E35)
-            : const Color(0xFFE7CFC2);
+        final tileColor =
+            isDark ? const Color(0xFF2D221E) : const Color(0xFFFFF0E7);
+        final tileBorder =
+            isDark ? const Color(0xFF523E35) : const Color(0xFFE7CFC2);
 
         Color background;
-        if (isSelected) {
-          background = isDark
-              ? const Color(0xFF6A321D)
-              : const Color(0xFFF5C9B5);
-        } else if (isToday) {
-          background = isDark
-              ? const Color(0xFF3A2B22)
-              : const Color(0xFFFFE0CF);
+        if (isToday && inside) {
+          background =
+              isDark ? const Color(0xFF3A2B22) : const Color(0xFFFFE0CF);
         } else if (inside) {
           background = tileColor;
         } else {
@@ -357,28 +447,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
         return InkWell(
           borderRadius: BorderRadius.circular(13),
-          onTap: () {
-            setState(() {
-              selectedDate = d;
-              visibleMonth = DateTime.utc(d.year, d.month, 1);
-              _futureKey = null;
-              _majorKey = null;
-            });
-            _openDay(d);
-          },
+          onTap: () => _openDay(d),
           child: AnimatedContainer(
+            key: ValueKey(
+                'calendar-cell-${d.year}-${d.month}-${d.day}-${isToday && inside}'),
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.fromLTRB(3, 6, 3, 5),
             decoration: BoxDecoration(
               color: background,
               borderRadius: BorderRadius.circular(13),
               border: Border.all(
-                color: isSelected
+                color: isToday && inside
                     ? scheme.primary.withAlpha(180)
-                    : isToday
-                        ? scheme.primary.withAlpha(145)
-                        : (inside ? tileBorder : Colors.transparent),
-                width: isSelected ? 1.2 : 0.8,
+                    : (inside ? tileBorder : Colors.transparent),
+                width: isToday && inside ? 1.2 : 0.8,
               ),
             ),
             child: Column(
@@ -412,7 +494,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 if (eventLabel != null && inside)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
                     decoration: BoxDecoration(
                       color: majorEvents.isNotEmpty
                           ? scheme.primaryContainer.withAlpha(190)
@@ -447,7 +530,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   _CalendarCellData _cellData(DateTime d) {
-    final key = '${d.year}-${d.month}-${d.day}|${widget.location.id}';
+    final key = '${d.year}-${d.month}-${d.day}|${widget.location.cacheKey}';
     final cached = _cellCache[key];
     if (cached != null) return cached;
 
@@ -465,7 +548,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _cellCache[key] = cell;
 
     if (_cellCache.length > 160) {
-      final keep = _cellCache.entries.toList().reversed.take(100).toList().reversed;
+      final keep =
+          _cellCache.entries.toList().reversed.take(100).toList().reversed;
       _cellCache
         ..clear()
         ..addEntries(keep);
@@ -502,7 +586,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _CalendarCellData cell,
   ) {
     if (event.basis == PersonalEventBasis.gregorian) {
-      if (event.gregorianMonth != date.month || event.gregorianDay != date.day) return false;
+      if (event.gregorianMonth != date.month ||
+          event.gregorianDay != date.day) {
+        return false;
+      }
       return event.repeatYearly || event.gregorianYear == date.year;
     }
     final isShukla = cell.pakshaHi.startsWith('शुक्ल');
@@ -562,7 +649,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final monthNames = widget.language == AppLanguage.hi ? monthNamesHi : monthNamesEn;
+            final monthNames =
+                widget.language == AppLanguage.hi ? monthNamesHi : monthNamesEn;
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
@@ -574,15 +662,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            widget.language == AppLanguage.hi ? 'महीना और वर्ष चुनें' : 'Choose month and year',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                            widget.language == AppLanguage.hi
+                                ? 'महीना और वर्ष चुनें'
+                                : 'Choose month and year',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w900),
                           ),
                         ),
                         IconButton(
-                          tooltip: widget.language == AppLanguage.hi ? 'आज' : 'Today',
+                          tooltip: widget.language == AppLanguage.hi
+                              ? 'आज'
+                              : 'Today',
                           onPressed: () {
                             final now = DateTime.now();
-                            Navigator.pop(context, DateTime.utc(now.year, now.month, 1));
+                            Navigator.pop(
+                                context, DateTime.utc(now.year, now.month, 1));
                           },
                           icon: const Icon(Icons.today_outlined),
                         ),
@@ -592,13 +688,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                        border: Border.all(
+                            color:
+                                Theme.of(context).colorScheme.outlineVariant),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
                         children: [
                           IconButton(
-                            onPressed: year > 1900 ? () => setSheetState(() => year--) : null,
+                            onPressed: year > 1900
+                                ? () => setSheetState(() => year--)
+                                : null,
                             icon: const Icon(Icons.chevron_left),
                           ),
                           Expanded(
@@ -609,16 +709,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 alignment: Alignment.center,
                                 items: [
                                   for (var y = 1900; y <= 2100; y++)
-                                    DropdownMenuItem(value: y, child: Center(child: Text('$y'))),
+                                    DropdownMenuItem(
+                                        value: y,
+                                        child: Center(child: Text('$y'))),
                                 ],
                                 onChanged: (value) {
-                                  if (value != null) setSheetState(() => year = value);
+                                  if (value != null) {
+                                    setSheetState(() => year = value);
+                                  }
                                 },
                               ),
                             ),
                           ),
                           IconButton(
-                            onPressed: year < 2100 ? () => setSheetState(() => year++) : null,
+                            onPressed: year < 2100
+                                ? () => setSheetState(() => year++)
+                                : null,
                             icon: const Icon(Icons.chevron_right),
                           ),
                         ],
@@ -628,7 +734,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 2.2,
                         mainAxisSpacing: 8,
@@ -636,14 +743,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                       itemCount: 12,
                       itemBuilder: (context, i) {
-                        final active = i + 1 == visibleMonth.month && year == visibleMonth.year;
+                        final active = i + 1 == visibleMonth.month &&
+                            year == visibleMonth.year;
                         return FilledButton.tonal(
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 6),
-                            backgroundColor: active ? Theme.of(context).colorScheme.primaryContainer : null,
+                            backgroundColor: active
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
                           ),
-                          onPressed: () => Navigator.pop(context, DateTime.utc(year, i + 1, 1)),
-                          child: Text(monthNames[i], textAlign: TextAlign.center),
+                          onPressed: () => Navigator.pop(
+                              context, DateTime.utc(year, i + 1, 1)),
+                          child:
+                              Text(monthNames[i], textAlign: TextAlign.center),
                         );
                       },
                     ),
@@ -655,32 +767,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
         );
       },
     );
-    if (selected == null) return;
+    if (selected == null || !mounted) return;
     setState(() {
       visibleMonth = selected;
-      selectedDate = selected;
-      _futureKey = null;
-      _majorKey = null;
       _monthDragDx = 0;
     });
   }
 
   void _moveMonth(int delta) {
     setState(() {
-      visibleMonth = DateTime.utc(visibleMonth.year, visibleMonth.month + delta, 1);
-      selectedDate = visibleMonth;
-      _futureKey = null;
-      _majorKey = null;
+      visibleMonth =
+          DateTime.utc(visibleMonth.year, visibleMonth.month + delta, 1);
     });
   }
 
   void _goToday() {
     final now = DateTime.now();
     setState(() {
-      selectedDate = DateTime.utc(now.year, now.month, now.day);
       visibleMonth = DateTime.utc(now.year, now.month, 1);
-      _futureKey = null;
-      _majorKey = null;
     });
   }
 
@@ -690,14 +794,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
       showDragHandle: true,
       builder: (context) => ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.my_location),
+            title: Text(L10n(widget.language)
+                .pick('वर्तमान स्थान इस्तेमाल करें', 'Use current location')),
+            subtitle: Text(L10n(widget.language).pick(
+                'एक बार स्थान लें; फिर ऑफ़लाइन इस्तेमाल करें',
+                'Save once, then use offline. Tap again to refresh.')),
+            onTap: () {
+              Navigator.pop(context);
+              _useCurrentLocation();
+            },
+          ),
+          if (widget.location.id == 'current')
+            ListTile(
+              leading: const Icon(Icons.check),
+              title: Text(L10n(widget.language)
+                  .pick('सहेजा हुआ वर्तमान स्थान', 'Saved current location')),
+              subtitle: Text(L10n(widget.language).pick(
+                  '${widget.location.cityHi} · ${widget.location.stateHi}',
+                  '${widget.location.cityEn} · ${widget.location.stateEn}')),
+            ),
           for (final x in locations)
             ListTile(
               leading: const Icon(Icons.location_city_outlined),
-              title: Text(widget.language == AppLanguage.hi ? x.cityHi : x.cityEn),
+              title:
+                  Text(widget.language == AppLanguage.hi ? x.cityHi : x.cityEn),
               subtitle: Text(
                 widget.language == AppLanguage.hi ? x.stateHi : x.stateEn,
               ),
-              trailing: x.id == widget.location.id
+              trailing: x.cacheKey == widget.location.cacheKey
                   ? const Icon(Icons.check)
                   : null,
               onTap: () => Navigator.pop(context, x),
@@ -705,9 +831,57 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ],
       ),
     );
-    if (choice != null) widget.onLocationChanged(choice);
+    if (choice != null && mounted && !_locating) {
+      setState(() => _locating = true);
+      try {
+        await widget.onLocationChanged(choice);
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(L10n(widget.language).pick(
+                'स्थान सहेजा नहीं जा सका। दोबारा कोशिश करें।',
+                'Could not save location. Please retry.'))));
+      } finally {
+        if (mounted) setState(() => _locating = false);
+      }
+    }
   }
 
+  Future<void> _useCurrentLocation() async {
+    if (_locating) return;
+    setState(() => _locating = true);
+    final l = L10n(widget.language);
+    try {
+      final value = await const CurrentLocationService().obtain();
+      if (!mounted) return;
+      await widget.onLocationChanged(value);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l.pick('स्थान सहेजा गया। गणना IST में है।',
+              'Location saved. Calculations use IST.'))));
+    } catch (error) {
+      if (!mounted) return;
+      final code =
+          error is CurrentLocationException ? error.code : 'unavailable';
+      final message = switch (code) {
+        'disabled' => l.pick('फ़ोन का स्थान चालू करें या शहर चुनें।',
+            'Turn on device location or choose a city.'),
+        'deniedForever' => l.pick(
+            'ऐप की सेटिंग में स्थान अनुमति दें या शहर चुनें।',
+            'Allow location in app settings or choose a city.'),
+        'denied' => l.pick('स्थान अनुमति नहीं मिली। शहर चुन सकते हैं।',
+            'Location permission denied. You can choose a city.'),
+        _ => l.pick('स्थान नहीं मिला। दोबारा कोशिश करें या शहर चुनें।',
+            'Location unavailable. Retry or choose a city.'),
+      };
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
 
   void _openAboutSupport() {
     Navigator.of(context).push(
@@ -728,7 +902,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           language: widget.language,
           location: widget.location,
           panchang: widget.panchang,
-          initialDate: selectedDate,
+          initialDate: todayDate,
         ),
       ),
     );
@@ -752,7 +926,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 }
 
 class _CalendarCellData {
-  const _CalendarCellData(this.tithi, this.pakshaHi, this.pakshaEn, this.month, this.adhik);
+  const _CalendarCellData(
+      this.tithi, this.pakshaHi, this.pakshaEn, this.month, this.adhik);
   final TithiState tithi;
   final String pakshaHi;
   final String pakshaEn;
@@ -766,7 +941,7 @@ class _TodayCard extends StatelessWidget {
     required this.l,
     required this.panchang,
     required this.location,
-    required this.selectedDate,
+    required this.todayDate,
     required this.onTap,
   });
 
@@ -774,22 +949,23 @@ class _TodayCard extends StatelessWidget {
   final L10n l;
   final PanchangEngine panchang;
   final GeoLocation location;
-  final DateTime selectedDate;
+  final DateTime todayDate;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final isToday = selectedDate.year == now.year &&
-        selectedDate.month == now.month &&
-        selectedDate.day == now.day;
+    final isToday = todayDate.year == now.year &&
+        todayDate.month == now.month &&
+        todayDate.day == now.day;
     final title = isToday
         ? l.today
-        : '${selectedDate.day} ${l.language == AppLanguage.hi ? monthNamesHi[selectedDate.month - 1] : monthNamesEn[selectedDate.month - 1]}';
+        : '${todayDate.day} ${l.language == AppLanguage.hi ? monthNamesHi[todayDate.month - 1] : monthNamesEn[todayDate.month - 1]}';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Card(
+        key: const ValueKey('today-panchang-card'),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,

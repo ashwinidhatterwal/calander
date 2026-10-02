@@ -1,7 +1,7 @@
 name: hindu_calendar
 description: Hindi-first, offline Hindu calendar with Panchang and personal Tithi events.
 publish_to: 'none'
-version: 1.0.0+8
+version: 1.0.0+11
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -12,6 +12,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   shared_preferences: ^2.3.2
+  geolocator: ^14.1.1
   home_widget: ^0.9.2+1
   url_launcher: ^6.3.1
 
@@ -24,4 +25,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/festival_overrides.json
+    - assets/data/district_boundaries.json
     - assets/branding/app_icon.png

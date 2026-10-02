@@ -14,7 +14,9 @@
         android:background="@drawable/widget_chip_background"
         android:gravity="center"
         android:text="ॐ"
-        android:textColor="@color/widget_accent"
+        android:includeFontPadding="false"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/widget_accent"
         android:textSize="22sp"
         android:textStyle="bold" />
 
@@ -23,15 +25,19 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="start"
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/widget_upcoming_kind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="पर्व / व्रत"
+            android:includeFontPadding="false"
+            android:layout_marginTop="3dp"
             android:textColor="@color/widget_accent"
-            android:textSize="11sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
@@ -39,10 +45,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="शारदीय नवरात्रि आरम्भ"
+            android:includeFontPadding="false"
+            android:layout_marginTop="3dp"
             android:textColor="@color/widget_text"
-            android:textSize="17sp"
+            android:textSize="19sp"
             android:textStyle="bold" />
 
         <TextView
@@ -50,8 +58,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="11 अक्टूबर 2026"
+            android:includeFontPadding="false"
+            android:layout_marginTop="3dp"
             android:textColor="@color/widget_subtext"
             android:textSize="12sp" />
     </LinearLayout>
@@ -61,6 +71,8 @@
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:text="›"
-        android:textColor="@color/widget_subtext"
+        android:includeFontPadding="false"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/widget_subtext"
         android:textSize="30sp" />
 </LinearLayout>

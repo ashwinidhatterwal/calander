@@ -1,0 +1,12 @@
+<hi-IN>
+• वर्तमान स्थान सहेजकर स्थानीय पंचांग देखें; स्थान की अनुमति वैकल्पिक है।
+• कैलेंडर में केवल आज की तारीख हाइलाइट होती है।
+• पर्व अनुभाग में राष्ट्रीय अवकाश की अलग सूची जोड़ी गई है।
+• सहेजे हुए स्थान के साथ पंचांग ऑफ़लाइन चलता है।
+</hi-IN>
+<en-IN>
+• Save your current location for local Panchang timings; location permission is optional.
+• Only Today remains highlighted in the calendar.
+• National Holidays now have a separate category in Festivals.
+• Panchang works offline with your saved location.
+</en-IN>

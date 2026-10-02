@@ -1,6 +1,6 @@
 # Google Play Data Safety Guide
 
-This is a conservative declaration guide for the current Checkpoint 08 design. Re-check the Play Console wording at submission time.
+This is a conservative declaration guide for the current Checkpoint 11 design. Re-check the Play Console wording at submission time.
 
 ## Core app
 - Ads: No
@@ -9,6 +9,10 @@ This is a conservative declaration guide for the current Checkpoint 08 design. R
 - Developer server for calendar data: No
 - Personal events: stored locally on device
 - Language/location preferences: stored locally on device
+- Optional approximate/precise foreground coordinates: stored locally for Panchang and widgets; no developer-server upload or background tracking
+- Explicit location refresh can call Android's system geocoder (potentially network-backed). The district fallback and repair of saved division labels run offline. Names stay saved locally.
+- Morning reminders default on unless explicitly disabled, with Android notification permission still required. Personal-event reminders are separately optional. No special alarm access is requested; reminder text may appear on the lock screen according to system settings.
+- Android location permission is optional; manual city selection works without it
 
 ## Optional support flow
 The app opens an external UPI app for a voluntary developer tip. The calendar app does not receive or store banking credentials.

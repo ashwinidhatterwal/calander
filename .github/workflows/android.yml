@@ -21,6 +21,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -46,7 +47,9 @@ jobs:
 
       - name: Validate production-source structure
         working-directory: .
-        run: python tools/validate_checkpoint08.py
+        run: |
+          python tools/validate_checkpoint11.py
+          python tools/test_permission_audit.py
 
       - name: Build QA release APK
         env:
@@ -70,6 +73,10 @@ jobs:
           fi
           target="$($tool manifest target-sdk build/app/outputs/flutter-apk/app-release.apk | grep -oE '[0-9]+' | head -n1)"
           echo "Target SDK: $target"
+          appid="$($tool manifest application-id build/app/outputs/flutter-apk/app-release.apk)"
+          version="$($tool manifest version-code build/app/outputs/flutter-apk/app-release.apk)"
+          [ "$appid" = "in.hinducalendar.hindu_calendar" ]
+          [ "$version" = "11" ]
           if [ "$target" -lt 36 ]; then
             echo "::error::Google Play requires target API 36+ for new apps as of Aug 31, 2026"
             exit 1
@@ -81,19 +88,15 @@ jobs:
           set -euo pipefail
           tool="$(find "$ANDROID_SDK_ROOT" -type f -name apkanalyzer 2>/dev/null | head -n 1 || true)"
           if [ -z "$tool" ]; then
-            echo "::warning::apkanalyzer not found; permission audit skipped"
-            exit 0
-          fi
-          perms="$($tool manifest permissions build/app/outputs/flutter-apk/app-release.apk || true)"
-          echo "$perms"
-          if echo "$perms" | grep -Eq 'ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|CAMERA|RECORD_AUDIO|READ_CONTACTS|WRITE_CONTACTS|READ_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|MANAGE_EXTERNAL_STORAGE'; then
-            echo "::error::Unexpected sensitive Android permission found"
+            echo "::error::apkanalyzer missing; cannot audit release permissions"
             exit 1
           fi
+          "$tool" manifest permissions build/app/outputs/flutter-apk/app-release.apk > build/release-permissions.txt
+          python ../tools/audit_android_permissions.py build/release-permissions.txt
 
       - name: Upload QA APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-qa-apk
+          name: hindu-calendar-1.0.0-build11-qa-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error

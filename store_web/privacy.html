@@ -10,11 +10,14 @@
 </head>
 <body>
   <h1>Hindu Calendar Privacy Policy</h1>
-  <small>Effective: 27 September 2026</small>
+  <small>Effective: 2 October 2026</small>
   <p>Hindu Calendar is designed as an offline-first calendar and Panchang utility. The core app does not require an account and does not contain advertising or behavioral analytics.</p>
 
   <h2>Local app data</h2>
-  <p>Personal events, selected language, and selected city are stored locally on the user’s device. The app does not upload this calendar data to a developer-operated server.</p>
+  <p>Personal events, selected language, selected city, and optionally saved location coordinates are stored locally on the user’s device. The app does not upload this calendar data to a developer-operated server.</p>
+
+  <h2>Optional foreground location</h2>
+  <p>“Use current location” requests approximate or precise foreground location only when chosen. Coordinates are saved locally for sunrise, sunset, moonrise and location-dependent Panchang rules. The app does not track location continuously or in the background and does not request location on every startup. Saved coordinates work offline. Manual city selection is always available. This release uses the India/IST calendar profile. No coordinates are sent to a developer server and no reverse geocoding is used. Android location services may use device-managed positioning services when obtaining a location.</p>
 
   <h2>Home-screen widgets</h2>
   <p>The app writes a limited calendar summary to Android widget storage on the same device so its optional home-screen widgets can display today’s Panchang and upcoming events.</p>
@@ -32,8 +35,9 @@
   <p>The main calendar follows a North Indian Purnimanta profile. Regional traditions and other Panchang methods can produce different festival dates or Muhurta times.</p>
 
   <h2>Contact</h2>
-  <p>Privacy questions can be sent to {{SUPPORT_EMAIL}}.</p>
+  <p>Privacy questions can be sent to ashwinidhatterwal@gmail.com .</p>
 
   <div class="card"><strong>Summary:</strong> core calendar data stays on the device; optional support payment and note-request communication happen through external apps chosen by the user.</div>
+<section><h2>Optional district names and reminders</h2><p>When you explicitly acquire or refresh your current location, Android's system Geocoder may use its provider to look up the district and state from your coordinates. The lookup may require internet. An offline bundled district lookup can resolve ambiguous division labels, including a one-time repair of previously saved names. We do not operate a location server. Coordinates and returned labels are saved on your device and reused offline; location is never tracked in the background.</p><p>Morning Panchang is enabled by default unless previously disabled; notification permission remains required and reminders can be disabled in the app. Personal-event reminders are separately optional. Notifications use locally calculated summaries and a short daily background renewal. No special alarm access is requested; Android may delay delivery after 5 AM. Notification content can appear on your lock screen according to your phone settings. No GPS acquisition or network calendar request is needed for reminders.</p></section>
 </body>
 </html>

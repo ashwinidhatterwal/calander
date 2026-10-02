@@ -1,0 +1,41 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hindu_calendar/data/district_lookup.dart';
+import 'package:hindu_calendar/data/current_location_service.dart';
+import 'package:hindu_calendar/domain/civil_holidays.dart';
+import 'package:hindu_calendar/domain/models.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test('district fallback distinguishes Hanumangarh from Bikaner division', () {
+    final raw = File('assets/data/district_boundaries.json').readAsStringSync();
+    expect(findDistrict((raw, 29.58, 74.29)), 'Hanumangarh');
+    expect(findDistrict((raw, 28.02, 73.31)), 'Bikaner');
+    expect(findDistrict((raw, 0, 0)), isNull);
+    expect(isDivisionLabel('Bikaner Division'), isTrue);
+    expect(isDivisionLabel('बीकानेर संभाग'), isTrue);
+    expect(isDivisionLabel('Hanumangarh'), isFalse);
+    expect(isDivisionLabel('मंडला'), isFalse);
+  });
+  test('valid saved district does not require lookup or GPS', () async {
+    const saved = GeoLocation(id: 'current', cityHi: 'हनुमानगढ़',
+        cityEn: 'Hanumangarh', stateHi: 'राजस्थान', stateEn: 'Rajasthan',
+        latitude: 29.58, longitude: 74.29);
+    expect(identical(saved,
+        await const CurrentLocationService().repairSavedDistrict(saved)), isTrue);
+  });
+  test('holiday lists cover 36 states and UTs, are sorted and year scoped', () {
+    final regions = stateHolidays.map((h) => h.stateCode).toSet();
+    expect(regions.length, 36);
+    for (final region in regions) {
+      final items = holidaysForRegion(2026, region);
+      expect(items.where((h) => h.stateCode == region), isNotEmpty);
+      expect(items.where((h) => h.id == 'republic_day').length, 1);
+      for (var i = 1; i < items.length; i++) {
+        expect(items[i].dateInYear(2026).isBefore(items[i - 1].dateInYear(2026)), isFalse);
+      }
+      expect(holidaysForRegion(2027, region).length, 3);
+    }
+  });
+}

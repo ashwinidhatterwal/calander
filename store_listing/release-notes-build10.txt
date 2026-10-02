@@ -1,0 +1,3 @@
+पर्वों की जानकारी और अवकाश फ़िल्टर बेहतर किए। सहेजे हुए स्थान का जिला नाम, तेज़ स्थान बदलाव और पारदर्शी विजेट जोड़े। सेटिंग में सुबह 5 बजे पंचांग और निजी कार्यक्रम की वैकल्पिक सूचनाएँ, मधुर ध्वनि सहित उपलब्ध हैं।
+
+Improved festival descriptions and holiday filters, saved district names, responsive location changes and translucent widgets. Optional 5 AM Panchang and personal-event reminders are available in Settings, with a gentle chime.

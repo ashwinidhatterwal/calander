@@ -8,3 +8,7 @@ flutter_app/android/
 **/*.jks
 **/*.keystore
 flutter_app/android/key.properties
+
+# Generated Flutter plugin metadata contains machine-specific package paths.
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies

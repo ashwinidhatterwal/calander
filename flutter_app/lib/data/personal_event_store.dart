@@ -23,6 +23,7 @@ class PersonalEventStore {
 
   Future<void> save(List<PersonalEvent> events) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, jsonEncode(events.map((x) => x.toJson()).toList()));
+    await prefs.setString(
+        _key, jsonEncode(events.map((x) => x.toJson()).toList()));
   }
 }

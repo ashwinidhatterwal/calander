@@ -11,6 +11,8 @@ import 'core/locations.dart';
 import 'data/app_settings_store.dart';
 import 'data/personal_event_store.dart';
 import 'data/widget_sync_service.dart';
+import 'data/notification_service.dart';
+import 'data/current_location_service.dart';
 import 'domain/festival_engine.dart';
 import 'domain/models.dart';
 import 'domain/panchang_engine.dart';
@@ -46,10 +48,12 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
     final started = DateTime.now();
     final overrides = <int, DateTime>{};
     try {
-      final raw = await rootBundle.loadString('assets/data/festival_overrides.json');
+      final raw =
+          await rootBundle.loadString('assets/data/festival_overrides.json');
       final items = jsonDecode(raw) as List<dynamic>;
       for (final item in items.cast<Map<String, dynamic>>()) {
-        if (item['festival_id'] == 'holika_dahan' && item['profile'] == 'north_india_purnimanta') {
+        if (item['festival_id'] == 'holika_dahan' &&
+            item['profile'] == 'north_india_purnimanta') {
           final d = DateTime.parse(item['date'] as String);
           overrides[item['year'] as int] = DateTime.utc(d.year, d.month, d.day);
         }
@@ -98,6 +102,8 @@ class _HinduCalendarBootstrapState extends State<HinduCalendarBootstrap> {
       onLanguageChanged: _settingsStore.saveLanguage,
       onLocationChanged: _settingsStore.saveLocation,
       onThemeChanged: _settingsStore.saveTheme,
+      offerCurrentLocation: data.settings.offerCurrentLocation,
+      onLocationOfferSeen: _settingsStore.markLocationOfferSeen,
     );
   }
 }
@@ -156,15 +162,24 @@ class _LoadingScreen extends StatelessWidget {
             const SizedBox(height: 22),
             Text(
               'हिन्दू कैलेंडर',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(
               'तिथि • पर्व • आपके दिन',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 26),
-            const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.6)),
+            const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(strokeWidth: 2.6)),
           ],
         ),
       ),
@@ -184,8 +199,12 @@ class HinduCalendarApp extends StatefulWidget {
     this.onLanguageChanged,
     this.onLocationChanged,
     this.onThemeChanged,
+    this.offerCurrentLocation = false,
+    this.onLocationOfferSeen,
   });
 
+  final bool offerCurrentLocation;
+  final Future<void> Function()? onLocationOfferSeen;
   final Map<int, DateTime> holikaOverrides;
   final List<PersonalEvent> initialEvents;
   final AppLanguage initialLanguage;
@@ -212,13 +231,34 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
   @override
   void initState() {
     super.initState();
-    festival = FestivalEngine(panchang, holikaOverrides: widget.holikaOverrides);
+    festival =
+        FestivalEngine(panchang, holikaOverrides: widget.holikaOverrides);
     personalEvents = List<PersonalEvent>.of(widget.initialEvents);
     language = widget.initialLanguage;
     location = widget.initialLocation ?? locations.first;
     themePreference = widget.initialTheme;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncHomeWidgets());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncHomeWidgets();
+      final savedLocation = location;
+      unawaited(const CurrentLocationService().repairSavedDistrict(savedLocation)
+          .then((repaired) async {
+        if (mounted && identical(location, savedLocation) &&
+            !identical(repaired, savedLocation)) {
+          await widget.onLocationChanged?.call(repaired);
+          if (!mounted || !identical(location, savedLocation)) return;
+          setState(() => location = repaired);
+          _syncHomeWidgets();
+        }
+      }).catchError((Object _) {}));
+      unawaited(NotificationService.initialize().then((_) => _refreshNotifications()).catchError((Object _) {}));
+    });
   }
+
+  Future<void> _refreshNotifications() => NotificationService.refresh(
+      location: location,
+      language: language,
+      overrides: widget.holikaOverrides,
+      events: personalEvents);
 
   void _syncHomeWidgets() {
     unawaited(
@@ -234,13 +274,24 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
 
   void _changeLanguage(AppLanguage value) {
     setState(() => language = value);
-    unawaited(widget.onLanguageChanged?.call(value) ?? Future<void>.value());
+    unawaited(() async {
+      await widget.onLanguageChanged?.call(value);
+      await _refreshNotifications();
+    }()
+        .catchError((Object _) {}));
     _syncHomeWidgets();
   }
 
-  void _changeLocation(GeoLocation value) {
+  Future<void> _changeLocation(GeoLocation value) async {
+    // Keep the current calendar responsive until the new location is ready.
+    await festival.majorFestivalsAsync(DateTime.now().year, value);
+    await widget.onLocationChanged?.call(value);
+    if (!mounted) return;
+    if (location.cacheKey != value.cacheKey) {
+      festival.clearLocationCache(location);
+    }
     setState(() => location = value);
-    unawaited(widget.onLocationChanged?.call(value) ?? Future<void>.value());
+    unawaited(_refreshNotifications().catchError((Object _) {}));
     _syncHomeWidgets();
   }
 
@@ -258,14 +309,26 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
       next[index] = event;
     }
     setState(() => personalEvents = next);
-    widget.onEventsChanged?.call(List<PersonalEvent>.unmodifiable(next));
+    unawaited(() async {
+      await widget.onEventsChanged
+          ?.call(List<PersonalEvent>.unmodifiable(next));
+      await NotificationService.created(event, language);
+      await _refreshNotifications();
+    }()
+        .catchError((Object _) {}));
     _syncHomeWidgets();
   }
 
   void _deleteEvent(String id) {
-    final next = personalEvents.where((x) => x.id != id).toList(growable: false);
+    final next =
+        personalEvents.where((x) => x.id != id).toList(growable: false);
     setState(() => personalEvents = next);
-    widget.onEventsChanged?.call(List<PersonalEvent>.unmodifiable(next));
+    unawaited(() async {
+      await widget.onEventsChanged
+          ?.call(List<PersonalEvent>.unmodifiable(next));
+      await _refreshNotifications();
+    }()
+        .catchError((Object _) {}));
     _syncHomeWidgets();
   }
 
@@ -275,7 +338,9 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: l10n.appName,
-      locale: language == AppLanguage.hi ? const Locale('hi', 'IN') : const Locale('en', 'IN'),
+      locale: language == AppLanguage.hi
+          ? const Locale('hi', 'IN')
+          : const Locale('en', 'IN'),
       supportedLocales: const [Locale('hi', 'IN'), Locale('en', 'IN')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: _theme(Brightness.light),
@@ -291,12 +356,15 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
               CalendarScreen(
                 panchang: panchang,
                 festival: festival,
+                onRefreshNotifications: _refreshNotifications,
                 language: language,
                 location: location,
                 personalEvents: personalEvents,
                 onUpsertPersonalEvent: _upsertEvent,
                 onLanguageChanged: _changeLanguage,
                 onLocationChanged: _changeLocation,
+                offerCurrentLocation: widget.offerCurrentLocation,
+                onLocationOfferSeen: widget.onLocationOfferSeen,
                 themePreference: themePreference,
                 onThemeChanged: _changeTheme,
               ),
@@ -350,18 +418,10 @@ ThemeData _theme(Brightness brightness) {
     seedColor: const Color(0xFF9A4E2D),
     brightness: brightness,
   );
-  final scaffold = isDark
-      ? const Color(0xFF17110F)
-      : const Color(0xFFFFFBF7);
-  final card = isDark
-      ? const Color(0xFF2A201C)
-      : const Color(0xFFFFF4ED);
-  final navigation = isDark
-      ? const Color(0xFF241B17)
-      : const Color(0xFFFFECE3);
-  final outline = isDark
-      ? const Color(0xFF4B3931)
-      : const Color(0xFFE8D3C7);
+  final scaffold = isDark ? const Color(0xFF17110F) : const Color(0xFFFFFBF7);
+  final card = isDark ? const Color(0xFF2A201C) : const Color(0xFFFFF4ED);
+  final navigation = isDark ? const Color(0xFF241B17) : const Color(0xFFFFECE3);
+  final outline = isDark ? const Color(0xFF4B3931) : const Color(0xFFE8D3C7);
 
   final scheme = base.copyWith(
     surface: scaffold,
@@ -376,9 +436,8 @@ ThemeData _theme(Brightness brightness) {
     scaffoldBackgroundColor: scaffold,
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: navigation,
-      indicatorColor: isDark
-          ? const Color(0xFF6E4435)
-          : const Color(0xFFF6CDBC),
+      indicatorColor:
+          isDark ? const Color(0xFF6E4435) : const Color(0xFFF6CDBC),
     ),
     cardTheme: CardThemeData(
       elevation: 0,
@@ -390,4 +449,37 @@ ThemeData _theme(Brightness brightness) {
     ),
     dividerTheme: DividerThemeData(color: outline),
   );
+}
+
+/// Android WorkManager entry point. Runs in a separate, short-lived engine.
+@pragma('vm:entry-point')
+Future<void> notificationBackground() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    final settings = await const AppSettingsStore().load();
+    final events = await PersonalEventStore().load();
+    final raw = jsonDecode(
+            await rootBundle.loadString('assets/data/festival_overrides.json'))
+        as List;
+    final overrides = <int, DateTime>{};
+    for (final item in raw) {
+      if (item['festival_id'] == 'holika_dahan' &&
+          item['profile'] == 'north_india_purnimanta') {
+        final d = DateTime.parse(item['date'] as String);
+        overrides[item['year'] as int] = DateTime.utc(d.year, d.month, d.day);
+      }
+    }
+    final now = DateTime.now();
+    final payload = notificationPayload((
+      DateTime.utc(now.year, now.month, now.day),
+      settings.location,
+      settings.language,
+      overrides,
+      events
+    ));
+    await NotificationService.channel
+        .invokeMethod('cache', jsonEncode(payload));
+  } catch (_) {
+    await NotificationService.channel.invokeMethod('failed');
+  }
 }

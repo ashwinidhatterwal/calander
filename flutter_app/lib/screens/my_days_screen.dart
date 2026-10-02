@@ -38,7 +38,7 @@ class _MyDaysScreenState extends State<MyDaysScreen> {
   void didUpdateWidget(covariant MyDaysScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.events != widget.events ||
-        oldWidget.location.id != widget.location.id ||
+        oldWidget.location.cacheKey != widget.location.cacheKey ||
         oldWidget.active != widget.active) {
       _key = null;
     }
@@ -49,7 +49,7 @@ class _MyDaysScreenState extends State<MyDaysScreen> {
     final eventSignature = widget.events
         .map((x) => '${x.id}:${x.title}:${x.basis.name}:${x.gregorianYear}:${x.gregorianMonth}:${x.gregorianDay}:${x.hinduMonth}:${x.hinduPaksha?.name}:${x.hinduTithi}:${x.adhikMonth}')
         .join('|');
-    final key = '${widget.location.id}|$eventSignature';
+    final key = '${widget.location.cacheKey}|$eventSignature';
     if (_key == key) return;
     _key = key;
     final now = DateTime.now();

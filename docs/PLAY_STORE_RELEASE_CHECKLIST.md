@@ -1,16 +1,18 @@
+Current source candidate: **Checkpoint 11 / 1.0.0+11**. Use `docs/CHECKPOINT_11.md` and its verification report for current scope and outstanding checks. Upload only the production-signed bundle, after CI and device checks pass, to the existing closed testing track.
+
 # Play Store Release Checklist — 1.0.0
 
 ## Identity
 - Permanent Android application id: `in.hinducalendar.hindu_calendar`
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+8`
+- Version: `1.0.0+9`
 - Android launcher icon: Checkpoint 06/07 production icon
 
 Do not change the application id after the first Play release.
 
 ## Release signing
 The repository never contains the upload keystore or passwords.
-Create an upload keystore and add these GitHub Actions secrets:
+For this update, reuse the existing upload keystore and GitHub Actions secrets. Do not create a replacement signing key. First-time setup only:
 
 - `UPLOAD_KEYSTORE_BASE64`
 - `UPLOAD_STORE_PASSWORD`
@@ -33,7 +35,7 @@ Then paste the resulting value into `UPLOAD_KEYSTORE_BASE64`.
 Never commit the keystore or any password to the public repository.
 
 ## Optional support configuration
-Checkpoint 08 intentionally has no paywall and no automatic support prompt.
+Checkpoint 09 intentionally has no paywall and no automatic support prompt.
 To activate voluntary developer support in production, configure:
 
 - `SUPPORT_UPI_ID`
@@ -49,7 +51,16 @@ To activate voluntary developer support in production, configure:
 
 The Play Store upload artifact is the signed AAB from **Production Play bundle**, not the QA APK.
 
-## Play Console
+## Closed-testing build +9
+1. Copy the updated source into the existing repository; keep repository secrets unchanged.
+2. Require **Android QA build** to pass analyze, all tests, Checkpoint 09 validation, build and merged-manifest permission audit.
+3. Run **Production Play bundle** using the existing upload-key secrets.
+4. Require its signed AAB build, signature verification and AAB permission audit to pass.
+5. Upload that AAB to the existing Closed testing track and roll out to the existing testers.
+6. Verify approximate/precise permission, denial, device location disabled, saved-location restart offline, explicit refresh, widget refresh, Today-only selection, and the three national holidays on real devices.
+7. Publish the updated privacy-policy source using the existing Pages workflow.
+
+## First release Play Console setup
 Before production rollout:
 1. Enroll in Play App Signing.
 2. Upload the signed AAB to an Internal testing track first.

@@ -8,6 +8,7 @@ class GeoLocation {
     this.utcOffsetMinutes = 330,
     this.stateHi = '',
     this.stateEn = '',
+    this.countryCode = 'IN',
   });
 
   final String id;
@@ -15,9 +16,23 @@ class GeoLocation {
   final String cityEn;
   final String stateHi;
   final String stateEn;
+  final String countryCode;
   final double latitude;
   final double longitude;
   final int utcOffsetMinutes;
+
+  // Names/IDs do not identify the effective astronomical location.
+  String get cacheKey => '$latitude|$longitude|$utcOffsetMinutes';
+
+  bool get hasValidCoordinates =>
+      latitude.isFinite &&
+      longitude.isFinite &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180 &&
+      utcOffsetMinutes >= -720 &&
+      utcOffsetMinutes <= 840;
 
   Duration get offset => Duration(minutes: utcOffsetMinutes);
 }

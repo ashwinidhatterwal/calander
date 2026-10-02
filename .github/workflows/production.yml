@@ -15,6 +15,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -54,7 +55,9 @@ jobs:
 
       - name: Validate production-source structure
         working-directory: .
-        run: python tools/validate_checkpoint08.py
+        run: |
+          python tools/validate_checkpoint11.py
+          python tools/test_permission_audit.py
 
       - name: Configure upload-key signing
         shell: bash
@@ -85,6 +88,14 @@ jobs:
             --dart-define=SUPPORT_PAYEE_NAME="$SUPPORT_PAYEE_NAME" \
             --dart-define=SUPPORT_EMAIL="$SUPPORT_EMAIL"
 
+      - name: Audit production bundle permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 https://github.com/google/bundletool/releases/download/1.18.2/bundletool-all-1.18.2.jar -o /tmp/bundletool.jar
+          java -jar /tmp/bundletool.jar dump manifest --bundle=build/app/outputs/bundle/release/app-release.aab --module=base > build/release-manifest.xml
+          python ../tools/audit_android_permissions.py build/release-manifest.xml
+
       - name: Verify AAB signature
         shell: bash
         run: jarsigner -verify -certs build/app/outputs/bundle/release/app-release.aab
@@ -92,13 +103,13 @@ jobs:
       - name: Upload Play bundle
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-play-aab
+          name: hindu-calendar-1.0.0-build11-play-aab
           path: flutter_app/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
       - name: Upload Dart symbols
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-dart-symbols
+          name: hindu-calendar-1.0.0-build11-dart-symbols
           path: flutter_app/build/symbols/**
           if-no-files-found: error

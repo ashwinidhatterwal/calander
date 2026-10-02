@@ -51,9 +51,7 @@ class UpcomingWidgetProvider : HomeWidgetProvider() {
     }
 
     private fun launchIntent(context: Context): PendingIntent {
-        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-            ?: Intent(context, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val intent = CalendarAlerts.launchIntent(context)
         return PendingIntent.getActivity(
             context,
             102,

@@ -1,0 +1,13 @@
+hi-IN
+सुबह का पंचांग अब डिफ़ॉल्ट रूप से चालू है; पहले से बंद की गई पसंद सुरक्षित है।
+सूचनाओं के लिए विशेष अलार्म अनुमति हटाई गई। 5 बजे की सूचना Android के कारण देर से आ सकती है।
+स्थान में संभाग की जगह जिला पहचानने का सुधार और पुराने सहेजे नाम का ऑफ़लाइन सुधार।
+हाल के ऐप्स में अतिरिक्त प्रविष्टियों से बचने के लिए लॉन्च व्यवहार सुधारा गया।
+एक अवकाश सूची में राष्ट्रीय और आपके राज्य के 2026 के संदर्भ अवकाश।
+
+en-US
+Morning Panchang now defaults on; existing opt-outs are preserved.
+Removed special alarm access. Android may deliver the 5 AM reminder later.
+Improved district identification and offline repair of saved division labels.
+Improved launch behavior to avoid duplicate Recent Apps entries.
+Combined national and local state reference holidays for 2026.

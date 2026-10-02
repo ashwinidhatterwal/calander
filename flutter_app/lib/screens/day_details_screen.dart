@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/localization.dart';
 import '../domain/festival_engine.dart';
+import '../domain/festival_descriptions.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/personal_event.dart';
@@ -40,9 +41,12 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
   }
 
   void _load() {
-    future = Future<_DayBundle>.sync(() {
+    final requestedDate = date;
+    future = widget.festival
+        .majorFestivalsAsync(date.year, widget.location)
+        .then((major) {
+      final date = requestedDate;
       final day = widget.panchang.buildDay(date, widget.location);
-      final major = widget.festival.majorFestivalsForYear(date.year, widget.location);
       final events = widget.festival.lightweightForDate(
         date,
         widget.location,
@@ -165,7 +169,9 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.bookmark_outline),
-                        title: Text(event.title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                        title: Text(event.title,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
                         subtitle: event.note.isEmpty ? null : Text(event.note),
                       ),
                   ],
@@ -193,11 +199,17 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                             ),
                             label: Text(
                               l.pick(event.nameHi, event.nameEn),
-                              style: const TextStyle(fontWeight: FontWeight.w700),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ),
                       ],
                     ),
+                    for (final event in bundle.events)
+                      Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                              '${bundle.events.length > 1 ? '${l.pick(event.nameHi, event.nameEn)}: ' : ''}${festivalDescription(event.id, widget.language == AppLanguage.hi)}')),
                     for (final event in bundle.events)
                       if (_festivalNote(event).isNotEmpty)
                         Padding(
@@ -224,7 +236,8 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                   ),
                   _ValueRow(
                     label: l.pick('तिथि समाप्त', 'Tithi ends'),
-                    value: '${_until(p.tithiEndUtc)} ${l.pick('तक', '')}'.trim(),
+                    value:
+                        '${_until(p.tithiEndUtc)} ${l.pick('तक', '')}'.trim(),
                   ),
                   _ValueRow(
                     label: l.pick('अगली तिथि', 'Next Tithi'),
@@ -238,17 +251,20 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                   _ValueRow(
                     label: l.nakshatra,
                     value:
-                        '${l.pick(p.nakshatra.hi, p.nakshatra.en)}\n${_until(p.nakshatraEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.nakshatra.hi, p.nakshatra.en)}\n${_until(p.nakshatraEndUtc)} ${l.pick('तक', '')}'
+                            .trim(),
                   ),
                   _ValueRow(
                     label: l.yoga,
                     value:
-                        '${l.pick(p.yoga.hi, p.yoga.en)}\n${_until(p.yogaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.yoga.hi, p.yoga.en)}\n${_until(p.yogaEndUtc)} ${l.pick('तक', '')}'
+                            .trim(),
                   ),
                   _ValueRow(
                     label: l.karana,
                     value:
-                        '${l.pick(p.karana.hi, p.karana.en)}\n${_until(p.karanaEndUtc)} ${l.pick('तक', '')}'.trim(),
+                        '${l.pick(p.karana.hi, p.karana.en)}\n${_until(p.karanaEndUtc)} ${l.pick('तक', '')}'
+                            .trim(),
                   ),
                   if (p.tithiStatus == 'kshaya')
                     _ValueRow(
@@ -318,7 +334,8 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                   ),
                   _ValueRow(
                     label: l.brahma,
-                    value: widget.panchang.range(p.brahmaMuhurta, widget.location),
+                    value:
+                        widget.panchang.range(p.brahmaMuhurta, widget.location),
                   ),
                 ],
               ),

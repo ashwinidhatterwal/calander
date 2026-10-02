@@ -1,11 +1,11 @@
-# Hindu Calendar — Checkpoint 08 Production Polish
+# Hindu Calendar — Checkpoint 11 Reminder and Location Refinements
 
-Checkpoint 08 is a real-device visual and trust refinement of the 1.0 production candidate. It keeps the product simple: a familiar calendar with Hindu Tithi/Panchang intelligence, personal Hindu-date events, useful widgets, and a Hindi-first interface.
+Build 1.0.0+11 defaults morning reminders on (preserving explicit opt-outs), removes special alarm access, consolidates Android tasks, repairs division labels using saved coordinates, and combines national and regional holidays. Bundled 2026 reference dates cover all 28 states and 8 union territories. See `docs/CHECKPOINT_11.md` and `docs/CHECKPOINT_11_VERIFICATION.md` for scope and pending verification.
 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+8`
+- Version: `1.0.0+11`
 - Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No
@@ -20,11 +20,14 @@ Checkpoint 08 is a real-device visual and trust refinement of the 1.0 production
 - Swipe left/right with resistance to change month.
 - Tap month/year to jump directly to another month or year.
 - Detailed Day page with Tithi, Paksha, Maas, Nakshatra, Yoga, Karana, Sun/Moon times and useful periods.
-- Major festival browser.
+- Major festival browser with a bilingual Holidays category combining national and local state dates.
 - Personal **My Days** calendar.
 - Personal events can follow either a Gregorian date or Hindu Maas + Paksha + Tithi.
 - Local event persistence.
-- Selected language, city, and appearance persist across restarts.
+- Selected language, manual city or saved current coordinates, and appearance persist across restarts.
+- First-use current-location offer; foreground location only after a tap, with refresh and manual-city fallback.
+- Today is the only persistent highlighted date, and the top Panchang card always shows Today.
+- Coordinates and UTC offset participate in all location-dependent cache keys.
 - Hindi and English.
 - **Light mode is the default.**
 - Optional dark mode is available under About → Appearance.
@@ -59,7 +62,7 @@ Pushes to `main` run `.github/workflows/android.yml`:
 flutter pub get
 flutter analyze
 flutter test
-Checkpoint 08 source validator
+Checkpoint 11 source validator
 release QA APK
 Target API verification
 permission audit
@@ -68,7 +71,7 @@ permission audit
 Expected artifact:
 
 ```text
-hindu-calendar-1.0.0-qa-apk
+hindu-calendar-1.0.0-build11-qa-apk
 ```
 
 ### Play Store AAB
@@ -78,12 +81,12 @@ Run **Production Play bundle** manually after configuring release secrets. It cr
 Expected artifacts:
 
 ```text
-hindu-calendar-1.0.0-play-aab
-hindu-calendar-1.0.0-dart-symbols
+hindu-calendar-1.0.0-build11-play-aab
+hindu-calendar-1.0.0-build11-dart-symbols
 ```
 
 The upload keystore and passwords must never be committed to this public repository.
 
 ## Validation boundary
 
-Checkpoint 08 changes presentation, theme behavior, widget previews, and wording only. It does **not** alter Panchang astronomy, Tithi/month calculations, festival-date selection rules, or personal-event matching.
+Checkpoint 11 changes reminders, task launches, district labels and civil holiday presentation. It does **not** alter Panchang astronomy, Tithi/month calculations, festival-date selection rules, or personal-event matching. Ordinary notification permission is required; Android may defer delivery after 5 AM. Force-stop blocks reminders until the app is reopened. District fallback data is a reference dataset, not a certified current administrative map.
