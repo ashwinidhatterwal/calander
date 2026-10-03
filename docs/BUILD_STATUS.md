@@ -16,3 +16,7 @@ Results: CalendarAlertsTest 7 tests, ReminderPolicyTest 2 tests; zero failures/e
 Flutter analysis/widget tests and APK/AAB build were not completed locally. Automatic approval review blocked Flutter dependency setup because it attempted to contact the cloud instance-metadata endpoint; no bypass was attempted. The updated GitHub QA and Production workflows perform Flutter analysis/tests and native regressions before publishing artifacts.
 
 Physical-device reminder delivery, sound, reboot and overnight behavior require the included test controls and acceptance checklist. No claim of phone delivery verification is made.
+
+## GitHub QA follow-up
+
+Run 37095124305 installed dependencies successfully and analyzed all build13 sources. It reported exactly one missing-braces lint in NotificationsScreen._message; that diagnostic is corrected by CI fix 13-01. Subsequent test/build stages were skipped. A new GitHub run is required after uploading this corrected package. Native code and its nine passing regression tests are unchanged.

@@ -35,8 +35,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   void _message(String text) {
-    if (mounted)
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    }
   }
 
   Future<void> _load() async {
