@@ -1,6 +1,7 @@
-Hindu Calendar build 13 — full source package, CI fix 13-01
+Hindu Calendar build 13 — full source package, CI fix 13-02
 
-Includes the missing-braces lint correction for the failed GitHub Analyze step.
+Includes the lint correction and the Flutter-assets dependency correction for
+native test packaging in both QA and production builds.
 
 Upload this complete package to the existing ashwinidhatterwal/calander repository.
 Keep flutter_app/, tools/ and .github/ at the repository root.
