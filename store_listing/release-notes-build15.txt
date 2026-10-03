@@ -1,0 +1,3 @@
+सूचना सेटिंग अब सरल हैं। परीक्षण बटन और तकनीकी जाँच विकल्प हटाए गए हैं। पंचांग, कार्यक्रम, समय, ध्वनि और ज़रूरी अनुमति सेटिंग उपलब्ध हैं।
+
+Simplified notification settings. Removed test buttons and technical diagnostic controls while keeping reminder times, switches, chime and relevant phone settings.

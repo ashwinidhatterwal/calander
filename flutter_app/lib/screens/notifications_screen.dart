@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../core/localization.dart';
 import '../data/notification_service.dart';
@@ -120,182 +119,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     }
   }
 
-  Future<void> _test(bool delayed) async {
-    setState(() => busy = true);
-    try {
-      final current = await NotificationService.status();
-      if (!mounted) return;
-      setState(() => settings = current);
-      if (delayed &&
-          current['permitted'] == true &&
-          current['channelEnabled'] != false &&
-          current['precise'] != true) {
-        final enable = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(
-              l.pick(
-                'एक मिनट के परीक्षण की अनुमति',
-                'Allow precise test timing',
-              ),
-            ),
-            content: Text(
-              l.pick(
-                '“अलार्म और रिमाइंडर” चालू करें, फिर वापस आकर परीक्षण दोबारा दबाएँ। इसके बिना Android एक मिनट की सूचना बहुत देर से दे सकता है।',
-                'Enable “Alarms & reminders”, then return and tap the test again. Without this access Android can delay a one-minute notification substantially.',
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l.pick('अभी नहीं', 'Not now')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l.pick('अनुमति दें', 'Enable')),
-              ),
-            ],
-          ),
-        );
-        if (enable == true && mounted) await _open('alarmSettings');
-        return;
-      }
-      final posted = await NotificationService.test(
-        widget.language,
-        delayed: delayed,
-      );
-      final after = await NotificationService.status();
-      if (!mounted) return;
-      setState(() => settings = after);
-      _message(
-        posted
-            ? delayed
-                  ? l.pick(
-                      'परीक्षण तय हो गया। ऐप बंद करें; लगभग एक मिनट बाद सूचना देखें।',
-                      'Test scheduled. Close the app and check for a notification in about one minute.',
-                    )
-                  : l.pick(
-                      'परीक्षण सूचना भेजी गई। सूचना पैनल देखें।',
-                      'Test notification posted. Check your notification panel.',
-                    )
-            : after['lastTestResult'] == 'precise_permission_required'
-            ? l.pick(
-                'सटीक समय की अनुमति दें और परीक्षण दोबारा करें।',
-                'Enable precise timing and try the test again.',
-              )
-            : after['lastTestResult'] == 'permission_blocked' ||
-                  after['lastTestResult'] == 'channel_blocked' ||
-                  after['permitted'] != true ||
-                  after['channelEnabled'] == false
-            ? l.pick(
-                'सूचना अनुमति या सूचना चैनल बंद है। नीचे फ़ोन सेटिंग खोलें।',
-                'Notification permission or the channel is blocked. Open phone settings below.',
-              )
-            : l.pick(
-                'परीक्षण तय नहीं हो सका। स्थिति विवरण देखें।',
-                'Could not schedule the test. Check the status details.',
-              ),
-      );
-    } catch (_) {
-      _message(
-        l.pick(
-          'परीक्षण असफल रहा। स्थिति विवरण देखें।',
-          'Test failed. Check the status details.',
-        ),
-      );
-    } finally {
-      await _load();
-    }
-  }
-
-  String _testResult() {
-    switch (settings['lastTestResult']) {
-      case 'scheduled':
-        return l.pick(
-          'परीक्षण सूचना की प्रतीक्षा है।',
-          'Waiting for the scheduled test.',
-        );
-      case 'delayed_posted':
-        return l.pick(
-          'एक मिनट का परीक्षण फ़ोन को भेजा गया।',
-          'Scheduled test posted to Android.',
-        );
-      case 'precise_permission_required':
-        return l.pick(
-          'सटीक समय की अनुमति चाहिए।',
-          'Precise timing access is required.',
-        );
-      case 'expired':
-        return l.pick(
-          'परीक्षण समय पर नहीं पहुँचा। बैटरी सेटिंग जाँचकर फिर परीक्षण करें।',
-          'Test did not arrive in time. Check battery settings and retry.',
-        );
-      case 'permission_blocked':
-      case 'channel_blocked':
-        return l.pick(
-          'परीक्षण की सूचना अनुमति या चैनल बंद है।',
-          'Test notification permission or channel is blocked.',
-        );
-      default:
-        return l.pick(
-          'सटीक समय की अनुमति के साथ परीक्षण तय करके ऐप बंद करें।',
-          'Requires precise timing access. Schedule the test, then close the app.',
-        );
-    }
-  }
-
-  String _result() {
-    switch (settings['lastResult']) {
-      case 'posted':
-        return l.pick(
-          'अंतिम सूचना फ़ोन को भेजी गई',
-          'Last notification posted to Android',
-        );
-      case 'permission_blocked':
-        return l.pick(
-          'सूचना अनुमति बंद है',
-          'Notification permission is blocked',
-        );
-      case 'channel_blocked':
-        return l.pick('सूचना चैनल बंद है', 'Notification channel is blocked');
-      case 'cache_missing':
-        return l.pick(
-          'पंचांग तैयार हो रहा है; फिर कोशिश होगी',
-          'Preparing Panchang; delivery will retry',
-        );
-      default:
-        return l.pick('सूचना स्थिति विवरण', 'Notification status details');
-    }
-  }
-
-  Future<void> _details() async {
-    await _load();
-    if (!mounted) return;
-    final report = settings.entries
-        .map((e) => '${e.key}: ${e.value}')
-        .join('\n');
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l.pick('सूचना स्थिति', 'Notification status')),
-        content: SingleChildScrollView(child: SelectableText(report)),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: report));
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text(l.pick('कॉपी करें', 'Copy')),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l.pick('बंद करें', 'Close')),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final blocked =
@@ -347,19 +170,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             onChanged: busy ? null : (v) => _save('sound', v),
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.notifications_active_outlined),
-            title: Text(
-              l.pick('अभी परीक्षण सूचना भेजें', 'Send test notification now'),
-            ),
-            onTap: busy ? null : () => _test(false),
-          ),
-          ListTile(
-            leading: const Icon(Icons.timer_outlined),
-            title: Text(l.pick('एक मिनट बाद परीक्षण', 'Test in one minute')),
-            subtitle: Text(_testResult()),
-            onTap: busy ? null : () => _test(true),
-          ),
           ListTile(
             leading: Icon(
               blocked
@@ -415,25 +225,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               onTap: () => _open('batterySettings'),
             ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(_result()),
-            subtitle: Text(
-              settings['cacheReady'] == true
-                  ? l.pick('आज का पंचांग तैयार है', 'Today’s Panchang is ready')
-                  : l.pick(
-                      'आज का पंचांग अभी तैयार नहीं है',
-                      'Today’s Panchang is not ready yet',
-                    ),
-            ),
-            onTap: busy ? null : _details,
-          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
               l.pick(
-                'समय फ़ोन के समय क्षेत्र के अनुसार है। सामान्य रूप से ऐप बंद होने पर भी सूचनाएँ आती हैं; फ़ोर्स स्टॉप के बाद ऐप फिर खोलें। छूटी हुई सूचना उसी दिन फिर भेजने की कोशिश होती है। सूचनाओं के लिए इंटरनेट या नया GPS स्थान नहीं चाहिए।',
-                'Times follow your phone’s time zone. Reminders work when the app is closed normally; reopen after force-stop. Missed reminders retry on the same day. No internet or fresh GPS fix is needed.',
+                'सूचना का समय फ़ोन के समय क्षेत्र के अनुसार है। ऐप सामान्य रूप से बंद होने पर भी रिमाइंडर आते हैं।',
+                'Reminder times follow your phone’s time zone. Reminders work when the app is closed normally.',
               ),
             ),
           ),

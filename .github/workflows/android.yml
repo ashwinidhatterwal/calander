@@ -48,7 +48,7 @@ jobs:
       - name: Validate production-source structure
         working-directory: .
         run: |
-          python tools/validate_checkpoint14.py
+          python tools/validate_checkpoint15.py
           python tools/test_permission_audit.py
 
       - name: Build QA release APK
@@ -79,7 +79,7 @@ jobs:
           appid="$($tool manifest application-id build/app/outputs/flutter-apk/app-release.apk)"
           version="$($tool manifest version-code build/app/outputs/flutter-apk/app-release.apk)"
           [ "$appid" = "in.hinducalendar.hindu_calendar" ]
-          [ "$version" = "14" ]
+          [ "$version" = "15" ]
           if [ "$target" -lt 36 ]; then
             echo "::error::Google Play requires target API 36+ for new apps as of Aug 31, 2026"
             exit 1
@@ -100,6 +100,6 @@ jobs:
       - name: Upload QA APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build14-qa-apk
+          name: hindu-calendar-1.0.0-build15-qa-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
