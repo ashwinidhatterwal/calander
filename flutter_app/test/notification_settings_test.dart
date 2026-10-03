@@ -121,4 +121,24 @@ void main() {
     expect(args['morningMinute'], 0);
     expect(args['eventsMinute'], 720);
   });
+  testWidgets('one-minute test explains exact access before scheduling', (
+    tester,
+  ) async {
+    settings['precise'] = false;
+    await open(tester, AppLanguage.en);
+    await tester.scrollUntilVisible(find.text('Test in one minute'), 200);
+    await tester.tap(find.text('Test in one minute'));
+    await tester.pumpAndSettle();
+    expect(find.text('Allow precise test timing'), findsOneWidget);
+    expect(calls.any((c) => c.method == 'testNotification'), false);
+    await tester.tap(find.text('Enable'));
+    await tester.pumpAndSettle();
+    expect(calls.any((c) => c.method == 'alarmSettings'), true);
+  });
+  test('default configuration uses six AM for both reminders', () async {
+    await NotificationService.configure(true, true, true);
+    final args = calls.single.arguments as Map;
+    expect(args['morningMinute'], 360);
+    expect(args['eventsMinute'], 360);
+  });
 }

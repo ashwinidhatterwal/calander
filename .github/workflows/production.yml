@@ -56,7 +56,7 @@ jobs:
       - name: Validate production-source structure
         working-directory: .
         run: |
-          python tools/validate_checkpoint13.py
+          python tools/validate_checkpoint14.py
           python tools/test_permission_audit.py
 
       - name: Configure upload-key signing
@@ -106,13 +106,13 @@ jobs:
       - name: Upload Play bundle
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build13-play-aab
+          name: hindu-calendar-1.0.0-build14-play-aab
           path: flutter_app/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
       - name: Upload Dart symbols
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build13-dart-symbols
+          name: hindu-calendar-1.0.0-build14-dart-symbols
           path: flutter_app/build/symbols/**
           if-no-files-found: error

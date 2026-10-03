@@ -1,0 +1,3 @@
+स्थान बदलने के बाद संदेश अब अपने आप हटता है। नए कार्यक्रम और दैनिक पंचांग रिमाइंडर डिफ़ॉल्ट रूप से सुबह 6 बजे चालू हैं। एक मिनट के सूचना परीक्षण में अनुमति जाँच, पुनर्प्राप्ति और स्पष्ट स्थिति जोड़ी गई है।
+
+Location feedback now dismisses automatically. New daily Panchang and event reminders default to 6 AM. One-minute notification testing adds precise-access checks, persistent recovery and clearer delivery status.

@@ -1,6 +1,10 @@
 import 'async_calendar_helper.dart';
+
 import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:hindu_calendar/core/localization.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hindu_calendar/data/current_location_service.dart';
@@ -18,7 +22,9 @@ class FakeLocator extends GeolocatorPlatform {
   DateTime? primaryTimestamp;
   int nativeReads = 0;
   @override
-  Future<Position?> getLastKnownPosition({bool forceLocationManager = false}) async => lastKnown;
+  Future<Position?> getLastKnownPosition({
+    bool forceLocationManager = false,
+  }) async => lastKnown;
 
   LocationSettings? settings;
   @override
@@ -30,17 +36,29 @@ class FakeLocator extends GeolocatorPlatform {
     requests++;
     return requestedPermission;
   }
+
   @override
-  Future<Position> getCurrentPosition({LocationSettings? locationSettings}) async {
+  Future<Position> getCurrentPosition({
+    LocationSettings? locationSettings,
+  }) async {
     reads++;
     settings = locationSettings;
     if (timeout || failuresRemaining > 0) {
       if (failuresRemaining > 0) failuresRemaining--;
       throw TimeoutException('No fix');
     }
-    return Position(latitude: 28.7, longitude: 74.3, timestamp: primaryTimestamp ?? DateTime.now(),
-      accuracy: 1000, altitude: 0, altitudeAccuracy: 0, heading: 0,
-      headingAccuracy: 0, speed: 0, speedAccuracy: 0);
+    return Position(
+      latitude: 28.7,
+      longitude: 74.3,
+      timestamp: primaryTimestamp ?? DateTime.now(),
+      accuracy: 1000,
+      altitude: 0,
+      altitudeAccuracy: 0,
+      heading: 0,
+      headingAccuracy: 0,
+      speed: 0,
+      speedAccuracy: 0,
+    );
   }
 }
 
@@ -55,24 +73,35 @@ void main() {
     GeolocatorPlatform.instance = fake;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      if (call.method == 'locationStatus') {
-        return <String, dynamic>{'enabled': fake.enabled, 'gpsEnabled': fake.enabled,
-          'networkEnabled': fake.enabled};
-      }
-      if (call.method == 'currentPosition') {
-        fake.nativeReads++;
-        if (fake.timeout) throw PlatformException(code: 'location_timeout');
-        return <String, dynamic>{'latitude': 29.58, 'longitude': 74.29,
-          'accuracy': 30.0, 'timestamp': DateTime.now().millisecondsSinceEpoch,
-          'provider': 'gps'};
-      }
-      if (call.method == 'district') {
-        return <String, dynamic>{'districtEn': 'Bikaner Division',
-          'districtHi': 'बीकानेर डिवीजन', 'stateEn': 'Rajasthan',
-          'stateHi': 'राजस्थान', 'countryCode': 'IN'};
-      }
-      return null;
-    });
+          if (call.method == 'locationStatus') {
+            return <String, dynamic>{
+              'enabled': fake.enabled,
+              'gpsEnabled': fake.enabled,
+              'networkEnabled': fake.enabled,
+            };
+          }
+          if (call.method == 'currentPosition') {
+            fake.nativeReads++;
+            if (fake.timeout) throw PlatformException(code: 'location_timeout');
+            return <String, dynamic>{
+              'latitude': 29.58,
+              'longitude': 74.29,
+              'accuracy': 30.0,
+              'timestamp': DateTime.now().millisecondsSinceEpoch,
+              'provider': 'gps',
+            };
+          }
+          if (call.method == 'district') {
+            return <String, dynamic>{
+              'districtEn': 'Bikaner Division',
+              'districtHi': 'बीकानेर डिवीजन',
+              'stateEn': 'Rajasthan',
+              'stateHi': 'राजस्थान',
+              'countryCode': 'IN',
+            };
+          }
+          return null;
+        });
   });
   tearDown(() {
     GeolocatorPlatform.instance = original;
@@ -81,52 +110,86 @@ void main() {
   });
   const service = CurrentLocationService();
 
-  test('one bounded position request accepts approximate foreground fix', () async {
-    final location = await service.obtain();
-    expect(location.latitude, 28.7);
-    expect(location.utcOffsetMinutes, 330);
-    expect(fake.reads, 1);
-    expect(fake.settings!.accuracy, LocationAccuracy.high);
-    expect(fake.settings!.timeLimit, const Duration(seconds: 20));
-  });
+  test(
+    'one bounded position request accepts approximate foreground fix',
+    () async {
+      final location = await service.obtain();
+      expect(location.latitude, 28.7);
+      expect(location.utcOffsetMinutes, 330);
+      expect(fake.reads, 1);
+      expect(fake.settings!.accuracy, LocationAccuracy.high);
+      expect(fake.settings!.timeLimit, const Duration(seconds: 20));
+    },
+  );
   test('disabled service does not request permissions or position', () async {
     fake.enabled = false;
-    await expectLater(service.obtain(), throwsA(isA<CurrentLocationException>()));
+    await expectLater(
+      service.obtain(),
+      throwsA(isA<CurrentLocationException>()),
+    );
     expect(fake.reads, 0);
     expect(fake.requests, 0);
   });
-  test('denied permission stops acquisition, permanent denial is not reprompted', () async {
-    fake.permission = LocationPermission.denied;
-    fake.requestedPermission = LocationPermission.denied;
-    await expectLater(service.obtain(), throwsA(isA<CurrentLocationException>()));
-    expect(fake.requests, 1);
-    expect(fake.reads, 0);
-    fake.permission = LocationPermission.deniedForever;
-    await expectLater(service.obtain(), throwsA(isA<CurrentLocationException>()));
-    expect(fake.requests, 1);
-  });
+  test(
+    'denied permission stops acquisition, permanent denial is not reprompted',
+    () async {
+      fake.permission = LocationPermission.denied;
+      fake.requestedPermission = LocationPermission.denied;
+      await expectLater(
+        service.obtain(),
+        throwsA(isA<CurrentLocationException>()),
+      );
+      expect(fake.requests, 1);
+      expect(fake.reads, 0);
+      fake.permission = LocationPermission.deniedForever;
+      await expectLater(
+        service.obtain(),
+        throwsA(isA<CurrentLocationException>()),
+      );
+      expect(fake.requests, 1);
+    },
+  );
   test('timeout does not silently choose stale coordinates', () async {
     fake.timeout = true;
-    fake.lastKnown = Position(latitude: 29.58, longitude: 74.29,
-        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-        accuracy: 10, altitude: 0, altitudeAccuracy: 0, heading: 0,
-        headingAccuracy: 0, speed: 0, speedAccuracy: 0);
-    await expectLater(service.obtain(), throwsA(isA<CurrentLocationException>()
-        .having((error) => error.code, 'code', 'timeout')));
+    fake.lastKnown = Position(
+      latitude: 29.58,
+      longitude: 74.29,
+      timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+      accuracy: 10,
+      altitude: 0,
+      altitudeAccuracy: 0,
+      heading: 0,
+      headingAccuracy: 0,
+      speed: 0,
+      speedAccuracy: 0,
+    );
+    await expectLater(
+      service.obtain(),
+      throwsA(
+        isA<CurrentLocationException>().having(
+          (error) => error.code,
+          'code',
+          'timeout',
+        ),
+      ),
+    );
     expect(fake.reads, 1);
     expect(fake.nativeReads, 1);
     expect(LocationDiagnostics.report, contains('location_timeout'));
   });
-  test('failed fused request uses explicit native GPS/network fallback', () async {
-    fake.failuresRemaining = 1;
-    final location = await service.obtain();
-    expect(location.latitude, 29.58);
-    expect(location.cityEn, 'Hanumangarh');
-    expect(location.cityHi, 'हनुमानगढ़');
-    expect(fake.reads, 1);
-    expect(fake.nativeReads, 1);
-    expect(LocationDiagnostics.report, contains('Native provider: gps'));
-  });
+  test(
+    'failed fused request uses explicit native GPS/network fallback',
+    () async {
+      fake.failuresRemaining = 1;
+      final location = await service.obtain();
+      expect(location.latitude, 29.58);
+      expect(location.cityEn, 'Hanumangarh');
+      expect(location.cityHi, 'हनुमानगढ़');
+      expect(fake.reads, 1);
+      expect(fake.nativeReads, 1);
+      expect(LocationDiagnostics.report, contains('Native provider: gps'));
+    },
+  );
   test('stale primary fix is rejected before native recovery', () async {
     fake.primaryTimestamp = DateTime.now().subtract(const Duration(hours: 1));
     final location = await service.obtain();
@@ -136,10 +199,18 @@ void main() {
   });
   test('recent accurate cached fix recovers a timeout', () async {
     fake.timeout = true;
-    fake.lastKnown = Position(latitude: 29.58, longitude: 74.29,
-        timestamp: DateTime.now().subtract(const Duration(seconds: 30)),
-        accuracy: 50, altitude: 0, altitudeAccuracy: 0, heading: 0,
-        headingAccuracy: 0, speed: 0, speedAccuracy: 0);
+    fake.lastKnown = Position(
+      latitude: 29.58,
+      longitude: 74.29,
+      timestamp: DateTime.now().subtract(const Duration(seconds: 30)),
+      accuracy: 50,
+      altitude: 0,
+      altitudeAccuracy: 0,
+      heading: 0,
+      headingAccuracy: 0,
+      speed: 0,
+      speedAccuracy: 0,
+    );
     final location = await service.obtain();
     expect(location.latitude, 29.58);
     expect(location.longitude, 74.29);
@@ -147,18 +218,26 @@ void main() {
     expect(location.cityHi, 'हनुमानगढ़');
     expect(fake.reads, 1);
   });
-  testWidgets('ordinary startup never requests a current location', (tester) async {
+  testWidgets('ordinary startup never requests a current location', (
+    tester,
+  ) async {
     await tester.pumpWidget(const HinduCalendarApp(holikaOverrides: {}));
     await settleCalendar(tester);
     expect(fake.reads, 0);
     expect(fake.requests, 0);
   });
 
-  testWidgets('first-use offer waits for a tap before permission request', (tester) async {
+  testWidgets('first-use offer waits for a tap before permission request', (
+    tester,
+  ) async {
     var offerRemembered = false;
-    await tester.pumpWidget(HinduCalendarApp(holikaOverrides: const {},
-      offerCurrentLocation: true,
-      onLocationOfferSeen: () async => offerRemembered = true));
+    await tester.pumpWidget(
+      HinduCalendarApp(
+        holikaOverrides: const {},
+        offerCurrentLocation: true,
+        onLocationOfferSeen: () async => offerRemembered = true,
+      ),
+    );
     await settleCalendar(tester);
     expect(offerRemembered, isTrue);
     expect(find.text('वर्तमान स्थान इस्तेमाल करें'), findsOneWidget);
@@ -166,4 +245,43 @@ void main() {
     expect(fake.requests, 0);
   });
 
+  for (final language in AppLanguage.values) {
+    testWidgets(
+      'location success message expires with Details action in ${language.name}',
+      (tester) async {
+        await tester.pumpWidget(
+          HinduCalendarApp(
+            holikaOverrides: const {},
+            initialLanguage: language,
+            offerCurrentLocation: true,
+          ),
+        );
+        await settleCalendar(tester);
+        await tester.tap(
+          find.text(
+            language == AppLanguage.hi
+                ? 'वर्तमान स्थान इस्तेमाल करें'
+                : 'Use current location',
+          ),
+        );
+        for (var i = 0; i < 150; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)),
+          );
+          await tester.pump(const Duration(milliseconds: 20));
+          if (find.byType(SnackBar).evaluate().isNotEmpty) break;
+        }
+        final message = language == AppLanguage.hi
+            ? 'स्थान सहेजा गया। गणना IST में है।'
+            : 'Location saved. Calculations use IST.';
+        expect(find.text(message), findsOneWidget);
+        expect(find.byType(SnackBarAction), findsOneWidget);
+        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text(message), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
 }

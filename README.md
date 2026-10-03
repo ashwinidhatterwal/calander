@@ -1,11 +1,11 @@
-# Hindu Calendar — Checkpoint 13 Notification Reliability
+# Hindu Calendar — Checkpoint 14 Notification Timing
 
-Build 1.0.0+13 fixes missed-reminder recovery, separates Panchang and event timing, and adds immediate/background notification tests with visible status. All location, Hindi time-format and calendar fixes are retained. See `docs/CHECKPOINT_13.md`.
+Build 1.0.0+14 makes location feedback expire after three seconds, enables new event reminders at 6 AM, and repairs one-minute notification testing with an exact-access check, durable backup and delivery diagnostics. Previous calendar and CI fixes are retained. See `docs/CHECKPOINT_14.md`.
 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+13`
+- Version: `1.0.0+14`
 - Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No
@@ -62,7 +62,7 @@ Pushes to `main` run `.github/workflows/android.yml`:
 flutter pub get
 flutter analyze
 flutter test
-Checkpoint 13 source validator
+Checkpoint 14 source validator
 release QA APK
 native notification regression tests
 Target API verification
@@ -72,7 +72,7 @@ permission audit
 Expected artifact:
 
 ```text
-hindu-calendar-1.0.0-build13-qa-apk
+hindu-calendar-1.0.0-build14-qa-apk
 ```
 
 ### Play Store AAB
@@ -82,8 +82,8 @@ Run **Production Play bundle** manually after configuring release secrets. It cr
 Expected artifacts:
 
 ```text
-hindu-calendar-1.0.0-build13-play-aab
-hindu-calendar-1.0.0-build13-dart-symbols
+hindu-calendar-1.0.0-build14-play-aab
+hindu-calendar-1.0.0-build14-dart-symbols
 ```
 
 The upload keystore and passwords must never be committed to this public repository.

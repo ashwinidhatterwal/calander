@@ -879,6 +879,8 @@ class _CalendarScreenState extends State<CalendarScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          persist: false,
+          duration: const Duration(seconds: 3),
           content: Text(l.pick('स्थान सहेजा गया। गणना IST में है।',
               'Location saved. Calculations use IST.')),
           action: SnackBarAction(label: l.pick('विवरण', 'Details'),
@@ -914,7 +916,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       };
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message),
+          .showSnackBar(SnackBar(persist: false, content: Text(message),
               duration: const Duration(seconds: 12),
               action: SnackBarAction(label: l.pick('विवरण', 'Details'),
                   onPressed: () => _showLocationDiagnostics(LocationDiagnostics.report))));

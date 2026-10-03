@@ -1,38 +1,40 @@
-# Build status — checkpoint 13
+# Build status — checkpoint 14
 
-Source version 1.0.0+13 based on the released build12 GitHub commit acff0f554106ab5684a02983fc19e2e4341cea8e.
+Source version 1.0.0+14. The build13 baseline passed GitHub QA run 37104758173
+at 0a36bae83a5396607dd228d16a6bbbbdb98ed9ae. The asset-task dependency repair
+from CI fix 13-02 is retained in both QA and production scaffolding.
 
-Passed locally:
-- Expanded checkpoint13 source/geometry validator (57 checks).
-- Six permission-audit tests, including version-code and merged-manifest behavior.
-- Shell syntax and embedded Python syntax of Android scaffold.
-- Workflow YAML parsing and git diff whitespace checks.
-- Dart formatting/parser check of new notification code and tests.
+Passed locally for build14:
+- Native Android compilation of CalendarAlerts, MainActivity, DeviceLocation and
+  ReminderPolicy against real Android/Flutter classes and app resources.
+- CalendarAlertsTest: 12 tests; ReminderPolicyTest: 2 tests; zero failures/errors.
+  This includes API31 exact-alarm access denial, selected/default preferences,
+  delayed test scheduling and due-time gating, superseded callbacks, duplicate
+  suppression, permission recovery, stale-test expiration and prior daily/event
+  cache and delivery regressions.
+- 57 checkpoint14 source/geometry checks and six permission-audit unit tests.
+- Scaffold shell/embedded Python syntax, workflow YAML and whitespace checks.
+- Standalone Dart formatter/parser checked all changed Dart sources and tests.
 
-Native notification compilation and all nine native regression tests passed in an independent Android library harness using Android SDK 36, Flutter 3.47.5 embedding, Kotlin 2.1.0, AGP 8.11.1, Gradle 8.14.3, Java 17 and Robolectric 4.17 (API 28 framework simulation). The harness compiles CalendarAlerts, MainActivity, DeviceLocation and ReminderPolicy against real Android/Flutter classes; unchanged HomeWidget provider classes are excluded because the full Flutter plugin graph is not installed locally. It includes the actual notification/widget resources and launcher icons. This is not a full Flutter APK/AAB or Android 16 device test.
+Native harness: SDK36 compile target, Robolectric4.17 with API28/API31 simulations,
+Gradle8.14.3, AGP8.11.1, Kotlin2.1.0, JDK17, Flutter3.47.5 embedding and real native
+notification/widget resources. Unchanged HomeWidget provider classes are excluded
+from this independent harness because the full Flutter plugin graph is not
+installed locally. This is not a complete APK/AAB or physical Android16 test.
 
-Results: CalendarAlertsTest 7 tests, ReminderPolicyTest 2 tests; zero failures/errors.
+Flutter widget regressions were added for both Hindi/English location message
+expiration, the exact-access settings flow and both 6AM defaults. Those tests,
+full Flutter analysis and APK/AAB generation require the updated GitHub workflows.
+Local Flutter dependency setup was previously blocked by automatic approval review
+for an attempted cloud instance-metadata connection; no workaround was attempted.
+Standalone native testing and offline Dart formatting do not run Flutter pub.
 
-Flutter analysis/widget tests and APK/AAB build were not completed locally. Automatic approval review blocked Flutter dependency setup because it attempted to contact the cloud instance-metadata endpoint; no bypass was attempted. The updated GitHub QA and Production workflows perform Flutter analysis/tests and native regressions before publishing artifacts.
+The tester confirmed the immediate notification works on their phone. The delayed
+path must be retested after installing build14 and granting Alarms & reminders.
+Without a device report, the precise cause on that phone is not conclusively
+identified; the confirmed silent inexact fallback has been removed from the
+one-minute test and new persistent recovery/diagnostics cover delayed failures.
 
-Physical-device reminder delivery, sound, reboot and overnight behavior require the included test controls and acceptance checklist. No claim of phone delivery verification is made.
-
-## GitHub QA follow-up
-
-Run 37095124305 installed dependencies successfully and analyzed all build13 sources. It reported exactly one missing-braces lint in NotificationsScreen._message; that diagnostic is corrected by CI fix 13-01. Subsequent test/build stages were skipped. A new GitHub run is required after uploading this corrected package. Native code and its nine passing regression tests are unchanged.
-
-Run 37095876407 then passed Analyze, Flutter calculation/UI/personal-calendar tests,
-source validation and the QA release APK build. It failed at native test packaging:
-`packageDebugUnitTestForUnitTest` consumed Flutter assets without depending on
-`copyFlutterAssetsDebug`. Native test execution had not started.
-
-CI fix 13-02 adds the missing producer dependency in the generated Android host
-for all variants. A focused, offline Gradle 8.14.3 regression reproduced the same
-implicit-dependency validation failure before the fix. After applying the exact
-Kotlin block emitted by the scaffold and deleting generated assets, Debug,
-Release and DemoDebug packaging all passed, with the Flutter-assets producer
-automatically executed before each consumer (nine tasks successful). This checks
-task wiring; it does not run the complete GitHub Gradle 9.3.1/Flutter plugin graph.
-All 57 source checks, six permission-audit tests, scaffold shell/Python syntax,
-workflow YAML and whitespace checks passed again. Native app code is unchanged.
-Upload CI fix 13-02 and require a successful new QA run before production release.
+Package release steps: upload the full source ZIP, wait for new QA success, then
+run Production Play bundle for the signed build14 Play Store AAB. Signing secrets
+and application ID are unchanged. Saved switches and custom times are retained.

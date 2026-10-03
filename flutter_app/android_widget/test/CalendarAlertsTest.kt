@@ -1,5 +1,7 @@
 package `in`.hinducalendar.hindu_calendar
 
+import android.app.AlarmManager
+import android.content.Intent
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import android.content.Context
@@ -13,6 +15,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
+import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.annotation.Config
 import java.text.SimpleDateFormat
 import java.util.*
@@ -98,4 +101,70 @@ class CalendarAlertsTest {
         CalendarAlerts.deliverDue(context)
         assertEquals(timestamp, CalendarAlerts.prefs(context).getLong("lastPosted", 0))
     }
+    @Test fun defaultsEnableBothRemindersAtSixButPreserveSavedChoices() {
+        val p = CalendarAlerts.prefs(context)
+        p.edit().clear().commit()
+        var status = CalendarAlerts.status(context)
+        assertEquals(true, status["morning"])
+        assertEquals(true, status["events"])
+        assertEquals(360, status["morningMinute"])
+        assertEquals(360, status["eventsMinute"])
+        p.edit().putBoolean("events", false).putInt("eventsMinute", 720).commit()
+        status = CalendarAlerts.status(context)
+        assertEquals(false, status["events"])
+        assertEquals(720, status["eventsMinute"])
+    }
+    @Test @Config(sdk = [31]) fun delayedTestCannotSilentlyUseInexactAlarm() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        assertFalse(CalendarAlerts.test(context, "Test", "Body", true))
+        assertEquals("precise_permission_required", CalendarAlerts.prefs(context).getString("lastTestResult", ""))
+        assertEquals(0L, CalendarAlerts.prefs(context).getLong("testScheduled", 0))
+        assertFalse(CalendarAlerts.prefs(context).contains("morningDelivered"))
+    }
+    @Test fun delayedTestPostsOnlyAfterDueAndOnlyOnce() {
+        val p = CalendarAlerts.prefs(context)
+        val now = System.currentTimeMillis()
+        assertTrue(CalendarAlerts.test(context, "Test", "Background", true))
+        val at = p.getLong("testScheduled", 0)
+        assertEquals(now + 60000, at)
+        val alarm = requireNotNull(Shadows.shadowOf(context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).nextScheduledAlarm)
+        assertEquals(at, alarm.triggerAtTime)
+        assertEquals(CalendarAlerts.TEST, Shadows.shadowOf(alarm.operation).savedIntent.action)
+        CalendarAlarmReceiver().onReceive(context, Intent(CalendarAlerts.TEST))
+        assertEquals(at, p.getLong("testScheduled", 0))
+        assertFalse(p.contains("lastTestPosted"))
+        // Model a delayed callback without sleeping or starting a Flutter engine.
+        val due = now - 1
+        p.edit().putLong("testScheduled", due).commit()
+        assertFalse(CalendarAlerts.deliverTestDue(context, at)) // Superseded backup must not post.
+        CalendarAlarmReceiver().onReceive(context, Intent(CalendarAlerts.TEST))
+        assertEquals("delayed_posted", p.getString("lastTestResult", ""))
+        assertEquals(0L, p.getLong("testScheduled", -1))
+        assertFalse(CalendarAlerts.deliverTestDue(context))
+        assertFalse(p.contains("morningDelivered"))
+        assertFalse(p.contains("eventsDelivered"))
+    }
+    @Test fun blockedDelayedPostCanRecoverAfterPermissionRestored() {
+        val p = CalendarAlerts.prefs(context)
+        assertTrue(CalendarAlerts.test(context, "Test", "Body", true))
+        p.edit().putLong("testScheduled", System.currentTimeMillis() - 1).commit()
+        val manager = Shadows.shadowOf(context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+        manager.setNotificationsEnabled(false)
+        assertFalse(CalendarAlerts.deliverTestDue(context))
+        assertEquals("permission_blocked", p.getString("lastTestResult", ""))
+        assertTrue(p.getLong("testScheduled", 0) != 0L)
+        manager.setNotificationsEnabled(true)
+        assertTrue(CalendarAlerts.deliverTestDue(context))
+        assertEquals("delayed_posted", p.getString("lastTestResult", ""))
+    }
+
+    @Test fun expiredTestDoesNotPostStaleNotification() {
+        val p = CalendarAlerts.prefs(context)
+        p.edit().putLong("testScheduled", System.currentTimeMillis() - 16 * 60000).commit()
+        assertFalse(CalendarAlerts.deliverTestDue(context))
+        assertEquals("expired", p.getString("lastTestResult", ""))
+        assertEquals(0L, p.getLong("testScheduled", -1))
+        assertFalse(p.contains("lastTestPosted"))
+    }
+
 }

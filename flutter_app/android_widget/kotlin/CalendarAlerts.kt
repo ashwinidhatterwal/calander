@@ -28,6 +28,7 @@ object CalendarAlerts {
     const val CHANNEL = "in.hinducalendar/device"
     const val MORNING = "in.hinducalendar.MORNING"
     const val EVENTS = "in.hinducalendar.EVENTS"
+    const val DEFAULT_MINUTE = 360
     const val TEST = "in.hinducalendar.TEST"
     fun prefs(context: Context) = context.getSharedPreferences("calendar_alerts", Context.MODE_PRIVATE)
     private fun manager(context: Context) = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -60,10 +61,10 @@ object CalendarAlerts {
     fun status(context: Context): Map<String, Any> {
         val p = prefs(context)
         val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-        return mapOf("morning" to p.getBoolean("morning", true), "events" to p.getBoolean("events", false),
+        return mapOf("morning" to p.getBoolean("morning", true), "events" to p.getBoolean("events", true),
             "sound" to p.getBoolean("sound", true), "permitted" to permitted(context), "channelEnabled" to channelEnabled(context),
-            "morningMinute" to ReminderPolicy.minute(p.getInt("morningMinute", 300)),
-            "eventsMinute" to ReminderPolicy.minute(p.getInt("eventsMinute", 300)),
+            "morningMinute" to ReminderPolicy.minute(p.getInt("morningMinute", DEFAULT_MINUTE)),
+            "eventsMinute" to ReminderPolicy.minute(p.getInt("eventsMinute", DEFAULT_MINUTE)),
             "precise" to precise(context), "batteryRestricted" to (Build.VERSION.SDK_INT >= 28 && (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).isBackgroundRestricted),
             "batteryOptimized" to !power.isIgnoringBatteryOptimizations(context.packageName),
             "cacheReady" to (cachedToday(context) != null), "cacheUpdated" to p.getLong("cacheUpdated", 0),
@@ -71,7 +72,10 @@ object CalendarAlerts {
             "lastAlarm" to p.getLong("lastAlarm", 0), "lastPosted" to p.getLong("lastPosted", 0),
             "lastResult" to p.getString("lastResult", "not_run").orEmpty(),
             "lastRefreshError" to p.getString("lastRefreshError", "").orEmpty(),
-            "testScheduled" to p.getLong("testScheduled", 0))
+            "testScheduled" to p.getLong("testScheduled", 0),
+            "lastTestResult" to p.getString("lastTestResult", "not_run").orEmpty(),
+            "lastTestPosted" to p.getLong("lastTestPosted", 0),
+            "testBackupError" to p.getString("testBackupError", "").orEmpty())
     }
     private fun pending(context: Context, id: Int, action: String?) = PendingIntent.getBroadcast(context, id,
         Intent(context, CalendarAlarmReceiver::class.java).apply { this.action = action },
@@ -90,11 +94,11 @@ object CalendarAlerts {
         val now = System.currentTimeMillis()
         for ((key, id, action) in listOf(Triple("morning", 500, MORNING), Triple("events", 501, EVENTS))) {
             val pi = pending(context, id, action)
-            val next = if (p.getBoolean(key, key == "morning")) ReminderPolicy.next(now, p.getInt(key + "Minute", 300)) else 0L
+            val next = if (p.getBoolean(key, true)) ReminderPolicy.next(now, p.getInt(key + "Minute", DEFAULT_MINUTE)) else 0L
             if (next == 0L) manager(context).cancel(pi) else alarm(context, next, pi)
             p.edit().putLong(if (key == "morning") "nextMorning" else "nextEvents", next).apply()
         }
-        if (p.getBoolean("morning", true) || p.getBoolean("events", false)) {
+        if (p.getBoolean("morning", true) || p.getBoolean("events", true)) {
             WorkManager.getInstance(context).enqueueUniquePeriodicWork("calendar-delivery-recovery", ExistingPeriodicWorkPolicy.KEEP,
                 PeriodicWorkRequestBuilder<CalendarRecoveryWorker>(15, TimeUnit.MINUTES).build())
         } else WorkManager.getInstance(context).cancelUniqueWork("calendar-delivery-recovery")
@@ -119,7 +123,7 @@ object CalendarAlerts {
         val iso = today()
         val item = cachedToday(context)
         for ((key, id) in listOf("morning" to 500, "events" to 501)) {
-            if (!p.getBoolean(key, key == "morning") || !ReminderPolicy.due(now, p.getInt(key + "Minute", 300), p.getString(key + "Delivered", "") == iso)) continue
+            if (!p.getBoolean(key, true) || !ReminderPolicy.due(now, p.getInt(key + "Minute", DEFAULT_MINUTE), p.getString(key + "Delivered", "") == iso)) continue
             if (item == null) { p.edit().putString("lastResult", "cache_missing").apply(); refresh(context); continue }
             val body = if (key == "events") item.optString("events") else item.optString("body") +
                 item.optString("events").let { if (it.isBlank()) "" else "\n$it" }
@@ -143,33 +147,90 @@ object CalendarAlerts {
             true
         } catch (e: Exception) { p.edit().putString("lastResult", "post_failed:" + e.javaClass.simpleName).apply(); false }
     }
-    fun test(context: Context, title: String, body: String, delayed: Boolean): Boolean {
-        if (!permitted(context) || !channelEnabled(context)) return show(context, 503, title, body)
-        if (!delayed) return show(context, 503, title, body)
-        prefs(context).edit().putString("testTitle", title).putString("testBody", body).apply()
+    @Synchronized fun test(context: Context, title: String, body: String, delayed: Boolean): Boolean {
+        val p = prefs(context)
+        if (!permitted(context) || !channelEnabled(context)) {
+            show(context, 503, title, body)
+            p.edit().putString("lastTestResult", p.getString("lastResult", "blocked")).apply()
+            return false
+        }
+        if (!delayed) {
+            val posted = show(context, 503, title, body)
+            p.edit().putString("lastTestResult", if (posted) "immediate_posted" else p.getString("lastResult", "post_failed"))
+                .putLong("lastTestPosted", if (posted) System.currentTimeMillis() else p.getLong("lastTestPosted", 0)).apply()
+            return posted
+        }
+        // A one-minute test must never silently become an inexact alarm.
+        if (!precise(context)) {
+            p.edit().putString("lastTestResult", "precise_permission_required").apply()
+            return false
+        }
         val at = System.currentTimeMillis() + 60000
-        alarm(context, at, pending(context, 503, TEST))
-        prefs(context).edit().putLong("testScheduled", at).apply()
+        if (!p.edit().putString("testTitle", title).putString("testBody", body)
+                .putLong("testScheduled", at).putString("lastTestResult", "scheduled")
+                .putString("testBackupError", "").commit()) return false
+        try {
+            manager(context).setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending(context, 503, TEST))
+        } catch (e: Exception) {
+            p.edit().putLong("testScheduled", 0)
+                .putString("lastTestResult", if (e is SecurityException) "precise_permission_required" else "schedule_failed:" + e.javaClass.simpleName).commit()
+            return false
+        }
+        // Persistent backup survives process death/reboot; delivery is de-duplicated.
+        // WorkManager is recovery only, not a promise of exact-minute execution.
+        try {
+            WorkManager.getInstance(context).enqueueUniqueWork("calendar-test-notification", ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<CalendarTestWorker>().setInitialDelay(60, TimeUnit.SECONDS)
+                    .setInputData(workDataOf("scheduledAt" to at)).build())
+        } catch (e: Exception) {
+            p.edit().putString("testBackupError", e.javaClass.simpleName).apply()
+        }
         return true
     }
+    @Synchronized fun deliverTestDue(context: Context, expectedAt: Long? = null): Boolean {
+        val p = prefs(context)
+        val at = p.getLong("testScheduled", 0)
+        if (at == 0L || (expectedAt != null && at != expectedAt) || System.currentTimeMillis() < at) return false
+        if (System.currentTimeMillis() - at > TimeUnit.MINUTES.toMillis(15)) {
+            p.edit().putLong("testScheduled", 0).putString("lastTestResult", "expired").commit()
+            return false
+        }
+        val posted = show(context, 503, p.getString("testTitle", "Test notification").orEmpty(), p.getString("testBody", "").orEmpty())
+        val edit = p.edit().putString("lastTestResult", if (posted) "delayed_posted" else p.getString("lastResult", "post_failed"))
+        if (posted) edit.putLong("testScheduled", 0).putLong("lastTestPosted", System.currentTimeMillis())
+        edit.commit()
+        return posted
+    }
+
 }
 
 class CalendarAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         CalendarAlerts.prefs(context).edit().putLong("lastAlarm", System.currentTimeMillis()).apply()
         if (intent.action == CalendarAlerts.TEST) {
-            val p = CalendarAlerts.prefs(context)
-            CalendarAlerts.show(context, 503, p.getString("testTitle", "Test notification").orEmpty(), p.getString("testBody", "").orEmpty())
+            CalendarAlerts.deliverTestDue(context)
             return
         }
+        CalendarAlerts.deliverTestDue(context)
         CalendarAlerts.deliverDue(context)
         CalendarAlerts.schedule(context)
-        if (CalendarAlerts.prefs(context).getBoolean("morning", true) || CalendarAlerts.prefs(context).getBoolean("events", false)) CalendarAlerts.refresh(context)
+        if (CalendarAlerts.prefs(context).getBoolean("morning", true) || CalendarAlerts.prefs(context).getBoolean("events", true)) CalendarAlerts.refresh(context)
+    }
+}
+
+class CalendarTestWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+    override fun doWork(): Result {
+        val at = inputData.getLong("scheduledAt", 0)
+        if (at == 0L || CalendarAlerts.prefs(applicationContext).getLong("testScheduled", 0) != at) return Result.success()
+        val posted = CalendarAlerts.deliverTestDue(applicationContext, at)
+        return if (posted || CalendarAlerts.prefs(applicationContext).getLong("testScheduled", 0) != at)
+            Result.success() else Result.retry()
     }
 }
 
 class CalendarRecoveryWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     override fun doWork(): Result {
+        CalendarAlerts.deliverTestDue(applicationContext)
         CalendarAlerts.deliverDue(applicationContext)
         CalendarAlerts.schedule(applicationContext)
         // Rebuild only when cache is absent/older than a day, avoiding repeated Flutter engines.
@@ -189,7 +250,7 @@ class CalendarSummaryWorker(context: Context, params: WorkerParameters) : Worker
         val outcome = AtomicReference(Result.retry())
         fun complete(value: Result) { outcome.set(value); completed.countDown() }
         handler.post {
-            if (!CalendarAlerts.prefs(applicationContext).getBoolean("morning", true) && !CalendarAlerts.prefs(applicationContext).getBoolean("events", false)) {
+            if (!CalendarAlerts.prefs(applicationContext).getBoolean("morning", true) && !CalendarAlerts.prefs(applicationContext).getBoolean("events", true)) {
                 complete(Result.success()); return@post
             }
             val revision = CalendarAlerts.prefs(applicationContext).getLong("cacheRevision", 0)

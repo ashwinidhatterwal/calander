@@ -34,8 +34,8 @@ class NotificationService {
     bool morning,
     bool events,
     bool sound, {
-    int morningMinute = 300,
-    int eventsMinute = 300,
+    int morningMinute = 360,
+    int eventsMinute = 360,
   }) async => channel.invokeMethod('configure', {
     'morning': morning,
     'events': events,

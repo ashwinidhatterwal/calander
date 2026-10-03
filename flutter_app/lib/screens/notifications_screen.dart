@@ -61,7 +61,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     if (state == AppLifecycleState.resumed) _load();
   }
 
-  int _minute(String key) => (settings[key] as num?)?.toInt() ?? 300;
+  int _minute(String key) => (settings[key] as num?)?.toInt() ?? 360;
   String _time(int minute) {
     final hour = minute ~/ 60;
     final suffix = hour < 12 ? l.pick('पु.', 'AM') : l.pick('अप.', 'PM');
@@ -123,29 +123,77 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Future<void> _test(bool delayed) async {
     setState(() => busy = true);
     try {
+      final current = await NotificationService.status();
+      if (!mounted) return;
+      setState(() => settings = current);
+      if (delayed &&
+          current['permitted'] == true &&
+          current['channelEnabled'] != false &&
+          current['precise'] != true) {
+        final enable = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              l.pick(
+                'एक मिनट के परीक्षण की अनुमति',
+                'Allow precise test timing',
+              ),
+            ),
+            content: Text(
+              l.pick(
+                '“अलार्म और रिमाइंडर” चालू करें, फिर वापस आकर परीक्षण दोबारा दबाएँ। इसके बिना Android एक मिनट की सूचना बहुत देर से दे सकता है।',
+                'Enable “Alarms & reminders”, then return and tap the test again. Without this access Android can delay a one-minute notification substantially.',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l.pick('अभी नहीं', 'Not now')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l.pick('अनुमति दें', 'Enable')),
+              ),
+            ],
+          ),
+        );
+        if (enable == true && mounted) await _open('alarmSettings');
+        return;
+      }
       final posted = await NotificationService.test(
         widget.language,
         delayed: delayed,
       );
+      final after = await NotificationService.status();
+      if (!mounted) return;
+      setState(() => settings = after);
       _message(
         posted
             ? delayed
-                  ? settings['precise'] != true
-                        ? l.pick(
-                            'परीक्षण तय हो गया। ऐप बंद करें। सटीक समय की अनुमति के बिना Android सूचना देर से दे सकता है।',
-                            'Test scheduled. Close the app. Android may delay it without precise reminder access.',
-                          )
-                        : l.pick(
-                            'परीक्षण तय हो गया। ऐप बंद करें; लगभग एक मिनट बाद सूचना देखें।',
-                            'Test scheduled. Close the app and check for a notification in about one minute.',
-                          )
+                  ? l.pick(
+                      'परीक्षण तय हो गया। ऐप बंद करें; लगभग एक मिनट बाद सूचना देखें।',
+                      'Test scheduled. Close the app and check for a notification in about one minute.',
+                    )
                   : l.pick(
                       'परीक्षण सूचना भेजी गई। सूचना पैनल देखें।',
                       'Test notification posted. Check your notification panel.',
                     )
-            : l.pick(
+            : after['lastTestResult'] == 'precise_permission_required'
+            ? l.pick(
+                'सटीक समय की अनुमति दें और परीक्षण दोबारा करें।',
+                'Enable precise timing and try the test again.',
+              )
+            : after['lastTestResult'] == 'permission_blocked' ||
+                  after['lastTestResult'] == 'channel_blocked' ||
+                  after['permitted'] != true ||
+                  after['channelEnabled'] == false
+            ? l.pick(
                 'सूचना अनुमति या सूचना चैनल बंद है। नीचे फ़ोन सेटिंग खोलें।',
                 'Notification permission or the channel is blocked. Open phone settings below.',
+              )
+            : l.pick(
+                'परीक्षण तय नहीं हो सका। स्थिति विवरण देखें।',
+                'Could not schedule the test. Check the status details.',
               ),
       );
     } catch (_) {
@@ -157,6 +205,42 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       );
     } finally {
       await _load();
+    }
+  }
+
+  String _testResult() {
+    switch (settings['lastTestResult']) {
+      case 'scheduled':
+        return l.pick(
+          'परीक्षण सूचना की प्रतीक्षा है।',
+          'Waiting for the scheduled test.',
+        );
+      case 'delayed_posted':
+        return l.pick(
+          'एक मिनट का परीक्षण फ़ोन को भेजा गया।',
+          'Scheduled test posted to Android.',
+        );
+      case 'precise_permission_required':
+        return l.pick(
+          'सटीक समय की अनुमति चाहिए।',
+          'Precise timing access is required.',
+        );
+      case 'expired':
+        return l.pick(
+          'परीक्षण समय पर नहीं पहुँचा। बैटरी सेटिंग जाँचकर फिर परीक्षण करें।',
+          'Test did not arrive in time. Check battery settings and retry.',
+        );
+      case 'permission_blocked':
+      case 'channel_blocked':
+        return l.pick(
+          'परीक्षण की सूचना अनुमति या चैनल बंद है।',
+          'Test notification permission or channel is blocked.',
+        );
+      default:
+        return l.pick(
+          'सटीक समय की अनुमति के साथ परीक्षण तय करके ऐप बंद करें।',
+          'Requires precise timing access. Schedule the test, then close the app.',
+        );
     }
   }
 
@@ -273,12 +357,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ListTile(
             leading: const Icon(Icons.timer_outlined),
             title: Text(l.pick('एक मिनट बाद परीक्षण', 'Test in one minute')),
-            subtitle: Text(
-              l.pick(
-                'परीक्षण तय करके ऐप बंद करें।',
-                'Schedule the test, then close the app.',
-              ),
-            ),
+            subtitle: Text(_testResult()),
             onTap: busy ? null : () => _test(true),
           ),
           ListTile(
