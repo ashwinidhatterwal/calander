@@ -71,6 +71,18 @@ with gradle.open('a', encoding='utf-8') as output:
 with gradle.open('a', encoding='utf-8') as output:
     output.write('\nandroid { testOptions { unitTests { isIncludeAndroidResources = true; all { it.jvmArgs(\"--add-opens=java.base/java.lang=ALL-UNNAMED\", \"--add-opens=java.base/java.util=ALL-UNNAMED\", \"--add-opens=java.base/java.io=ALL-UNNAMED\") } } } }\n')
 
+with gradle.open('a', encoding='utf-8') as output:
+    output.write('''
+// Host tests package the merged assets directory, which Flutter also writes.
+// Declare the producer dependency for every variant, including release tests.
+tasks.configureEach {
+    if (name.startsWith("package") && name.endsWith("UnitTestForUnitTest")) {
+        val variant = name.removePrefix("package").removeSuffix("UnitTestForUnitTest")
+        dependsOn("copyFlutterAssets${variant}")
+    }
+}
+''')
+
 path = Path('android/app/src/main/AndroidManifest.xml')
 text = path.read_text(encoding='utf-8')
 text = text.replace('android:taskAffinity=""', 'android:taskAffinity="in.hinducalendar.hindu_calendar"')
