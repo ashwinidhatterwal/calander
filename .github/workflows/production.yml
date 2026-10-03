@@ -88,8 +88,10 @@ jobs:
             --dart-define=SUPPORT_PAYEE_NAME="$SUPPORT_PAYEE_NAME" \
             --dart-define=SUPPORT_EMAIL="$SUPPORT_EMAIL"
 
+      # This generated Android host exposes debug unit tests. The release AAB
+      # is built above and audited/signed below; do not request a missing task.
       - name: Test native notification delivery and recovery
-        run: cd android && ./gradlew app:testReleaseUnitTest
+        run: cd android && ./gradlew app:testDebugUnitTest
 
       - name: Audit production bundle permissions
         shell: bash

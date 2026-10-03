@@ -126,7 +126,7 @@ check('morningMinute' in notification_ui and 'eventsMinute' in notification_ui a
 check("_test(" not in notification_ui and "_details(" not in notification_ui, 'production settings omit testing and diagnostic controls')
 check('CalendarAlerts.test' in activity and 'SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED' in scaffold, 'test and precise permission bridges are registered')
 check('lastRefreshError' in alerts and 'notificationSettings' in notification_ui, 'internal diagnostics retained and permission settings accessible')
-check('testDebugUnitTest' in source('.github/workflows/android.yml') and 'testReleaseUnitTest' in source('.github/workflows/production.yml'), 'both workflows run native regressions')
+check('testDebugUnitTest' in source('.github/workflows/android.yml') and 'testDebugUnitTest' in source('.github/workflows/production.yml'), 'both workflows run supported native regressions')
 
 for ok, description in checks:
     print(('PASS' if ok else 'FAIL') + ' - ' + description)

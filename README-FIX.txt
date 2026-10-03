@@ -1,8 +1,10 @@
-Hindu Calendar build 15 — full source package
+Hindu Calendar build 15 — full source package, production CI fix 15-01
 
 Upload the complete contents to ashwinidhatterwal/calander.
 Keep flutter_app/, tools/ and .github/ at the repository root.
-After Android QA succeeds, run Production Play bundle for the signed build15 AAB.
+After uploading this fix, start a NEW Production Play bundle run on main.
+Do not rerun the old failed commit. The supported debug host-test task now runs
+native regressions before the signed build15 AAB is audited and uploaded.
 
 User notification settings now contain only:
 - Daily Panchang toggle and reminder time

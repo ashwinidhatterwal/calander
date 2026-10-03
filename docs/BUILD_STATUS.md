@@ -19,3 +19,11 @@ Only standalone Dart code/formatting and independent permission checks were run.
 
 Release: upload complete source, wait for Android QA success, then run Production
 Play bundle to obtain the signed build15 AAB. Existing signing secrets are retained.
+
+## Production CI follow-up 15-01
+
+QA run 37118923163 passed on build15 commit b47004b. Production run 37118946645
+built the signed AAB successfully but then requested the unavailable
+app:testReleaseUnitTest task. It now uses the supported app:testDebugUnitTest
+command which passed in QA on the identical source. Release permission audit,
+signature verification and artifact uploads remain mandatory. See CI_FIX_15_01.md.
