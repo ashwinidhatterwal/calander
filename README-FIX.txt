@@ -1,20 +1,16 @@
-Hindu Calendar build 15 — full source package, production CI fix 15-01
+Hindu Calendar 1.0.0+16 — Android 9 startup compatibility
 
-Upload the complete contents to ashwinidhatterwal/calander.
-Keep flutter_app/, tools/ and .github/ at the repository root.
-After uploading this fix, start a NEW Production Play bundle run on main.
-Do not rerun the old failed commit. The supported debug host-test task now runs
-native regressions before the signed build15 AAB is audited and uploaded.
+Replace the repository contents with this full package. Run QA and Production
+Play bundle workflows on the same commit. Wait for both to pass. Test the QA
+APK on the affected realme 1, then publish the signed build16 AAB.
 
-User notification settings now contain only:
-- Daily Panchang toggle and reminder time
-- Personal events toggle and reminder time
-- Gentle chime toggle
-- Phone notification permission settings
-- Alarms & reminders / precise timing settings
-- Battery/background settings when applicable
+Root cause found in startup duplicate-task cleanup: RecentTaskInfo.taskId was
+read without an API guard. That field is available from API 29 (Android 10),
+while Android 9 uses RecentTaskInfo.id. Build 16 selects the correct field and
+keeps optional task cleanup from blocking launch on RuntimeException.
 
-Immediate and one-minute test buttons and the technical status/report row are removed.
-The notification delivery/recovery implementation is retained unchanged from the
-working build14. Saved preferences, default 6 AM times and default-on events remain.
-The calendar's tithi display/calculation is unchanged by this update.
+Native regression tests cover API 24/28 and API 29/31. These tests are included
+in both workflows. Local source and permission-audit checks passed; native
+regressions and full Flutter tests must run in GitHub. No physical-device crash
+trace was supplied, so the identified startup defect is not yet confirmed as
+this phone's only failure. Preserve app data during the update.

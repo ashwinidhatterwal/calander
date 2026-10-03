@@ -3,6 +3,7 @@ package `in`.hinducalendar.hindu_calendar
 import android.Manifest
 import android.app.ActivityManager
 import android.os.Bundle
+import android.util.Log
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Build
@@ -18,9 +19,17 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Remove legacy duplicate tasks left by old widget/notification launch flags.
-        (getSystemService(ACTIVITY_SERVICE) as ActivityManager).appTasks.forEach { task ->
-            val info = task.taskInfo
-            if (info.taskId != taskId && info.baseIntent.component?.packageName == packageName) task.finishAndRemoveTask()
+        try {
+            (getSystemService(ACTIVITY_SERVICE) as ActivityManager).appTasks.forEach { task ->
+                val info = task.taskInfo
+                if (TaskCompatibility.isOtherAppTask(info, taskId, packageName)) {
+                    task.finishAndRemoveTask()
+                }
+            }
+        } catch (error: RuntimeException) {
+            // Task cleanup is optional: a removed task or OEM restriction must
+            // never prevent the calendar from opening.
+            Log.w("HinduCalendar", "Could not clean legacy app tasks", error)
         }
     }
     private val deviceLocation by lazy { DeviceLocation(this) }
