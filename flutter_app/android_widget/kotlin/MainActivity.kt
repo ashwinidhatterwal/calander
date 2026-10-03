@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Build
+import android.net.Uri
+import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -54,17 +56,39 @@ class MainActivity : FlutterActivity() {
                     } }
                 }
                 "status" -> reply.success(CalendarAlerts.status(this))
+                "notificationSettings" -> {
+                    startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName))
+                    reply.success(null)
+                }
+                "alarmSettings" -> {
+                    if (Build.VERSION.SDK_INT >= 31) startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName")))
+                    reply.success(null)
+                }
+                "batterySettings" -> {
+                    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+                    reply.success(null)
+                }
+                "testNotification" -> reply.success(CalendarAlerts.test(this,
+                    call.argument<String>("title") ?: "Test notification",
+                    call.argument<String>("body") ?: "",
+                    call.argument<Boolean>("delayed") ?: false))
                 "configure" -> {
                     val prefs = CalendarAlerts.prefs(this)
-                    prefs.edit().putBoolean("morning", call.argument<Boolean>("morning") ?: true)
+                    val saved = prefs.edit().putBoolean("morning", call.argument<Boolean>("morning") ?: true)
                         .putBoolean("events", call.argument<Boolean>("events") ?: false)
-                        .putBoolean("sound", call.argument<Boolean>("sound") ?: true).apply()
+                        .putBoolean("sound", call.argument<Boolean>("sound") ?: true)
+                        .putInt("morningMinute", ReminderPolicy.minute(call.argument<Int>("morningMinute") ?: prefs.getInt("morningMinute", 300)))
+                        .putInt("eventsMinute", ReminderPolicy.minute(call.argument<Int>("eventsMinute") ?: prefs.getInt("eventsMinute", 300))).commit()
+                    if (!saved) {
+                        reply.error("settings_write_failed", "Could not save reminder settings", null)
+                        return@setMethodCallHandler
+                    }
                     CalendarAlerts.schedule(this)
                     if (Build.VERSION.SDK_INT >= 33 && !CalendarAlerts.permitted(this) &&
                         (prefs.getBoolean("morning", true) || prefs.getBoolean("events", false))) {
                         permissionReply = reply
                         requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 510)
-                    } else reply.success(null)
+                    } else { CalendarAlerts.deliverDue(this); reply.success(null) }
                 }
                 "initializeNotifications" -> {
                     val prefs = CalendarAlerts.prefs(this)
@@ -80,8 +104,8 @@ class MainActivity : FlutterActivity() {
                     CalendarAlerts.schedule(this)
                 }
                 "cache" -> {
-                    CalendarAlerts.prefs(this).let { prefs -> prefs.edit().putString("cache", call.arguments as String).putLong("cacheRevision", prefs.getLong("cacheRevision", 0) + 1).apply() }
-                    CalendarAlerts.schedule(this); reply.success(null)
+                    CalendarAlerts.storeCache(this, call.arguments as String, true)
+                    CalendarAlerts.deliverDue(this); CalendarAlerts.schedule(this); reply.success(null)
                 }
                 "created" -> {
                     if (CalendarAlerts.prefs(this).getBoolean("events", false))
@@ -94,7 +118,14 @@ class MainActivity : FlutterActivity() {
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 510) { permissionReply?.success(null); permissionReply = null }
+        if (requestCode == 510) {
+            CalendarAlerts.deliverDue(this); CalendarAlerts.schedule(this)
+            permissionReply?.success(null); permissionReply = null
+        }
     }
-    override fun onResume() { super.onResume(); CalendarAlerts.schedule(this) }
+    override fun onResume() {
+        super.onResume()
+        CalendarAlerts.deliverDue(this)
+        CalendarAlerts.schedule(this)
+    }
 }

@@ -12,6 +12,8 @@ FOREGROUND_LOCATION = {
 }
 ALLOWED = FOREGROUND_LOCATION | {
     'android.permission.POST_NOTIFICATIONS',
+    # Optional user-granted Alarms & reminders access for selected reminder times.
+    'android.permission.SCHEDULE_EXACT_ALARM',
     'android.permission.INTERNET',
     'android.permission.ACCESS_NETWORK_STATE',
     'android.permission.WAKE_LOCK',

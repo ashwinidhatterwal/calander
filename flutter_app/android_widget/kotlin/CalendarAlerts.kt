@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
@@ -25,64 +26,156 @@ import java.util.*
 
 object CalendarAlerts {
     const val CHANNEL = "in.hinducalendar/device"
+    const val MORNING = "in.hinducalendar.MORNING"
+    const val EVENTS = "in.hinducalendar.EVENTS"
+    const val TEST = "in.hinducalendar.TEST"
     fun prefs(context: Context) = context.getSharedPreferences("calendar_alerts", Context.MODE_PRIVATE)
+    private fun manager(context: Context) = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     fun permitted(context: Context) = NotificationManagerCompat.from(context).areNotificationsEnabled() && (Build.VERSION.SDK_INT < 33 || context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
+    fun precise(context: Context) = Build.VERSION.SDK_INT < 31 || manager(context).canScheduleExactAlarms()
     fun launchIntent(context: Context) = Intent(context, MainActivity::class.java).apply {
         action = Intent.ACTION_MAIN
         addCategory(Intent.CATEGORY_LAUNCHER)
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
     }
-    fun status(context: Context): Map<String, Boolean> = mapOf("morning" to prefs(context).getBoolean("morning", true), "events" to prefs(context).getBoolean("events", false), "sound" to prefs(context).getBoolean("sound", true), "permitted" to permitted(context))
-    fun schedule(context: Context) {
-        val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = PendingIntent.getBroadcast(context, 500, Intent(context, CalendarAlarmReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        if (!prefs(context).getBoolean("morning", true) && !prefs(context).getBoolean("events", false)) { manager.cancel(pending); return }
-        val next = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 5); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0); if (timeInMillis <= System.currentTimeMillis()) add(Calendar.DAY_OF_YEAR, 1) }
-        // Ordinary notification permission only. Android may defer this inexact alarm.
-        manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next.timeInMillis, pending)
-    }
-    fun refresh(context: Context) {
-        val request = OneTimeWorkRequestBuilder<CalendarSummaryWorker>().build()
-        WorkManager.getInstance(context).enqueueUniqueWork("calendar-summary-refresh", ExistingWorkPolicy.KEEP, request)
-    }
-    fun show(context: Context, id: Int, title: String, body: String) {
-        if (!permitted(context)) return
+    private fun channelId(context: Context) = if (prefs(context).getBoolean("sound", true)) "calendar_morning_chime_v1" else "calendar_silent_v1"
+    private fun ensureChannel(context: Context): NotificationManager {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val sound = prefs(context).getBoolean("sound", true)
-        val channelId = if (sound) "calendar_morning_chime_v1" else "calendar_silent_v1"
-        if (Build.VERSION.SDK_INT >= 26) {
-            val channel = NotificationChannel(channelId, if (sound) "Calendar gentle reminders" else "Calendar silent reminders", NotificationManager.IMPORTANCE_DEFAULT)
+        if (Build.VERSION.SDK_INT >= 26 && manager.getNotificationChannel(channelId(context)) == null) {
+            val channel = NotificationChannel(channelId(context), if (sound) "Calendar gentle reminders" else "Calendar silent reminders", NotificationManager.IMPORTANCE_DEFAULT)
             channel.enableVibration(false)
             channel.setSound(if (sound) Uri.parse("android.resource://${context.packageName}/${R.raw.morning_chime}") else null, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).build())
             manager.createNotificationChannel(channel)
         }
-        val launch = PendingIntent.getActivity(context, id, launchIntent(context), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val notification = NotificationCompat.Builder(context, channelId).setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(title).setContentText(body).setStyle(NotificationCompat.BigTextStyle().bigText(body))
-            .setSound(if (sound) Uri.parse("android.resource://${context.packageName}/${R.raw.morning_chime}") else null)
-            .setContentIntent(launch).setAutoCancel(true).setOnlyAlertOnce(true).build()
-        manager.notify(id, notification)
+        return manager
+    }
+    fun channelEnabled(context: Context): Boolean {
+        val manager = ensureChannel(context)
+        if (Build.VERSION.SDK_INT < 26) return true
+        val channel = manager.getNotificationChannel(channelId(context)) ?: return false
+        if (channel.importance == NotificationManager.IMPORTANCE_NONE) return false
+        return Build.VERSION.SDK_INT < 28 || channel.group == null || manager.getNotificationChannelGroup(channel.group)?.isBlocked != true
+    }
+    fun status(context: Context): Map<String, Any> {
+        val p = prefs(context)
+        val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        return mapOf("morning" to p.getBoolean("morning", true), "events" to p.getBoolean("events", false),
+            "sound" to p.getBoolean("sound", true), "permitted" to permitted(context), "channelEnabled" to channelEnabled(context),
+            "morningMinute" to ReminderPolicy.minute(p.getInt("morningMinute", 300)),
+            "eventsMinute" to ReminderPolicy.minute(p.getInt("eventsMinute", 300)),
+            "precise" to precise(context), "batteryRestricted" to (Build.VERSION.SDK_INT >= 28 && (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).isBackgroundRestricted),
+            "batteryOptimized" to !power.isIgnoringBatteryOptimizations(context.packageName),
+            "cacheReady" to (cachedToday(context) != null), "cacheUpdated" to p.getLong("cacheUpdated", 0),
+            "nextMorning" to p.getLong("nextMorning", 0), "nextEvents" to p.getLong("nextEvents", 0),
+            "lastAlarm" to p.getLong("lastAlarm", 0), "lastPosted" to p.getLong("lastPosted", 0),
+            "lastResult" to p.getString("lastResult", "not_run").orEmpty(),
+            "lastRefreshError" to p.getString("lastRefreshError", "").orEmpty(),
+            "testScheduled" to p.getLong("testScheduled", 0))
+    }
+    private fun pending(context: Context, id: Int, action: String?) = PendingIntent.getBroadcast(context, id,
+        Intent(context, CalendarAlarmReceiver::class.java).apply { this.action = action },
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    private fun alarm(context: Context, at: Long, pending: PendingIntent) {
+        val m = manager(context)
+        try {
+            if (precise(context)) m.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+            else m.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+        } catch (_: SecurityException) { m.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending) }
+    }
+    fun schedule(context: Context) {
+        val p = prefs(context)
+        // Remove the legacy action-less 5 AM alarm during upgrade.
+        manager(context).cancel(pending(context, 500, null))
+        val now = System.currentTimeMillis()
+        for ((key, id, action) in listOf(Triple("morning", 500, MORNING), Triple("events", 501, EVENTS))) {
+            val pi = pending(context, id, action)
+            val next = if (p.getBoolean(key, key == "morning")) ReminderPolicy.next(now, p.getInt(key + "Minute", 300)) else 0L
+            if (next == 0L) manager(context).cancel(pi) else alarm(context, next, pi)
+            p.edit().putLong(if (key == "morning") "nextMorning" else "nextEvents", next).apply()
+        }
+        if (p.getBoolean("morning", true) || p.getBoolean("events", false)) {
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork("calendar-delivery-recovery", ExistingPeriodicWorkPolicy.KEEP,
+                PeriodicWorkRequestBuilder<CalendarRecoveryWorker>(15, TimeUnit.MINUTES).build())
+        } else WorkManager.getInstance(context).cancelUniqueWork("calendar-delivery-recovery")
+    }
+    fun refresh(context: Context) {
+        WorkManager.getInstance(context).enqueueUniqueWork("calendar-summary-refresh", ExistingWorkPolicy.KEEP,
+            OneTimeWorkRequestBuilder<CalendarSummaryWorker>().build())
+    }
+    private fun today() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+    private fun cachedToday(context: Context): JSONObject? = try {
+        JSONObject(prefs(context).getString("cache", "{}")!!).optJSONObject(today())
+    } catch (_: Exception) { null }
+    fun storeCache(context: Context, payload: String, foreground: Boolean) {
+        val p = prefs(context)
+        val edit = p.edit().putString("cache", payload).putLong("cacheUpdated", System.currentTimeMillis()).putString("lastRefreshError", "")
+        if (foreground) edit.putLong("cacheRevision", p.getLong("cacheRevision", 0) + 1)
+        if (!edit.commit()) throw IllegalStateException("Reminder cache write failed")
+    }
+    @Synchronized fun deliverDue(context: Context) {
+        val p = prefs(context)
+        val now = System.currentTimeMillis()
+        val iso = today()
+        val item = cachedToday(context)
+        for ((key, id) in listOf("morning" to 500, "events" to 501)) {
+            if (!p.getBoolean(key, key == "morning") || !ReminderPolicy.due(now, p.getInt(key + "Minute", 300), p.getString(key + "Delivered", "") == iso)) continue
+            if (item == null) { p.edit().putString("lastResult", "cache_missing").apply(); refresh(context); continue }
+            val body = if (key == "events") item.optString("events") else item.optString("body") +
+                item.optString("events").let { if (it.isBlank()) "" else "\n$it" }
+            if (key == "events" && body.isBlank()) continue
+            // Never consume the day's delivery when permission/channel/posting fails.
+            if (show(context, id, item.optString("title"), body)) p.edit().putString(key + "Delivered", iso).commit()
+        }
+    }
+    fun show(context: Context, id: Int, title: String, body: String): Boolean {
+        val p = prefs(context)
+        if (!permitted(context)) { p.edit().putString("lastResult", "permission_blocked").apply(); return false }
+        if (!channelEnabled(context)) { p.edit().putString("lastResult", "channel_blocked").apply(); return false }
+        return try {
+            val launch = PendingIntent.getActivity(context, id, launchIntent(context), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val notification = NotificationCompat.Builder(context, channelId(context)).setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title).setContentText(body).setStyle(NotificationCompat.BigTextStyle().bigText(body))
+                .setSound(if (p.getBoolean("sound", true)) Uri.parse("android.resource://${context.packageName}/${R.raw.morning_chime}") else null)
+                .setContentIntent(launch).setAutoCancel(true).setOnlyAlertOnce(false).build()
+            ensureChannel(context).notify(id, notification)
+            p.edit().putString("lastResult", "posted").putLong("lastPosted", System.currentTimeMillis()).apply()
+            true
+        } catch (e: Exception) { p.edit().putString("lastResult", "post_failed:" + e.javaClass.simpleName).apply(); false }
+    }
+    fun test(context: Context, title: String, body: String, delayed: Boolean): Boolean {
+        if (!permitted(context) || !channelEnabled(context)) return show(context, 503, title, body)
+        if (!delayed) return show(context, 503, title, body)
+        prefs(context).edit().putString("testTitle", title).putString("testBody", body).apply()
+        val at = System.currentTimeMillis() + 60000
+        alarm(context, at, pending(context, 503, TEST))
+        prefs(context).edit().putLong("testScheduled", at).apply()
+        return true
     }
 }
 
 class CalendarAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val prefs = CalendarAlerts.prefs(context)
-        if (intent.action == "in.hinducalendar.MORNING" || intent.action == null) {
-            val iso = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-            // Dedupe clock adjustments/repeated broadcasts, but permit retry if no cached summary.
-            if (prefs.getString("delivered", "") != iso) {
-                val item = try { JSONObject(prefs.getString("cache", "{}")!!).optJSONObject(iso) } catch (_: Exception) { null }
-                if (item != null) {
-                    if (prefs.getBoolean("morning", true)) CalendarAlerts.show(context, 500, item.optString("title"), item.optString("body"))
-                    val events = item.optString("events")
-                    if (prefs.getBoolean("events", false) && events.isNotBlank()) CalendarAlerts.show(context, 501, item.optString("title"), events)
-                    prefs.edit().putString("delivered", iso).apply()
-                }
-            }
+        CalendarAlerts.prefs(context).edit().putLong("lastAlarm", System.currentTimeMillis()).apply()
+        if (intent.action == CalendarAlerts.TEST) {
+            val p = CalendarAlerts.prefs(context)
+            CalendarAlerts.show(context, 503, p.getString("testTitle", "Test notification").orEmpty(), p.getString("testBody", "").orEmpty())
+            return
         }
+        CalendarAlerts.deliverDue(context)
         CalendarAlerts.schedule(context)
-        if (prefs.getBoolean("morning", true) || prefs.getBoolean("events", false)) CalendarAlerts.refresh(context)
+        if (CalendarAlerts.prefs(context).getBoolean("morning", true) || CalendarAlerts.prefs(context).getBoolean("events", false)) CalendarAlerts.refresh(context)
+    }
+}
+
+class CalendarRecoveryWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+    override fun doWork(): Result {
+        CalendarAlerts.deliverDue(applicationContext)
+        CalendarAlerts.schedule(applicationContext)
+        // Rebuild only when cache is absent/older than a day, avoiding repeated Flutter engines.
+        if (System.currentTimeMillis() - CalendarAlerts.prefs(applicationContext).getLong("cacheUpdated", 0) > TimeUnit.HOURS.toMillis(24))
+            CalendarAlerts.refresh(applicationContext)
+        return Result.success()
     }
 }
 
@@ -109,14 +202,23 @@ class CalendarSummaryWorker(context: Context, params: WorkerParameters) : Worker
                 engine = workerEngine
                 MethodChannel(workerEngine.dartExecutor.binaryMessenger, CalendarAlerts.CHANNEL).setMethodCallHandler { call, reply ->
                     when (call.method) {
-                        "cache" -> { if (CalendarAlerts.prefs(applicationContext).getLong("cacheRevision", 0) == revision) CalendarAlerts.prefs(applicationContext).edit().putString("cache", call.arguments as String).apply(); reply.success(null); handler.post { finish(Result.success()) } }
-                        "failed" -> { reply.success(null); handler.post { finish(Result.retry()) } }
+                        "cache" -> { if (CalendarAlerts.prefs(applicationContext).getLong("cacheRevision", 0) == revision) CalendarAlerts.storeCache(applicationContext, call.arguments as String, false); reply.success(null); CalendarAlerts.deliverDue(applicationContext); CalendarAlerts.schedule(applicationContext); handler.post { finish(Result.success()) } }
+                        "failed" -> {
+                            CalendarAlerts.prefs(applicationContext).edit().putString("lastRefreshError", call.arguments?.toString() ?: "summary_failed").apply()
+                            reply.success(null); handler.post { finish(Result.retry()) }
+                        }
                         else -> reply.notImplemented()
                     }
                 }
                 workerEngine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint(loader.findAppBundlePath(), "notificationBackground"))
-                handler.postDelayed({ finish(Result.retry()) }, 120000)
-            } catch (_: Exception) { finish(Result.retry()) }
+                handler.postDelayed({
+                    if (!finished) CalendarAlerts.prefs(applicationContext).edit().putString("lastRefreshError", "summary_timeout").apply()
+                    finish(Result.retry())
+                }, 120000)
+            } catch (e: Exception) {
+                CalendarAlerts.prefs(applicationContext).edit().putString("lastRefreshError", e.javaClass.simpleName).apply()
+                finish(Result.retry())
+            }
         }
         if (!completed.await(125, TimeUnit.SECONDS)) {
             handler.post { engine?.destroy(); engine = null }

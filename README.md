@@ -1,11 +1,11 @@
-# Hindu Calendar — Checkpoint 12 Location Reliability and Today Times
+# Hindu Calendar — Checkpoint 13 Notification Reliability
 
-Build 1.0.0+12 adds explicit GPS/network acquisition, visible failure diagnostics, coordinate-based districts, and localized 12-hour sunrise/sunset. Includes prior reminder, holiday and UI fixes. See `docs/CHECKPOINT_12.md` for research, scope and verification status.
+Build 1.0.0+13 fixes missed-reminder recovery, separates Panchang and event timing, and adds immediate/background notification tests with visible status. All location, Hindi time-format and calendar fixes are retained. See `docs/CHECKPOINT_13.md`.
 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+12`
+- Version: `1.0.0+13`
 - Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No
@@ -62,8 +62,9 @@ Pushes to `main` run `.github/workflows/android.yml`:
 flutter pub get
 flutter analyze
 flutter test
-Checkpoint 12 source validator
+Checkpoint 13 source validator
 release QA APK
+native notification regression tests
 Target API verification
 permission audit
 ```
@@ -71,7 +72,7 @@ permission audit
 Expected artifact:
 
 ```text
-hindu-calendar-1.0.0-build11-qa-apk
+hindu-calendar-1.0.0-build13-qa-apk
 ```
 
 ### Play Store AAB
@@ -81,12 +82,14 @@ Run **Production Play bundle** manually after configuring release secrets. It cr
 Expected artifacts:
 
 ```text
-hindu-calendar-1.0.0-build11-play-aab
-hindu-calendar-1.0.0-build11-dart-symbols
+hindu-calendar-1.0.0-build13-play-aab
+hindu-calendar-1.0.0-build13-dart-symbols
 ```
 
 The upload keystore and passwords must never be committed to this public repository.
 
 ## Validation boundary
 
-Checkpoint 11 changes reminders, task launches, district labels and civil holiday presentation. It does **not** alter Panchang astronomy, Tithi/month calculations, festival-date selection rules, or personal-event matching. Ordinary notification permission is required; Android may defer delivery after 5 AM. Force-stop blocks reminders until the app is reopened. District fallback data is a reference dataset, not a certified current administrative map.
+This checkpoint changes notifications and their settings; astronomy, festival dates and personal-event date matching are unchanged. Notification permission and an enabled notification channel are required. Optional user-granted **Alarms & reminders** access enables precise selected times; inexact fallback remains available. Force-stop requires reopening the app. A successful test means Android accepted the notification, not that the user saw it or heard it through DND.
+
+See `docs/BUILD_STATUS.md` for checks actually executed and remaining device validation.

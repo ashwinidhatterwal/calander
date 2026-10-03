@@ -14,7 +14,6 @@ class PermissionAuditTests(unittest.TestCase):
         for suffix in [
             'ACCESS_BACKGROUND_LOCATION',
             'FOREGROUND_SERVICE_LOCATION',
-            'SCHEDULE_EXACT_ALARM',
             'USE_EXACT_ALARM',
             'CAMERA',
             'READ_CONTACTS',

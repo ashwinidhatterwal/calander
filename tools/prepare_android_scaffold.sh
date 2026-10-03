@@ -54,6 +54,8 @@ cp -R android_widget/res/. android/app/src/main/res/
 kotlin_dir="android/app/src/main/kotlin/in/hinducalendar/hindu_calendar"
 mkdir -p "$kotlin_dir"
 cp android_widget/kotlin/*.kt "$kotlin_dir/"
+mkdir -p android/app/src/test/kotlin/in/hinducalendar/hindu_calendar
+cp android_widget/test/*.kt android/app/src/test/kotlin/in/hinducalendar/hindu_calendar/
 
 python - <<'PY'
 from pathlib import Path
@@ -64,7 +66,10 @@ gradle.write_text(gradle.read_text(encoding='utf-8').replace(
     '"`in`.hinducalendar.hindu_calendar"', '"in.hinducalendar.hindu_calendar"'), encoding='utf-8')
 
 with gradle.open('a', encoding='utf-8') as output:
-    output.write('\ndependencies { implementation("androidx.work:work-runtime-ktx:2.11.2"); implementation("androidx.core:core:1.13.1") }\n')
+    output.write('\ndependencies { implementation("androidx.work:work-runtime-ktx:2.11.2"); implementation("androidx.core:core:1.13.1"); testImplementation("junit:junit:4.13.2"); testImplementation("org.robolectric:robolectric:4.17"); testImplementation("androidx.work:work-testing:2.11.2") }\n')
+
+with gradle.open('a', encoding='utf-8') as output:
+    output.write('\nandroid { testOptions { unitTests { isIncludeAndroidResources = true; all { it.jvmArgs(\"--add-opens=java.base/java.lang=ALL-UNNAMED\", \"--add-opens=java.base/java.util=ALL-UNNAMED\", \"--add-opens=java.base/java.io=ALL-UNNAMED\") } } } }\n')
 
 path = Path('android/app/src/main/AndroidManifest.xml')
 text = path.read_text(encoding='utf-8')
@@ -82,6 +87,7 @@ text = text.replace('    <application', '''
 
 
 text = text.replace('    <application', '''    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -109,6 +115,7 @@ receivers = '''
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 

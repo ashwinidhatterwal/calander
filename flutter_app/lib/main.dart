@@ -311,8 +311,8 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     unawaited(() async {
       await widget.onEventsChanged
           ?.call(List<PersonalEvent>.unmodifiable(next));
-      await NotificationService.created(event, language);
       await _refreshNotifications();
+      await NotificationService.created(event, language);
     }()
         .catchError((Object _) {}));
     _syncHomeWidgets();
@@ -478,7 +478,7 @@ Future<void> notificationBackground() async {
     ));
     await NotificationService.channel
         .invokeMethod('cache', jsonEncode(payload));
-  } catch (_) {
-    await NotificationService.channel.invokeMethod('failed');
+  } catch (error) {
+    await NotificationService.channel.invokeMethod('failed', error.toString());
   }
 }

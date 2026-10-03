@@ -1,0 +1,6 @@
+<hi-IN>
+दैनिक पंचांग और कार्यक्रम सूचनाओं की विश्वसनीयता सुधारी गई। दोनों का समय अलग चुनें। तत्काल और ऐप बंद होने के बाद परीक्षण सूचना, अनुमति स्थिति और छूटी सूचनाओं का पुनः प्रयास जोड़ा गया।
+</hi-IN>
+<en-IN>
+Improved daily Panchang and event reminders. Choose separate reminder times, test notifications immediately or after closing the app, check permission status, and retry missed reminders.
+</en-IN>
