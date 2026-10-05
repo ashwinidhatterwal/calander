@@ -18,3 +18,5 @@ Android 9 startup compatibility from build16 is retained.
 Local source/permission checks, pure-Dart domain/payload checks, and Python
 festival regressions passed. Flutter UI and native integration regression
 checks are included for GitHub; not run locally. Full details in docs/CHECKPOINT_17.md.
+
+CI17-01: corrected a legacy test expecting date as title. See docs/CI_FIX_17_01.md.

@@ -89,8 +89,11 @@ void main() {
       [event]
     ));
     expect(result.length, 32);
-    expect(result['2026-11-11']!['title'], '11 November 2026');
-    expect(result['2026-11-11']!['body'], contains('Bhai Dooj'));
-    expect(result['2026-11-11']!['events'], 'Family puja');
+    final day = result['2026-11-11']!;
+    expect(day['title'], 'Shukla Paksha Dwitiya');
+    expect(day['date'], '11 November 2026');
+    expect(day['body']!.split('\n').first, contains('Bhai Dooj'));
+    expect(day['body']!.split('\n').last, day['date']);
+    expect(day['events'], 'Family puja');
   });
 }
