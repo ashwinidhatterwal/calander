@@ -140,8 +140,13 @@ class CalendarAlertsTest {
         val p = CalendarAlerts.prefs(context)
         val now = System.currentTimeMillis()
         assertTrue(CalendarAlerts.test(context, "Test", "Background", true))
+        val afterScheduling = System.currentTimeMillis()
         val at = p.getLong("testScheduled", 0)
-        assertEquals(now + 60000, at)
+        // The scheduler samples the clock inside test(). It may be milliseconds
+        // later than this test's initial read. Require exactly a 60-second
+        // offset from an instant within the call, rather than equal clock reads.
+        assertTrue("One-minute alarm must be scheduled within the call's clock bounds",
+            at in (now + 60000)..(afterScheduling + 60000))
         val alarm = requireNotNull(Shadows.shadowOf(context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).nextScheduledAlarm)
         assertEquals(at, alarm.triggerAtTime)
         assertEquals(CalendarAlerts.TEST, Shadows.shadowOf(alarm.operation).savedIntent.action)

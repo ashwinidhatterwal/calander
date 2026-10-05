@@ -20,3 +20,5 @@ festival regressions passed. Flutter UI and native integration regression
 checks are included for GitHub; not run locally. Full details in docs/CHECKPOINT_17.md.
 
 CI17-01: corrected a legacy test expecting date as title. See docs/CI_FIX_17_01.md.
+
+CI17-02: fix clock-race assertion, run native tests before packaging, pin runner/JDK, and save test reports. See docs/CI_FIX_17_02.md.

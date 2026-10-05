@@ -155,6 +155,17 @@ check((root/'flutter_app/test/durga_observance_test.dart').exists() and
 
 check('masik_durgashtami' not in festival, 'monthly Durgashtami excluded as requested')
 
+for workflow, build_step in [('android', 'Build QA release APK'), ('production', 'Configure upload-key signing')]:
+    config = source(f'.github/workflows/{workflow}.yml')
+    check(config.index('Test native notification delivery and recovery') < config.index(build_step),
+          f'{workflow} runs native regressions before release packaging')
+    check('runs-on: ubuntu-24.04' in config and "java-version: '17'" in config,
+          f'{workflow} selects runner and Java explicitly')
+    check('if: always()' in config and 'test-results/**' in config and 'set -euo pipefail' in config,
+          f'{workflow} preserves failure diagnostics without ignoring tests')
+check('assertEquals(now + 60000, at)' not in source('flutter_app/android_widget/test/CalendarAlertsTest.kt'),
+      'delayed reminder test does not assume equal wall-clock reads')
+
 for ok, description in checks:
     print(('PASS' if ok else 'FAIL') + ' - ' + description)
 sys.exit(0 if all(ok for ok, _ in checks) else 1)

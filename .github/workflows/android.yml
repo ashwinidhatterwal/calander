@@ -11,12 +11,18 @@ on:
 
 jobs:
   test-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: flutter_app
     steps:
       - uses: actions/checkout@v5
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -43,13 +49,25 @@ jobs:
         run: flutter analyze
 
       - name: Test calculation, UI and personal-calendar logic
-        run: flutter test
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci
+          flutter test --reporter expanded 2>&1 | tee build/ci/flutter-tests.log
 
       - name: Validate production-source structure
         working-directory: .
         run: |
           python tools/validate_checkpoint17.py
           python tools/test_permission_audit.py
+
+      - name: Test native notification delivery and recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci
+          cd android
+          ./gradlew app:testDebugUnitTest --stacktrace 2>&1 | tee ../build/ci/native-tests.log
 
       - name: Build QA release APK
         env:
@@ -62,8 +80,6 @@ jobs:
             --dart-define=SUPPORT_PAYEE_NAME="$SUPPORT_PAYEE_NAME" \
             --dart-define=SUPPORT_EMAIL="$SUPPORT_EMAIL"
 
-      - name: Test native notification delivery and recovery
-        run: cd android && ./gradlew app:testDebugUnitTest
 
       - name: Verify target API level
         shell: bash
@@ -103,3 +119,17 @@ jobs:
           name: hindu-calendar-1.0.0-build17-qa-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+      - name: Save test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-build17-test-reports-${{ github.run_attempt }}
+          path: |
+            flutter_app/build/ci/*.log
+            flutter_app/build/app/reports/tests/**
+            flutter_app/build/app/test-results/**
+            flutter_app/android/app/build/reports/tests/**
+            flutter_app/android/app/build/test-results/**
+          if-no-files-found: ignore
+          retention-days: 14
