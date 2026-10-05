@@ -24,6 +24,18 @@ const festivalDescriptions = <String, (String, String)>{
     'देवी दुर्गा की नौ रातों की आराधना का आरम्भ। घटस्थापना, उपवास और देवी पाठ की परंपरा है।',
     'Begins nine nights of worship of Goddess Durga, with ceremonial pot installation, fasting and devotional readings.'
   ),
+  'chaitra_navratri': (
+    'चैत्र मास में देवी दुर्गा की नौ रातों की आराधना का आरम्भ। घटस्थापना, देवी पाठ और उपवास की परंपरा है।',
+    'Begins the spring Navratri worship of Goddess Durga, with ceremonial pot installation, devotional readings and fasting.',
+  ),
+  'chaitra_durga_ashtami': (
+    'चैत्र नवरात्रि की अष्टमी पर देवी पूजन और कन्या पूजन की परंपरा है। परिवार और क्षेत्र के अनुसार विधियाँ बदलती हैं।',
+    'The Ashtami observance during Chaitra Navratri, traditionally marked by Devi worship and Kanya Puja; customs vary.',
+  ),
+  'durga_ashtami': (
+    'शारदीय नवरात्रि का प्रमुख देवी पर्व, जिसे महाष्टमी भी कहते हैं। देवी पूजन और कन्या पूजन की परंपरा है।',
+    'A major Devi observance during Shardiya Navratri, also called Mahashtami, traditionally marked by worship and Kanya Puja.',
+  ),
   'vijayadashami': (
     'असत्य पर सत्य की विजय का उत्सव। राम की रावण पर और दुर्गा की महिषासुर पर विजय का स्मरण होता है।',
     'Celebrates the victory of good over evil, recalling Rama’s victory over Ravana and Durga’s over Mahishasura.'

@@ -129,7 +129,8 @@ object CalendarAlerts {
                 item.optString("events").let { if (it.isBlank()) "" else "\n$it" }
             if (key == "events" && body.isBlank()) continue
             // Never consume the day's delivery when permission/channel/posting fails.
-            if (show(context, id, item.optString("title"), body)) p.edit().putString(key + "Delivered", iso).commit()
+            val title = if (key == "events") item.optString("date", item.optString("title")) else item.optString("title")
+            if (show(context, id, title, body)) p.edit().putString(key + "Delivered", iso).commit()
         }
     }
     fun show(context: Context, id: Int, title: String, body: String): Boolean {

@@ -1,4 +1,6 @@
-# Current checkpoint: 1.0.0+16
+# Current checkpoint: 1.0.0+17
 
-Android 7–9 task identifier compatibility fixed. GitHub native/Flutter checks
-and affected-phone verification are pending. See CHECKPOINT_16.md and README-FIX.txt.
+Morning notification hierarchy improved and Durga Ashtami Navratri
+coverage added. Android 9 compatibility retained. Local domain/source checks
+passed; GitHub Flutter/native checks and device verification remain pending.
+See CHECKPOINT_17.md and README-FIX.txt.

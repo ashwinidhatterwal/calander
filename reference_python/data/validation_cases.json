@@ -16,7 +16,10 @@
       "dhanteras": "2026-11-06",
       "diwali": "2026-11-08",
       "govardhan_puja": "2026-11-10",
-      "bhai_dooj": "2026-11-11"
+      "bhai_dooj": "2026-11-11",
+      "durga_ashtami": "2026-10-19",
+      "chaitra_durga_ashtami": "2026-03-26",
+      "chaitra_navratri": "2026-03-19"
     },
     "2027": {
       "maha_shivaratri": "2027-03-06",
@@ -32,7 +35,8 @@
       "dhanteras": "2027-10-27",
       "diwali": "2027-10-29",
       "govardhan_puja": "2027-10-30",
-      "bhai_dooj": "2027-10-31"
+      "bhai_dooj": "2027-10-31",
+      "durga_ashtami": "2027-10-07"
     }
   },
   "timing_checks": [

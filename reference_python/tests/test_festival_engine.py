@@ -70,3 +70,13 @@ def test_1983_kshaya_month_and_following_adhik_month_are_detected():
     assert jan15.kshaya_month_after.en == "Magha"
     assert feb13.adhik_month is True
     assert feb13.amanta_month.en == "Phalguna"
+
+
+def test_durga_ashtami_matches_dated_references_in_two_years_and_locations():
+    for location in [DELHI, GeoLocation("Hanumangarh", 29.58, 74.32, 330)]:
+        for year, expected in [(2026, "2026-10-19"), (2027, "2027-10-07")]:
+            items = {x.id: x.local_date.isoformat() for x in major_festivals_for_year(year, location)}
+            assert items["durga_ashtami"] == expected
+        items = {x.id: x.local_date.isoformat() for x in major_festivals_for_year(2026, location)}
+        assert items["chaitra_durga_ashtami"] == "2026-03-26"
+        assert items["chaitra_navratri"] == "2026-03-19"

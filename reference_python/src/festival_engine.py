@@ -104,6 +104,18 @@ MAJOR_RULES: tuple[FestivalRule, ...] = (
         "first_third_day", (9, 10), importance=5,
     ),
     FestivalRule(
+        "chaitra_navratri", "चैत्र नवरात्रि आरम्भ", "Chaitra Navratri Begins", "Chaitra", "shukla", 1,
+        "first_third_day", (3, 4), importance=5,
+    ),
+    FestivalRule(
+        "chaitra_durga_ashtami", "चैत्र दुर्गा अष्टमी", "Chaitra Durga Ashtami", "Chaitra", "shukla", 8,
+        "sunrise", (3, 4), importance=5,
+    ),
+    FestivalRule(
+        "durga_ashtami", "दुर्गा अष्टमी / महाष्टमी", "Durga Ashtami / Mahashtami", "Ashwin", "shukla", 8,
+        "sunrise", (9, 10), importance=5,
+    ),
+    FestivalRule(
         "vijayadashami", "विजयादशमी / दशहरा", "Vijayadashami / Dussehra", "Ashwin", "shukla", 10,
         "aparahna", (9, 10), importance=5,
     ),

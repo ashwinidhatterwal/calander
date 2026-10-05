@@ -124,10 +124,11 @@ Map<String, Map<String, String>> notificationPayload(
         .map((e) => e.title)
         .join(' · ');
     final month = (hi ? monthNamesHi : monthNamesEn)[date.month - 1];
+    final dateLabel = '${date.day} $month ${date.year}';
     result[date.toIso8601String().substring(0, 10)] = {
-      'title': '${date.day} $month ${date.year}',
-      'body':
-          '${hi ? cell.pakshaHi : cell.pakshaEn} ${hi ? cell.tithi.hi : cell.tithi.en}${names.isEmpty ? '' : '\n$names'}',
+      'title': '${hi ? cell.pakshaHi : cell.pakshaEn} ${hi ? cell.tithi.hi : cell.tithi.en}',
+      'body': [if (names.isNotEmpty) names, dateLabel].join('\n'),
+      'date': dateLabel,
       'events': personal,
     };
   }

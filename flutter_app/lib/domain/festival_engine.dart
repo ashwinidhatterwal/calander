@@ -42,6 +42,12 @@ const majorRules = <FestivalRule>[
       'first_third_day',
       [9, 10],
       importance: 5),
+  FestivalRule('chaitra_navratri', 'चैत्र नवरात्रि आरम्भ', 'Chaitra Navratri Begins',
+      'Chaitra', 'shukla', 1, 'first_third_day', [3, 4], importance: 5),
+  FestivalRule('chaitra_durga_ashtami', 'चैत्र दुर्गा अष्टमी', 'Chaitra Durga Ashtami',
+      'Chaitra', 'shukla', 8, 'sunrise', [3, 4], importance: 5),
+  FestivalRule('durga_ashtami', 'दुर्गा अष्टमी / महाष्टमी', 'Durga Ashtami / Mahashtami',
+      'Ashwin', 'shukla', 8, 'sunrise', [9, 10], importance: 5),
   FestivalRule('vijayadashami', 'विजयादशमी / दशहरा', 'Vijayadashami / Dussehra',
       'Ashwin', 'shukla', 10, 'aparahna', [9, 10],
       importance: 5),
@@ -283,38 +289,53 @@ class FestivalEngine {
     final sr = panchang.sunriseSunset(d, loc)[0],
         t = panchang.tithiAt(sr),
         month = panchang.lunarMonthDetailsAt(sr).purnimanta;
-    if (t.value.index == 11) {
-      out.add(FestivalObservance(
-          id: 'ekadashi',
-          nameHi: 'एकादशी',
-          nameEn: 'Ekadashi',
-          localDate: d,
-          category: 'vrat',
-          importance: 3,
-          selectionBasis: 'tithi_at_sunrise'));
-    }
-    if (t.rawIndex == 15) {
-      out.add(FestivalObservance(
-          id: 'purnima',
-          nameHi: '${month.hi} पूर्णिमा',
-          nameEn: '${month.en} Purnima',
-          localDate: d,
-          category: 'lunar_day',
-          importance: 2,
-          selectionBasis: 'purnima_at_sunrise'));
-    }
-    if (t.rawIndex == 30) {
-      out.add(FestivalObservance(
-          id: 'amavasya',
-          nameHi: '${month.hi} अमावस्या',
-          nameEn: '${month.en} Amavasya',
-          localDate: d,
-          category: 'lunar_day',
-          importance: 2,
-          selectionBasis: 'amavasya_at_sunrise'));
-    }
+    out.addAll(sunriseObservances(d, t, month));
+    out.sort((a, b) => b.importance.compareTo(a.importance));
     return out;
   }
+}
+
+/// Shared sunrise labels. No GPS, year scan or moonrise calculation is needed.
+List<FestivalObservance> sunriseObservances(
+  DateTime date,
+  TithiState t,
+  NamedValue month,
+) {
+  FestivalObservance item(
+    String id,
+    String hi,
+    String en,
+    String category,
+    int importance,
+  ) =>
+      FestivalObservance(
+        id: id,
+        nameHi: hi,
+        nameEn: en,
+        localDate: date,
+        category: category,
+        importance: importance,
+        selectionBasis: 'tithi_at_sunrise',
+      );
+  return [
+    if (t.value.index == 11) item('ekadashi', 'एकादशी', 'Ekadashi', 'vrat', 3),
+    if (t.rawIndex == 15)
+      item(
+        'purnima',
+        '${month.hi} पूर्णिमा',
+        '${month.en} Purnima',
+        'lunar_day',
+        2,
+      ),
+    if (t.rawIndex == 30)
+      item(
+        'amavasya',
+        '${month.hi} अमावस्या',
+        '${month.en} Amavasya',
+        'lunar_day',
+        2,
+      ),
+  ];
 }
 
 List<FestivalObservance> _calculateYear(

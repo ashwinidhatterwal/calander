@@ -37,6 +37,30 @@
       "notes_en": null
     },
     {
+      "id": "chaitra_navratri",
+      "name_hi": "चैत्र नवरात्रि आरम्भ",
+      "name_en": "Chaitra Navratri Begins",
+      "local_date": "2026-03-19",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "first_third_day",
+      "basis_time": "2026-03-19T07:27:01.019891+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
+      "id": "chaitra_durga_ashtami",
+      "name_hi": "चैत्र दुर्गा अष्टमी",
+      "name_en": "Chaitra Durga Ashtami",
+      "local_date": "2026-03-26",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "sunrise",
+      "basis_time": "2026-03-26T06:18:28.236987+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
       "id": "rama_navami",
       "name_hi": "राम नवमी",
       "name_en": "Rama Navami",
@@ -93,6 +117,18 @@
       "importance": 5,
       "selection_basis": "first_third_day",
       "basis_time": "2026-10-11T06:19:27.866317+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
+      "id": "durga_ashtami",
+      "name_hi": "दुर्गा अष्टमी / महाष्टमी",
+      "name_en": "Durga Ashtami / Mahashtami",
+      "local_date": "2026-10-19",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "sunrise",
+      "basis_time": "2026-10-19T06:24:12.732272+05:30",
       "notes_hi": null,
       "notes_en": null
     },
@@ -207,6 +243,30 @@
       "notes_en": null
     },
     {
+      "id": "chaitra_navratri",
+      "name_hi": "चैत्र नवरात्रि आरम्भ",
+      "name_en": "Chaitra Navratri Begins",
+      "local_date": "2027-04-07",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "first_third_day",
+      "basis_time": "2027-04-07T06:05:01.386013+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
+      "id": "chaitra_durga_ashtami",
+      "name_hi": "चैत्र दुर्गा अष्टमी",
+      "name_en": "Chaitra Durga Ashtami",
+      "local_date": "2027-04-14",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "sunrise",
+      "basis_time": "2027-04-14T05:57:20.639685+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
       "id": "rama_navami",
       "name_hi": "राम नवमी",
       "name_en": "Rama Navami",
@@ -263,6 +323,18 @@
       "importance": 5,
       "selection_basis": "first_third_day",
       "basis_time": "2027-09-30T08:12:36.572023+05:30",
+      "notes_hi": null,
+      "notes_en": null
+    },
+    {
+      "id": "durga_ashtami",
+      "name_hi": "दुर्गा अष्टमी / महाष्टमी",
+      "name_en": "Durga Ashtami / Mahashtami",
+      "local_date": "2027-10-07",
+      "category": "festival",
+      "importance": 5,
+      "selection_basis": "sunrise",
+      "basis_time": "2027-10-07T06:17:04.765710+05:30",
       "notes_hi": null,
       "notes_en": null
     },

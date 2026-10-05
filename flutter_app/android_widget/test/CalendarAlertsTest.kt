@@ -39,6 +39,21 @@ class CalendarAlertsTest {
         val item = JSONObject().put("title", "Today").put("body", "Panchang").put("events", "Birthday")
         CalendarAlerts.storeCache(context, JSONObject().put(iso(), item).toString(), true)
     }
+    @Test fun morningUsesTithiTitleAndEventsKeepTheirDateTitle() {
+        val item = JSONObject().put("title", "Shukla Paksha Ashtami")
+            .put("body", "Durga Ashtami\n19 October 2026")
+            .put("date", "19 October 2026").put("events", "Birthday")
+        CalendarAlerts.storeCache(context, JSONObject().put(iso(), item).toString(), true)
+        CalendarAlerts.deliverDue(context)
+        val manager = Shadows.shadowOf(context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+        val morning = manager.getNotification(500)
+        val events = manager.getNotification(501)
+        assertEquals("Shukla Paksha Ashtami", morning.extras.getCharSequence("android.title").toString())
+        assertEquals("Durga Ashtami\n19 October 2026\nBirthday", morning.extras.getCharSequence("android.bigText").toString())
+        assertEquals("19 October 2026", events.extras.getCharSequence("android.title").toString())
+        assertEquals("Birthday", events.extras.getCharSequence("android.text").toString())
+    }
+
     @Test fun blockedPermissionDoesNotConsumeEitherReminder() {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         Shadows.shadowOf(manager).setNotificationsEnabled(false)

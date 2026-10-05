@@ -415,7 +415,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             .toList(growable: false);
         final holiday =
             nationalHolidays.where((h) => h.occursOn(d)).firstOrNull;
-        final eventLabel = _eventLabel(cell, majorEvents, personalForDay) ??
+        final eventLabel = _eventLabel(d, cell, majorEvents, personalForDay) ??
             (holiday == null
                 ? null
                 : L10n(widget.language).pick(holiday.nameHi, holiday.nameEn));
@@ -558,25 +558,19 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   String? _eventLabel(
+    DateTime date,
     _CalendarCellData cell,
     List<FestivalObservance> majorEvents,
     List<PersonalEvent> personalEvents,
   ) {
     if (majorEvents.isNotEmpty) {
-      return _shortEventName(majorEvents.first);
+      return majorEvents.take(2).map(_shortEventName).join(' · ');
     }
     if (personalEvents.isNotEmpty) {
       return personalEvents.first.title;
     }
-    if (cell.tithi.value.index == 11) {
-      return widget.language == AppLanguage.hi ? 'एकादशी' : 'Ekadashi';
-    }
-    if (cell.tithi.rawIndex == 15) {
-      return widget.language == AppLanguage.hi ? 'पूर्णिमा' : 'Purnima';
-    }
-    if (cell.tithi.rawIndex == 30) {
-      return widget.language == AppLanguage.hi ? 'अमावस्या' : 'Amavasya';
-    }
+    final recurring = sunriseObservances(date, cell.tithi, cell.month);
+    if (recurring.isNotEmpty) return _shortEventName(recurring.first);
     return null;
   }
 
@@ -609,6 +603,9 @@ class _CalendarScreenState extends State<CalendarScreen>
       'janmashtami': 'जन्माष्टमी',
       'ganesh_chaturthi': 'गणेश चतुर्थी',
       'shardiya_navratri': 'नवरात्रि',
+      'chaitra_navratri': 'चैत्र नवरात्रि',
+      'durga_ashtami': 'दुर्गा अष्टमी',
+      'chaitra_durga_ashtami': 'दुर्गा अष्टमी',
       'vijayadashami': 'दशहरा',
       'karwa_chauth': 'करवा चौथ',
       'dhanteras': 'धनतेरस',
@@ -625,6 +622,9 @@ class _CalendarScreenState extends State<CalendarScreen>
       'janmashtami': 'Janmashtami',
       'ganesh_chaturthi': 'Ganesh Ch.',
       'shardiya_navratri': 'Navratri',
+      'chaitra_navratri': 'Chaitra Navratri',
+      'durga_ashtami': 'Durga Ashtami',
+      'chaitra_durga_ashtami': 'Durga Ashtami',
       'vijayadashami': 'Dussehra',
       'karwa_chauth': 'Karwa Chauth',
       'dhanteras': 'Dhanteras',
