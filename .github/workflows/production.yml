@@ -122,14 +122,14 @@ jobs:
       - name: Upload Play bundle
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build17-play-aab
+          name: hindu-calendar-1.0.0-build18-play-aab
           path: flutter_app/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
       - name: Upload Dart symbols
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build17-dart-symbols
+          name: hindu-calendar-1.0.0-build18-dart-symbols
           path: flutter_app/build/symbols/**
           if-no-files-found: error
 
@@ -137,7 +137,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: play-build17-test-reports-${{ github.run_attempt }}
+          name: play-build18-test-reports-${{ github.run_attempt }}
           path: |
             flutter_app/build/ci/*.log
             flutter_app/build/app/reports/tests/**

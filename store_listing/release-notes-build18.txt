@@ -1,0 +1,1 @@
+Refined home-screen widgets with centred content, compact spacing, clearer typography and improved handling of long festival names and Hindi text.

@@ -95,7 +95,7 @@ jobs:
           appid="$($tool manifest application-id build/app/outputs/flutter-apk/app-release.apk)"
           version="$($tool manifest version-code build/app/outputs/flutter-apk/app-release.apk)"
           [ "$appid" = "in.hinducalendar.hindu_calendar" ]
-          [ "$version" = "17" ]
+          [ "$version" = "18" ]
           if [ "$target" -lt 36 ]; then
             echo "::error::Google Play requires target API 36+ for new apps as of Aug 31, 2026"
             exit 1
@@ -116,7 +116,7 @@ jobs:
       - name: Upload QA APK
         uses: actions/upload-artifact@v4
         with:
-          name: hindu-calendar-1.0.0-build17-qa-apk
+          name: hindu-calendar-1.0.0-build18-qa-apk
           path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
@@ -124,7 +124,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: qa-build17-test-reports-${{ github.run_attempt }}
+          name: qa-build18-test-reports-${{ github.run_attempt }}
           path: |
             flutter_app/build/ci/*.log
             flutter_app/build/app/reports/tests/**

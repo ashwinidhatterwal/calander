@@ -5,10 +5,10 @@
 1. Create a GitHub repository.
 2. Put the contents of this checkpoint at the repository root.
 3. Push to the `main` branch.
-4. Open **Actions → Android build**.
+4. Open **Actions → Android QA build**.
 5. Run the workflow if it did not start automatically.
 6. After success, open the workflow run's **Artifacts** section.
-7. Download `hindu-calendar-checkpoint-06-apk`.
+7. Download `hindu-calendar-1.0.0-build18-qa-apk`.
 8. Extract and install `app-release.apk` on an Android test device.
 
 ## Current Android identity
@@ -16,10 +16,10 @@
 ```text
 App label: हिन्दू कैलेंडर
 Package ID: in.hinducalendar.hindu_calendar
-Version: 0.6.0+6
+Version: 1.0.0+18
 ```
 
-The package ID is provisional. Change it before public Play Store publication if a final brand/domain is selected.
+Keep the existing package ID and upload signing key for updates.
 
 ## Store release later
 

@@ -1,24 +1,18 @@
-Hindu Calendar 1.0.0+17 — Panchang notification and Durga Ashtami
+Hindu Calendar 1.0.0+18 — Polished home-screen widgets
 
-Upload this full source package to the existing GitHub repository. Run QA and
-Production Play bundle on the same commit; wait for both checks to pass. Test
-notifications and calendar tiles, then upload the signed build17 AAB to Play.
+Upload the complete package contents to the existing GitHub repository root.
+Run Android QA build and Production Play bundle; both now label build18 artifacts.
+Install the QA APK before uploading the signed build18 AAB to Play.
 
-1. Morning reminder: tithi is the prominent title, festival/vrat names come
-   first in the body, followed by date and any personal events. Hindi/English.
-   Separate personal-event notification keeps its date title.
-2. Missing Durga rules added: Ashwin Durga Ashtami, Chaitra Durga Ashtami,
-   Chaitra Navratri start. Monthly Durgashtami excluded as requested.
-   Calendar and details/notification engine now share recurring labels.
-   Two simultaneous major festivals can appear in the calendar badge.
-3. Launcher icon unchanged; this was a feasibility question. A tithi widget
-   is recommended over daily activity-alias icon switching.
+Both widgets now centre their entire content block, including after enlargement.
+Oversized decorative icon/badge removed. Padding is smaller and explicit.
+Daily widget defaults to 2x2 cells, festival widget to 3x2 cells on Android 12+.
+Festival title has up to three lines with automatic font fitting; Hindi font
+padding protects vowel marks. Rounded warm cards have a subtle border and
+matching dark/dynamic colour variants. Taps and cached calendar data retained.
 
-Android 9 startup compatibility from build16 is retained.
-Local source/permission checks, pure-Dart domain/payload checks, and Python
-festival regressions passed. Flutter UI and native integration regression
-checks are included for GitHub; not run locally. Full details in docs/CHECKPOINT_17.md.
-
-CI17-01: corrected a legacy test expecting date as title. See docs/CI_FIX_17_01.md.
-
-CI17-02: fix clock-race assertion, run native tests before packaging, pin runner/JDK, and save test reports. See docs/CI_FIX_17_02.md.
+After installation, remove/re-add existing widgets once so launcher grid
+metadata is refreshed. Check Hindi/English, light/dark, normal/larger font,
+portrait/landscape, and minimum/enlarged sizes on the actual launcher.
+Resource/source/permission checks passed locally. Full APK/AAB build and
+on-device visual verification could not be performed in this environment.
