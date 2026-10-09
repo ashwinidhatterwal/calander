@@ -47,9 +47,8 @@ class TodayPanchangWidgetProvider : HomeWidgetProvider() {
                 val month = widgetData.getString("day_${slot}_month", "") ?: ""
                 val sunrise = widgetData.getString("day_${slot}_sunrise", "—") ?: "—"
                 val sunset = widgetData.getString("day_${slot}_sunset", "—") ?: "—"
-                setTextViewText(R.id.widget_today_date, listOf(weekday, date).filter { it.isNotBlank() }.joinToString(" • "))
+                setTextViewText(R.id.widget_today_date, listOf(weekday, date, month).filter { it.isNotBlank() }.joinToString(" • "))
                 setTextViewText(R.id.widget_today_tithi, tithi)
-                setTextViewText(R.id.widget_today_month, month)
                 setTextViewText(R.id.widget_today_sun, "☀ $sunrise   ◒ $sunset")
                 setOnClickPendingIntent(R.id.widget_root, launchIntent(context))
             }

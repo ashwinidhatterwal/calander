@@ -1,0 +1,1 @@
+More compact home-screen widgets with translucent backgrounds, opaque text and less empty space.

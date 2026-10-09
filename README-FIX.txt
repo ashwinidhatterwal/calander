@@ -1,18 +1,20 @@
-Hindu Calendar 1.0.0+18 — Polished home-screen widgets
+Hindu Calendar 1.0.0+19 — Compact translucent widgets
+
+Based on build18, verified against current GitHub main f24afad.
+Both widgets now request 3x1 launcher cells instead of two rows, with a 64dp
+minimum height. The visible card wraps its text instead of filling unused slot
+height. Daily date and lunar month share a metadata line; all data retained.
+The background is 65% transparent (35% opaque) in every theme variant; all text
+colours remain fully opaque. The opaque border has been removed.
 
 Upload the complete package contents to the existing GitHub repository root.
-Run Android QA build and Production Play bundle; both now label build18 artifacts.
-Install the QA APK before uploading the signed build18 AAB to Play.
+Run Android QA build and Production Play bundle for build19. Install QA first.
+REMOVE AND RE-ADD both widgets to reset existing launcher placement. They can
+now be resized down to one row where the launcher supports it. The exact grid
+slot size is controlled by the launcher. Check long event names, Hindi/English,
+normal/larger system fonts and light/dark wallpaper before publishing.
 
-Both widgets now centre their entire content block, including after enlargement.
-Oversized decorative icon/badge removed. Padding is smaller and explicit.
-Daily widget defaults to 2x2 cells, festival widget to 3x2 cells on Android 12+.
-Festival title has up to three lines with automatic font fitting; Hindi font
-padding protects vowel marks. Rounded warm cards have a subtle border and
-matching dark/dynamic colour variants. Taps and cached calendar data retained.
-
-After installation, remove/re-add existing widgets once so launcher grid
-metadata is refreshed. Check Hindi/English, light/dark, normal/larger font,
-portrait/landscape, and minimum/enlarged sizes on the actual launcher.
-Resource/source/permission checks passed locally. Full APK/AAB build and
-on-device visual verification could not be performed in this environment.
+Passed locally: source checkpoint checks, six permission-audit tests, XML parse,
+compact sizing/transparency checks and scaffold shell syntax.
+Android resource compiler/Flutter toolchain were unavailable for this revision;
+APK/AAB compilation and actual launcher rendering remain pending in GitHub/device.
