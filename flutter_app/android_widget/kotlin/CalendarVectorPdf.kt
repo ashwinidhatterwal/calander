@@ -22,8 +22,14 @@ object CalendarVectorPdf {
 
     fun build(context: Context, pages: List<Map<String, Any?>>): ByteArray {
         require(pages.size == 1 || pages.size == 12) { "Expected one or twelve months" }
-        val face = Typeface.createFromAsset(context.assets, "flutter_assets/assets/fonts/NotoSansDevanagari.ttf")
-        val icon = context.assets.open("flutter_assets/assets/branding/app_icon.png").use { BitmapFactory.decodeStream(it) }
+        // Static TrueType faces embed as reusable font subsets. Variable fonts and
+        // synthetic bold can force Skia to emit expensive Type 3 glyph paths.
+        val face = Typeface.createFromAsset(context.assets, "flutter_assets/assets/fonts/CalendarPdfRegular.ttf")
+        val boldFace = Typeface.createFromAsset(context.assets, "flutter_assets/assets/fonts/CalendarPdfBold.ttf")
+        val icon = context.assets.open("flutter_assets/assets/branding/app_icon.png").use {
+            // The icon is only 37 PDF points wide: 128px remains sharp at print size.
+            BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = 8 })
+        }
         val qr = context.assets.open("flutter_assets/assets/branding/play_store_qr.png").use { BitmapFactory.decodeStream(it) }
         requireNotNull(icon); requireNotNull(qr)
         val document = PdfDocument()
@@ -33,7 +39,7 @@ object CalendarVectorPdf {
                 try {
                     val canvas = page.canvas
                     canvas.scale(.5f, .5f)
-                    drawMonth(canvas, data, face, icon, qr)
+                    drawMonth(canvas, data, face, boldFace, icon, qr)
                 } finally { document.finishPage(page) }
             }
             val output = ByteArrayOutputStream()
@@ -45,7 +51,7 @@ object CalendarVectorPdf {
         }
     }
 
-    internal fun drawMonth(c: Canvas, data: Map<String, Any?>, face: Typeface,
+    internal fun drawMonth(c: Canvas, data: Map<String, Any?>, face: Typeface, boldFace: Typeface,
                           icon: android.graphics.Bitmap, qr: android.graphics.Bitmap) {
         val ink = Color.rgb(68, 45, 35)
         val accent = Color.rgb(168, 70, 27)
@@ -62,7 +68,7 @@ object CalendarVectorPdf {
                  align: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL) {
             if (value.isEmpty()) return
             val p = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                this.color = color; textSize = size; typeface = face; isFakeBoldText = bold
+                this.color = color; textSize = size; typeface = if (bold) boldFace else face
             }
             val layout = StaticLayout.Builder.obtain(value, 0, value.length, p, w.toInt())
                 .setAlignment(align).setIncludePad(false).setLineSpacing(0f, 1.18f)
@@ -124,14 +130,23 @@ object CalendarVectorPdf {
         rect(946f,1452f,196f,196f,Color.WHITE)
         paint.color=Color.BLACK; paint.style=Paint.Style.FILL; paint.isAntiAlias=false
         val sx=196f/qr.width; val sy=196f/qr.height
-        for (row in 0 until qr.height) {
-            var col=0
-            while(col<qr.width) {
-                if(Color.red(qr.getPixel(col,row))>=128) { col++; continue }
-                val start=col
-                while(col<qr.width && Color.red(qr.getPixel(col,row))<128) col++
-                c.drawRect(946f+start*sx,1452f+row*sy,946f+col*sx,1452f+(row+1)*sy,paint)
+        // Adjacent source rows repeat the same QR modules. Draw each band once,
+        // instead of hundreds of near-identical one-pixel-high rectangles.
+        val pixels = IntArray(qr.width * qr.height)
+        qr.getPixels(pixels, 0, qr.width, 0, 0, qr.width, qr.height)
+        fun black(row: Int, col: Int) = Color.red(pixels[row * qr.width + col]) < 128
+        var row = 0
+        while (row < qr.height) {
+            var endRow = row + 1
+            while (endRow < qr.height && (0 until qr.width).all { black(row, it) == black(endRow, it) }) endRow++
+            var col = 0
+            while (col < qr.width) {
+                if (!black(row, col)) { col++; continue }
+                val start = col
+                while (col < qr.width && black(row, col)) col++
+                c.drawRect(946f+start*sx,1452f+row*sy,946f+col*sx,1452f+endRow*sy,paint)
             }
+            row = endRow
         }
     }
 }

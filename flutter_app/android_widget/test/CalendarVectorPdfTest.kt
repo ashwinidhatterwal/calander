@@ -39,7 +39,9 @@ class CalendarVectorPdfTest {
     @Test fun hindiAndEnglishPageDesignDrawsOnNativeCanvas() {
         val context = RuntimeEnvironment.getApplication()
         val face = android.graphics.Typeface.createFromAsset(context.assets,
-            "flutter_assets/assets/fonts/NotoSansDevanagari.ttf")
+            "flutter_assets/assets/fonts/CalendarPdfRegular.ttf")
+        val boldFace = android.graphics.Typeface.createFromAsset(context.assets,
+            "flutter_assets/assets/fonts/CalendarPdfBold.ttf")
         val icon = context.assets.open("flutter_assets/assets/branding/app_icon.png").use {
             android.graphics.BitmapFactory.decodeStream(it) }
         val qr = context.assets.open("flutter_assets/assets/branding/play_store_qr.png").use {
@@ -48,7 +50,7 @@ class CalendarVectorPdfTest {
             for (hindi in listOf(true, false)) {
                 val bitmap = android.graphics.Bitmap.createBitmap(1190,1684,android.graphics.Bitmap.Config.ARGB_8888)
                 try {
-                    CalendarVectorPdf.drawMonth(android.graphics.Canvas(bitmap),month(hindi,0),face,icon,qr)
+                    CalendarVectorPdf.drawMonth(android.graphics.Canvas(bitmap),month(hindi,0),face,boldFace,icon,qr)
                     assertEquals(android.graphics.Color.rgb(255,250,245),bitmap.getPixel(0,20))
                     assertEquals(android.graphics.Color.rgb(168,70,27),bitmap.getPixel(0,0))
                     assertEquals(android.graphics.Color.WHITE,bitmap.getPixel(946,1452))

@@ -21,7 +21,7 @@ calendar = source('flutter_app/lib/screens/calendar_screen.dart')
 main = source('flutter_app/lib/main.dart')
 holidays = source('flutter_app/lib/domain/state_holidays_2026.dart')
 festival_ui = source('flutter_app/lib/screens/festivals_screen.dart')
-check('version: 1.0.0+23' in pubspec, 'version is 1.0.0+23')
+check('version: 1.0.0+24' in pubspec, 'version is 1.0.0+24')
 check('assets/data/district_boundaries.json' in pubspec, 'district geometry is bundled')
 check('compute(findDistrict' in lookup, 'district parsing and geometry run in a background isolate')
 check('repairSavedDistrict' in main and 'repairSavedDistrict' in location, 'old saved division labels are repaired without GPS')
@@ -69,7 +69,7 @@ for workflow in ['android', 'production']:
     text = source(f'.github/workflows/{workflow}.yml')
     check('validate_checkpoint17.py' in text and 'audit_android_permissions.py' in text,
           f'{workflow} workflow validates checkpoint 17 and merged permissions')
-    check('build10-' not in text, f'{workflow} artifact labels identify build 17')
+    check('build10-' not in text, f'{workflow} artifact labels identify current build')
 
 # Exercise real fallback data independently of Flutter toolchain availability.
 data = json.loads(source('flutter_app/assets/data/district_boundaries.json'))
@@ -165,6 +165,22 @@ for workflow, build_step in [('android', 'Build QA release APK'), ('production',
           f'{workflow} preserves failure diagnostics without ignoring tests')
 check('assertEquals(now + 60000, at)' not in source('flutter_app/android_widget/test/CalendarAlertsTest.kt'),
       'delayed reminder test does not assume equal wall-clock reads')
+
+# PDF fonts must remain static TrueType assets: variable tables force Type 3
+# paths in Android/Skia, making otherwise small calendars slow to display.
+import struct
+for label in ['Regular', 'Bold']:
+    font = root / f'flutter_app/assets/fonts/CalendarPdf{label}.ttf'
+    raw = font.read_bytes()
+    count = struct.unpack_from('>H', raw, 4)[0]
+    tags = {raw[12 + i * 16:16 + i * 16] for i in range(count)}
+    check(b'fvar' not in tags and b'gvar' not in tags
+          and b'glyf' in tags and b'GSUB' in tags and b'GPOS' in tags,
+          f'PDF {label} font is static TrueType with Hindi shaping tables')
+    check(f'assets/fonts/CalendarPdf{label}.ttf' in pubspec,
+          f'PDF {label} font is bundled for Android exports')
+check('isFakeBoldText' not in source('flutter_app/android_widget/kotlin/CalendarVectorPdf.kt'),
+      'PDF exporter avoids synthetic bold glyph paths')
 
 for ok, description in checks:
     print(('PASS' if ok else 'FAIL') + ' - ' + description)
