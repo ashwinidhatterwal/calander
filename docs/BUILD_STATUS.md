@@ -1,8 +1,9 @@
-# Current checkpoint: 1.0.0+21
+# Current checkpoint: 1.0.0+22
 
-Bold tithi-first monthly tiles and one-page monthly / 12-page yearly PDF sharing.
-Includes the build 20 widget readability and transparency improvements.
+Widget layout repair, portrait PDFs with Hindu/Gregorian headers, useful daily
+Panchang details and a Hindi app-download footer/QR; Hindu month transitions
+and complete-week month grids.
 
-Local analyzer, actual PDF rendering and narrow-screen layout checks pass.
-GitHub Flutter/native tests, Android packaging and phone sharing remain pending.
-See CHECKPOINT_21.md for exact verification and remaining checks.
+Local analyzer, actual PDF render/QR and app layout checks pass.
+Full GitHub Flutter/native tests, Android packaging and phone/launcher tests
+remain pending. See CHECKPOINT_22.md for precise coverage and limitations.

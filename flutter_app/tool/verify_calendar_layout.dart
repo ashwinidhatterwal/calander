@@ -5,6 +5,7 @@ import 'package:hindu_calendar/core/app_theme.dart';
 import 'package:hindu_calendar/core/localization.dart';
 import 'package:hindu_calendar/core/locations.dart';
 import 'package:hindu_calendar/domain/panchang_engine.dart';
+import 'package:hindu_calendar/domain/calendar_layout.dart';
 import 'package:hindu_calendar/domain/festival_engine.dart';
 import 'package:hindu_calendar/screens/calendar_screen.dart';
 
@@ -45,6 +46,34 @@ Future<void> main() async {
 
     visit(binding.rootElement!);
     final now = DateTime.now();
+    final dates = monthGridDates(DateTime.utc(now.year, now.month));
+    final grid = elements.map((e) => e.widget).whereType<GridView>().first;
+    if ((grid.childrenDelegate as SliverChildBuilderDelegate).childCount !=
+        dates.length) {
+      throw StateError('Month grid contains an extra row');
+    }
+    for (final d in dates.where((d) => d.month == now.month)) {
+      final current = engine.monthCell(d, locations.first);
+      final previous = engine.monthCell(
+          d.subtract(const Duration(days: 1)), locations.first);
+      final changed = current.month.index != previous.month.index ||
+          current.adhik != previous.adhik;
+      final found = elements
+          .where((e) =>
+              e.widget.key ==
+              ValueKey('hindu-month-start-${d.year}-${d.month}-${d.day}'))
+          .toList();
+      if (found.isNotEmpty &&
+          (!changed ||
+              !(found.single.widget as Text)
+                  .data!
+                  .contains(current.month.en))) {
+        throw StateError('Incorrect Hindu month transition label');
+      }
+      if (changed && found.isEmpty) {
+        throw StateError('Missing Hindu month transition label');
+      }
+    }
     final key =
         ValueKey('calendar-cell-${now.year}-${now.month}-1-${now.day == 1}');
     final tile = elements.firstWhere((e) => e.widget.key == key);
@@ -88,7 +117,7 @@ Future<void> main() async {
       exit(1);
     }
     stdout.writeln(
-        'PASS $width px: bold tithi above date, PDF choices, no render errors');
+        'PASS $width px: tithi/date order, final week, Hindu month labels, PDF choices, no render errors');
   }
   exit(0);
 }

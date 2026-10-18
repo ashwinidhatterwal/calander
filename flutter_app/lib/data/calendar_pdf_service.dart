@@ -17,6 +17,21 @@ import '../domain/panchang_engine.dart';
 /// deliberately excluded from a calendar intended for sharing.
 class CalendarPdfService {
   static const channel = MethodChannel('in.hinducalendar/calendar_pdf');
+  static const playStoreUrl =
+      'https://play.google.com/store/apps/details?id=in.hinducalendar.hindu_calendar';
+  static Future<ui.Image>? _qr;
+  static Future<ui.Image>? _icon;
+  static Future<ui.Image> _assetImage(String path) async {
+    final data = await rootBundle.load(path);
+    final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    try {
+      return (await codec.getNextFrame()).image;
+    } finally {
+      codec.dispose();
+    }
+  }
+
   static Future<void>? _font;
   static Future<void> loadFont() => _font ??= _loadFont();
   static Future<void> _loadFont() async {
@@ -50,6 +65,11 @@ class CalendarPdfService {
           day++) {
         final d = DateTime.utc(date.year, date.month, day);
         final cell = panchang.monthCell(d, location);
+        final detail = panchang.buildDay(d, location);
+        String time(DateTime utc) => panchang.time12(utc, location,
+            amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'));
+        final nextDay =
+            panchang.localDateOfUtc(detail.tithiEndUtc, location).isAfter(d);
         final raw =
             cell.tithi.index + (cell.pakshaHi.startsWith('शुक्ल') ? 0 : 15);
         final events = major
@@ -77,7 +97,15 @@ class CalendarPdfService {
           'tithi': l.pick(cell.tithi.hi, cell.tithi.en),
           'paksha': l.pick(cell.pakshaHi, cell.pakshaEn),
           'events': names.join(' · '),
+          'hinduMonth':
+              '${cell.adhik ? '${l.adhik} ' : ''}${l.pick(cell.month.hi, cell.month.en)}',
+          'samvat': '${detail.vikramSamvat}',
+          'nakshatra': l.pick(detail.nakshatra.hi, detail.nakshatra.en),
+          'sunrise': time(detail.sunriseUtc),
+          'sunset': time(detail.sunsetUtc),
+          'tithiEnd': '${time(detail.tithiEndUtc)}${nextDay ? ' +1' : ''}',
         });
+        if (day % 7 == 0) await Future<void>.delayed(Duration.zero);
       }
       final image = await renderMonth(date, days, language, location);
       try {
@@ -102,16 +130,17 @@ class CalendarPdfService {
   static Future<void> share(Uint8List bytes, String filename) => channel
       .invokeMethod<void>('share', {'bytes': bytes, 'filename': filename});
 
-  /// A4 landscape at 144 dpi. Text is shaped by Flutter with a bundled Hindi
-  /// font before embedding, so exported matras never depend on a PDF viewer.
+  /// Portrait A4 at 144 dpi, with pre-shaped Indic text and a permanent
+  /// store-listing QR rather than a URL tied to a particular release artifact.
   static Future<ui.Image> renderMonth(
-    DateTime month,
-    List<Map<String, String>> days,
-    AppLanguage language,
-    GeoLocation location,
-  ) async {
-    const width = 1684;
-    const height = 1190;
+      DateTime month,
+      List<Map<String, String>> days,
+      AppLanguage language,
+      GeoLocation location) async {
+    final qr = await (_qr ??= _assetImage('assets/branding/play_store_qr.png'));
+    final icon = await (_icon ??= _assetImage('assets/branding/app_icon.png'));
+    const width = 1190;
+    const height = 1684;
     final l = L10n(language);
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
@@ -119,28 +148,20 @@ class CalendarPdfService {
     const accent = Color(0xFFA8461B);
     const muted = Color(0xFF80695E);
     canvas.drawColor(const Color(0xFFFFFAF5), BlendMode.src);
-    void text(
-      String value,
-      double x,
-      double y,
-      double w,
-      double size, {
-      Color color = ink,
-      bool bold = false,
-      int lines = 1,
-      TextAlign align = TextAlign.left,
-    }) {
+    void text(String value, double x, double y, double w, double size,
+        {Color color = ink,
+        bool bold = false,
+        int lines = 1,
+        TextAlign align = TextAlign.left}) {
       final painter = TextPainter(
         text: TextSpan(
-          text: value,
-          style: TextStyle(
-            fontFamily: 'CalendarPdf',
-            fontSize: size,
-            height: 1.18,
-            color: color,
-            fontWeight: bold ? FontWeight.w800 : FontWeight.w400,
-          ),
-        ),
+            text: value,
+            style: TextStyle(
+                fontFamily: 'CalendarPdf',
+                fontSize: size,
+                height: 1.18,
+                color: color,
+                fontWeight: bold ? FontWeight.w800 : FontWeight.w400)),
         textDirection: TextDirection.ltr,
         textAlign: align,
         maxLines: lines,
@@ -151,136 +172,104 @@ class CalendarPdfService {
     }
 
     canvas.drawRect(
-      const Rect.fromLTWH(0, 0, 1684, 10),
-      Paint()..color = accent,
-    );
-    text(l.appName, 44, 29, 1000, 23, color: accent, bold: true);
+        const Rect.fromLTWH(0, 0, 1190, 9), Paint()..color = accent);
+    text(l.appName, 36, 26, 700, 23, color: accent, bold: true);
+    text(l.pick(location.cityHi, location.cityEn), 760, 27, 394, 18,
+        color: muted, align: TextAlign.right);
+    final hinduMonths = days.map((d) => d['hinduMonth']!).toSet().join(' • ');
+    text('$hinduMonths ${l.month}', 36, 65, 1118, 38, bold: true);
     final names = language == AppLanguage.hi ? monthNamesHi : monthNamesEn;
-    text(
-      '${names[month.month - 1]} ${month.year}',
-      44,
-      65,
-      1100,
-      49,
-      bold: true,
-    );
-    text(
-      l.pick(location.cityHi, location.cityEn),
-      1150,
-      51,
-      490,
-      24,
-      color: muted,
-      align: TextAlign.right,
-    );
-    text(
-      l.pick('सूर्योदय की तिथि • भारतीय समय', 'Tithi at sunrise • IST'),
-      1040,
-      90,
-      600,
-      18,
-      color: muted,
-      align: TextAlign.right,
-    );
-    const left = 44.0;
-    const top = 182.0;
-    const gap = 8.0;
-    const cellW = (1596.0 - 6 * gap) / 7;
+    text('${names[month.month - 1]} ${month.year}', 36, 116, 1118, 30,
+        color: accent, bold: true);
+    final years = days.map((d) => d['samvat']!).toSet().join('–');
+    text(l.pick('विक्रम संवत $years', 'Vikram Samvat $years'), 36, 165, 600, 17,
+        color: muted);
+    text(l.pick('सूर्योदय की तिथि • भारतीय समय', 'Tithi at sunrise • IST'), 590,
+        165, 564, 17,
+        color: muted, align: TextAlign.right);
+    const left = 36.0, top = 248.0, gap = 6.0;
+    const cellW = (1118.0 - 6 * gap) / 7;
     final offset = month.weekday % 7;
     final rows = ((offset + days.length) / 7).ceil();
-    final cellH = (880.0 - (rows - 1) * gap) / rows;
+    final cellH = (1128.0 - (rows - 1) * gap) / rows;
     final weekdays = language == AppLanguage.hi ? shortWeekHi : shortWeekEn;
     for (var col = 0; col < 7; col++) {
-      text(
-        weekdays[col],
-        left + col * (cellW + gap),
-        143,
-        cellW,
-        22,
-        color: col == 0 ? accent : muted,
-        bold: true,
-        align: TextAlign.center,
-      );
+      text(weekdays[col], left + col * (cellW + gap), 210, cellW, 19,
+          color: col == 0 ? accent : muted,
+          bold: true,
+          align: TextAlign.center);
     }
     for (var i = 0; i < days.length; i++) {
       final slot = offset + i;
       final x = left + (slot % 7) * (cellW + gap);
       final y = top + (slot ~/ 7) * (cellH + gap);
       final rect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, y, cellW, cellH),
-        const Radius.circular(12),
-      );
+          Rect.fromLTWH(x, y, cellW, cellH), const Radius.circular(10));
       canvas.drawRRect(rect, Paint()..color = const Color(0xFFFFF0E5));
       canvas.drawRRect(
-        rect,
-        Paint()
-          ..color = const Color(0xFFE8D5C7)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1,
-      );
+          rect,
+          Paint()
+            ..color = const Color(0xFFE8D5C7)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1);
       final day = days[i];
-      text(day['tithi']!, x + 10, y + 9, cellW - 20, 24, bold: true, lines: 1);
-      text(day['paksha']!, x + 10, y + 41, cellW - 20, 14, color: muted);
-      if (day['events']!.isNotEmpty) {
-        text(
-          day['events']!,
-          x + 10,
-          y + 64,
-          cellW - 20,
-          16,
-          color: accent,
-          bold: true,
-          lines: 2,
-        );
-      }
+      text(day['tithi']!, x + 8, y + 8, cellW - 16, 21, bold: true);
+      text(day['paksha']!, x + 8, y + 36, cellW - 16, 12.5, color: muted);
+      text(day['events']!, x + 8, y + 55, cellW - 16, 13,
+          color: accent, bold: true, lines: 2);
+      text('${l.pick('नक्षत्र', 'Nak.')} ${day['nakshatra']}', x + 8,
+          y + cellH - 96, cellW - 16, 12,
+          color: muted);
+      text('${l.sunrise} ${day['sunrise']}', x + 8, y + cellH - 79, cellW - 16,
+          12,
+          color: muted);
       text(
-        day['day']!,
-        x + 10,
-        y + cellH - 40,
-        cellW - 20,
-        29,
-        color: slot % 7 == 0 ? accent : ink,
-        bold: true,
-        align: TextAlign.right,
-      );
+          '${l.sunset} ${day['sunset']}', x + 8, y + cellH - 62, cellW - 16, 12,
+          color: muted);
+      text('${l.pick('तिथि अंत', 'Ends')} ${day['tithiEnd']}', x + 8,
+          y + cellH - 45, cellW - 16, 11.5,
+          color: muted);
+      text(day['day']!, x + 8, y + cellH - 29, cellW - 16, 23,
+          color: slot % 7 == 0 ? accent : ink,
+          bold: true,
+          align: TextAlign.right);
     }
-    canvas.drawLine(
-      const Offset(44, 1090),
-      const Offset(1640, 1090),
-      Paint()..color = const Color(0xFFE8D5C7),
-    );
     text(
-      l.pick(
-        'हिन्दू कैलेंडर • पंचांग, पर्व और तिथि अनुस्मारक',
-        'Hindu Calendar • Panchang, festivals & tithi reminders',
-      ),
-      44,
-      1107,
-      1150,
-      20,
-      color: accent,
-      bold: true,
-    );
-    text(
-      l.pick(
-        'Google Play पर हिन्दू कैलेंडर खोजें',
-        'Find Hindu Calendar on Google Play',
-      ),
-      44,
-      1140,
-      1200,
-      16,
-      color: muted,
-    );
-    text(
-      '${names[month.month - 1]} ${month.year}',
-      1250,
-      1120,
-      390,
-      18,
-      color: muted,
-      align: TextAlign.right,
-    );
+        l.pick('तिथि सूर्योदय के समय की है। +1 का अर्थ अगला दिन है।',
+            'Tithi is shown at sunrise. +1 means the following day.'),
+        36,
+        1394,
+        1118,
+        13,
+        color: muted);
+
+    // App promotion stays below the calendar, with a crisp, unbranded QR quiet zone.
+    final footer = RRect.fromRectAndRadius(
+        const Rect.fromLTWH(36, 1440, 1118, 220), const Radius.circular(20));
+    canvas.drawRRect(footer, Paint()..color = const Color(0xFFFFE8D5));
+    canvas.drawCircle(
+        const Offset(94, 1498), 44, Paint()..color = const Color(0xFFFFD3A8));
+    canvas.save();
+    canvas.clipRRect(RRect.fromRectAndRadius(
+        const Rect.fromLTWH(57, 1461, 74, 74), const Radius.circular(37)));
+    canvas.drawImageRect(
+        icon,
+        Rect.fromLTWH(0, 0, icon.width.toDouble(), icon.height.toDouble()),
+        const Rect.fromLTWH(57, 1461, 74, 74),
+        Paint()..filterQuality = FilterQuality.high);
+    canvas.restore();
+    text('आपका रोज़ का पंचांग, अब मोबाइल पर', 152, 1470, 766, 26,
+        color: ink, bold: true);
+    text('हिन्दू कैलेंडर ऐप डाउनलोड करें', 152, 1520, 766, 29,
+        color: accent, bold: true);
+    text('तिथि, पर्व और व्रत एक जगह। डाउनलोड करने के लिए QR स्कैन करें।', 152,
+        1570, 766, 18,
+        color: muted, lines: 2);
+    canvas.drawImageRect(
+        qr,
+        Rect.fromLTWH(0, 0, qr.width.toDouble(), qr.height.toDouble()),
+        const Rect.fromLTWH(946, 1452, 196, 196),
+        Paint()..filterQuality = FilterQuality.none);
     final picture = recorder.endRecording();
     try {
       return await picture.toImage(width, height);
@@ -325,10 +314,10 @@ class _ImagePdf {
         zlib.encode(rgb),
       ),
     );
-    final content = _add(_stream('', _ascii('q 842 0 0 595 0 0 cm /Im0 Do Q')));
+    final content = _add(_stream('', _ascii('q 595 0 0 842 0 0 cm /Im0 Do Q')));
     final link = _add(
       _ascii(
-        '<< /Type /Annot /Subtype /Link /Rect [22 12 620 46] '
+        '<< /Type /Annot /Subtype /Link /Rect [18 12 577 122] '
         '/Border [0 0 0] /A << /S /URI /URI '
         '(https://play.google.com/store/apps/details?id=in.hinducalendar.hindu_calendar) >> >>',
       ),
@@ -336,7 +325,7 @@ class _ImagePdf {
     _pages.add(
       _add(
         _ascii(
-          '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] '
+          '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] '
           '/Resources << /XObject << /Im0 $image 0 R >> >> /Contents $content 0 R /Annots [$link 0 R] >>',
         ),
       ),

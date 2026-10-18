@@ -7,6 +7,7 @@ import 'package:hindu_calendar/core/locations.dart';
 import 'package:hindu_calendar/data/calendar_pdf_service.dart';
 import 'package:hindu_calendar/domain/panchang_engine.dart';
 import 'package:hindu_calendar/domain/festival_engine.dart';
+import 'package:hindu_calendar/domain/models.dart';
 
 // Standalone engine verification also works without a test-runner network port.
 Future<void> main() async {
@@ -15,16 +16,26 @@ Future<void> main() async {
     final output = Directory(Platform.environment['CALENDAR_PDF_PREVIEW_DIR'] ??
         '/tmp/calendar-pdf-preview');
     await output.create(recursive: true);
+    final demo = Platform.environment['CALENDAR_PDF_DEMO'] == '1';
+    final month = demo ? DateTime.utc(2026, 10) : DateTime.utc(2024, 3);
+    final location = demo
+        ? const GeoLocation(
+            id: 'hanumangarh_demo',
+            cityHi: 'हनुमानगढ़',
+            cityEn: 'Hanumangarh',
+            latitude: 29.58,
+            longitude: 74.29)
+        : locations.first;
     final engine = PanchangEngine();
     final festivals = FestivalEngine(engine);
-    for (final language in AppLanguage.values) {
-      for (final yearly in [false, true]) {
+    for (final language in (demo ? [AppLanguage.hi] : AppLanguage.values)) {
+      for (final yearly in (demo ? [false] : [false, true])) {
         final progress = <int>[];
         final bytes = await CalendarPdfService.build(
-          month: DateTime.utc(2024, 3),
+          month: month,
           yearly: yearly,
           language: language,
-          location: locations.first,
+          location: location,
           panchang: engine,
           festival: festivals,
           onProgress: progress.add,

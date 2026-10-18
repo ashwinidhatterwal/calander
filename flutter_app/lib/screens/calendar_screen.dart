@@ -11,6 +11,7 @@ import '../domain/civil_holidays.dart';
 import '../data/current_location_service.dart';
 import '../data/calendar_pdf_service.dart';
 import '../domain/models.dart';
+import '../domain/calendar_layout.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/personal_event.dart';
 import 'about_support_screen.dart';
@@ -423,17 +424,16 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   Widget _calendarGrid(List<FestivalObservance> major) {
     final first = DateTime.utc(visibleMonth.year, visibleMonth.month, 1);
-    final offset = first.weekday % 7;
-    final start = first.subtract(Duration(days: offset));
+    final dates = monthGridDates(first);
     final now = DateTime.now();
 
     return LayoutBuilder(builder: (context, constraints) {
       final width = (constraints.maxWidth - 46) / 7;
       final naturalHeight = width / .62;
       final minimumHeight =
-          84 * MediaQuery.textScalerOf(context).scale(10.5) / 10.5;
+          98 * MediaQuery.textScalerOf(context).scale(10.5) / 10.5;
       return GridView.builder(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 96),
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 7,
           mainAxisExtent:
@@ -441,11 +441,15 @@ class _CalendarScreenState extends State<CalendarScreen>
           mainAxisSpacing: 6,
           crossAxisSpacing: 5,
         ),
-        itemCount: 42,
+        itemCount: dates.length,
         itemBuilder: (context, i) {
-          final d = start.add(Duration(days: i));
+          final d = dates[i];
           final inside = d.month == visibleMonth.month;
           final cell = _cellData(d);
+          final previous = _cellData(d.subtract(const Duration(days: 1)));
+          final startsHinduMonth = inside &&
+              (cell.month.index != previous.month.index ||
+                  cell.adhik != previous.adhik);
           final majorEvents =
               major.where((x) => _sameDate(x.localDate, d)).toList();
           final personalForDay = widget.personalEvents
@@ -520,6 +524,23 @@ class _CalendarScreenState extends State<CalendarScreen>
                       color: inside ? normalText : mutedSub,
                     ),
                   ),
+                  if (startsHinduMonth)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3),
+                      child: Text(
+                        '${cell.adhik ? '${L10n(widget.language).adhik} ' : ''}${L10n(widget.language).pick(cell.month.hi, cell.month.en)} ${L10n(widget.language).month}',
+                        key: ValueKey(
+                            'hindu-month-start-${d.year}-${d.month}-${d.day}'),
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 8.5,
+                            height: 1.05,
+                            fontWeight: FontWeight.w800,
+                            color: scheme.primary),
+                      ),
+                    ),
                   const Spacer(),
                   if (eventLabel != null && inside)
                     Container(

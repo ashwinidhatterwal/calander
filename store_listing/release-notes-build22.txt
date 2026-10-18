@@ -1,0 +1,14 @@
+हिन्दी
+• विजेट में पाठ, जगह और आकार का बेहतर तालमेल।
+• हिन्दू और अंग्रेज़ी महीनों के साथ पोर्ट्रेट कैलेंडर PDF।
+• नक्षत्र, सूर्योदय-सूर्यास्त और तिथि समाप्ति का समय।
+• ऐप डाउनलोड करने के लिए QR कोड।
+• माह बदलने वाली तारीख पर हिन्दू महीने का नाम।
+• अगले महीने की अनावश्यक अतिरिक्त पंक्ति हटाई गई।
+
+English
+• Improved widget text sizing, spacing and alignment.
+• Portrait calendar PDFs with Hindu/Gregorian month headers and daily details.
+• App-download QR code and Hindi footer.
+• Hindu month changes labelled on their dates.
+• Month grids stop at the final occupied week.

@@ -1,17 +1,16 @@
-HINDU CALENDAR — COMPLETE BUILD 21 SOURCE
+HINDU CALENDAR — BUILD 22 COMPLETE SOURCE
 
-1. Extract this ZIP and upload its contents to the repository root, including
-   .github, flutter_app and tools. Do not upload the ZIP itself as app source.
-2. Wait for Android QA build to pass.
-3. Run Production Play bundle on that same commit.
-4. Download hindu-calendar-1.0.0-build21-play-aab, extract app-release.aab,
-   and upload version code 21 to your Play Console testing track.
+Includes widget text layout repair, portrait PDF exports with Hindu/Gregorian
+month headers and more daily details, natural Hindi app promotion and a Play
+Store QR, Hindu month transition labels, and correctly sized month grids.
 
-New: bold tithi above the lower Gregorian date; three-dot menu → Share calendar
-PDF → monthly (one page) or yearly (12 pages). PDF language and calculations
-follow the app language and saved location. Small clickable app footer only.
-Build 20 widget readability/transparency improvements are included.
+Upload ALL ZIP contents to the repository root, including .github. Wait for
+Android QA build to pass, then run Production Play bundle on the same commit.
+Download hindu-calendar-1.0.0-build22-play-aab for Play Console version code 22.
 
-Local analyzer, PDF engine export/visual review, narrow-layout checks, source
-checks and permission tests passed. Full GitHub tests and Android compilation,
-plus phone share testing, remain required. Details: docs/CHECKPOINT_21.md.
+After updating, re-add existing widgets so the launcher applies the new sizing.
+Test both widgets with Hindi/English, enlarged system text and widget resizing.
+
+Local analyzer, source/permission checks, actual PDF rendering/QR decoding and
+in-app layout checks passed. Native widget tests, full GitHub workflows and
+phone testing remain pending. Exact validation: docs/CHECKPOINT_22.md.

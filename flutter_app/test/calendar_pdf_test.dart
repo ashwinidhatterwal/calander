@@ -37,7 +37,7 @@ void main() {
             expect(RegExp(r'/Type /Page\s').allMatches(text).length, count);
             expect(progress, List.generate(count, (i) => i + 1));
             expect(text, contains('/Count $count '));
-            expect(text, contains('/MediaBox [0 0 842 595]'));
+            expect(text, contains('/MediaBox [0 0 595 842]'));
             expect(
               text,
               contains(
