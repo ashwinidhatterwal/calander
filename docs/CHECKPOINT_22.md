@@ -19,8 +19,13 @@ Resizing still refreshes the current widget data.
 
 Native layout regressions cover both widget layouts, Hindi/English content,
 compact/resized rectangles, font scales 1 / 1.3 / 1.6, on Android 9 and 15.
-They check row bounds, text-layout height and ellipsis. They are included for
-GitHub and have not run locally; launcher/device verification remains required.
+They check row bounds, text-layout height and ellipsis. Both tests now pass
+locally against the final source: 72 combinations total. The fixture attaches
+RemoteViews to a real test Activity and completes autosizing before measuring.
+Android 8+ widgets use the app's bundled Hindi font for consistent measurement
+and rendering. The autosize floor uses dp so enlarged system text does not
+raise the minimum above the compact row height; the maximum still uses sp.
+Launcher/device verification remains required. See CI_FIX_22_02.md.
 
 ## PDF
 
@@ -61,7 +66,12 @@ GitHub and have not run locally; launcher/device verification remains required.
 - Actual UI-engine checks at 320/400 logical pixels pass for tithi/date order,
   month transition labels, final-week count, export choices and layout errors.
 - Existing source checks, six permission tests and archive checks pass.
+- Native widget tests pass with AGP 8.7.3, Gradle 8.11.1, Kotlin 2.1.0,
+  Java 17 and Robolectric 4.17 native graphics on API 28 and 35. Rendered widgets
+  were visually reviewed in Hindi/English on both APIs. The reusable
+  tools/verify_widget_layouts.py stages the actual app resources and test.
 
-Full GitHub Flutter/native tests, APK/AAB compilation and launcher/phone tests
-remain pending. Local engine verification used a network-denied process with
+The preceding GitHub run passed analysis and all 63 Flutter tests. The updated
+full GitHub suite, APK/AAB compilation and launcher/phone tests remain pending.
+Local engine verification used a network-denied process with
 public SDK/dependency files; no cloud instance-metadata access was allowed.

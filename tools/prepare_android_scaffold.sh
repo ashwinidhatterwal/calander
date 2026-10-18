@@ -51,6 +51,10 @@ fi
 
 # Theme-aware home-screen widgets.
 cp -R android_widget/res/. android/app/src/main/res/
+# Use the same bundled Hindi font for widget measurement and rendering.
+# Keep one source font instead of storing duplicate TTFs in the repository.
+mkdir -p android/app/src/main/res/font
+cp assets/fonts/NotoSansDevanagari.ttf android/app/src/main/res/font/calendar_widget_text.ttf
 kotlin_dir="android/app/src/main/kotlin/in/hinducalendar/hindu_calendar"
 mkdir -p "$kotlin_dir"
 cp android_widget/kotlin/*.kt "$kotlin_dir/"

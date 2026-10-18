@@ -1,0 +1,20 @@
+plugins {
+    id 'com.android.library' version '8.7.3'
+    id 'org.jetbrains.kotlin.android' version '2.1.0'
+}
+android {
+    namespace 'in.hinducalendar.hindu_calendar'
+    compileSdk 35
+    buildToolsVersion '35.0.0'
+    defaultConfig { minSdk 24; targetSdk 35 }
+    testOptions { unitTests { includeAndroidResources = true; all {
+        jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED', '--add-opens=java.base/java.io=ALL-UNNAMED'
+        ['http.proxyHost','http.proxyPort','https.proxyHost','https.proxyPort','http.nonProxyHosts'].each { p -> if (System.getProperty(p)) systemProperty p, System.getProperty(p) }
+        if (System.getProperty('calendar.widget.preview.dir')) systemProperty 'calendar.widget.preview.dir', System.getProperty('calendar.widget.preview.dir')
+        systemProperty 'robolectric.dependency.repo.url', 'https://repo.maven.apache.org/maven2'
+        testLogging { events 'passed', 'failed', 'skipped'; exceptionFormat 'full'; showStandardStreams true }
+    } } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    kotlinOptions { jvmTarget = '17' }
+}
+dependencies { testImplementation 'junit:junit:4.13.2'; testImplementation 'org.robolectric:robolectric:4.17' }

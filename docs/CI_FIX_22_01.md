@@ -1,5 +1,8 @@
 # Build 22 native test compilation correction
 
+Historical first correction. The subsequent run exposed two layout failures;
+see CI_FIX_22_02.md for the current, locally executed correction.
+
 Failed QA run: https://github.com/ashwinidhatterwal/calander/actions/runs/39096030758
 Commit: 50858abb10e1af49742388c927af739a64363b35.
 

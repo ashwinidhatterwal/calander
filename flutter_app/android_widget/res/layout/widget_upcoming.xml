@@ -14,6 +14,7 @@
         android:gravity="center"
         android:orientation="vertical">
         <TextView
+            style="@style/CalendarWidgetText"
             android:id="@+id/widget_upcoming_kind"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -28,10 +29,11 @@
             android:textSize="12sp"
             android:textStyle="normal"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="7sp"
+            android:autoSizeMinTextSize="7dp"
             android:autoSizeMaxTextSize="12sp"
             android:autoSizeStepGranularity="1sp" />
         <TextView
+            style="@style/CalendarWidgetText"
             android:id="@+id/widget_upcoming_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -46,10 +48,11 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="8sp"
+            android:autoSizeMinTextSize="8dp"
             android:autoSizeMaxTextSize="20sp"
             android:autoSizeStepGranularity="1sp" />
         <TextView
+            style="@style/CalendarWidgetText"
             android:id="@+id/widget_upcoming_date"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -64,7 +67,7 @@
             android:textSize="12sp"
             android:textStyle="normal"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="7sp"
+            android:autoSizeMinTextSize="7dp"
             android:autoSizeMaxTextSize="12sp"
             android:autoSizeStepGranularity="1sp" />
     </LinearLayout>
