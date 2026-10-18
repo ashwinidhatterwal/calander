@@ -14,3 +14,8 @@ Test both widgets with Hindi/English, enlarged system text and widget resizing.
 Local analyzer, source/permission checks, actual PDF rendering/QR decoding and
 in-app layout checks passed. Native widget tests, full GitHub workflows and
 phone testing remain pending. Exact validation: docs/CHECKPOINT_22.md.
+
+CI correction 22.01: fixed WidgetLayoutTest's undeclared ApplicationProvider
+import by using the existing Robolectric RuntimeEnvironment API. Version stays
+22. Upload/commit this corrected package to start a NEW QA run. Re-running the
+old failed run will use its old source. See docs/CI_FIX_22_01.md.

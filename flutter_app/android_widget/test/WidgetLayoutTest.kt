@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.RemoteViews
 import android.widget.TextView
-import androidx.test.core.app.ApplicationProvider
+import org.robolectric.RuntimeEnvironment
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +19,7 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class WidgetLayoutTest {
     @Test fun compactAndResizedWidgetsKeepAllThreeRowsVisible() {
-        val base = ApplicationProvider.getApplicationContext<Context>()
+        val base: Context = RuntimeEnvironment.getApplication()
         for (scale in listOf(1f, 1.3f, 1.6f)) {
             val config = Configuration(base.resources.configuration).apply { fontScale = scale }
             val context = base.createConfigurationContext(config)
