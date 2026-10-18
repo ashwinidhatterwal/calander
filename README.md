@@ -72,7 +72,7 @@ permission audit
 Expected artifact:
 
 ```text
-hindu-calendar-1.0.0-build15-qa-apk
+hindu-calendar-1.0.0-build21-qa-apk
 ```
 
 ### Play Store AAB
@@ -82,8 +82,8 @@ Run **Production Play bundle** manually after configuring release secrets. It cr
 Expected artifacts:
 
 ```text
-hindu-calendar-1.0.0-build15-play-aab
-hindu-calendar-1.0.0-build15-dart-symbols
+hindu-calendar-1.0.0-build21-play-aab
+hindu-calendar-1.0.0-build21-dart-symbols
 ```
 
 The upload keystore and passwords must never be committed to this public repository.

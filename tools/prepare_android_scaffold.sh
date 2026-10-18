@@ -121,6 +121,13 @@ if '<queries>' not in text:
     text = text.replace('    <application', queries + '    <application', 1)
 
 receivers = '''
+        <provider android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.calendar_exports"
+            android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/calendar_export_paths" />
+        </provider>
+
         <receiver android:name=".CalendarAlarmReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

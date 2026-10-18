@@ -37,6 +37,20 @@ class MainActivity : FlutterActivity() {
     private var permissionReply: MethodChannel.Result? = null
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        MethodChannel(engine.dartExecutor.binaryMessenger, "in.hinducalendar/calendar_pdf").setMethodCallHandler { call, reply ->
+            if (call.method != "share") {
+                reply.notImplemented()
+            } else {
+                try {
+                    CalendarPdfShare.share(this,
+                        requireNotNull(call.argument<ByteArray>("bytes")),
+                        requireNotNull(call.argument<String>("filename")))
+                    reply.success(null)
+                } catch (error: Exception) {
+                    reply.error("pdf_share_failed", error.message, null)
+                }
+            }
+        }
         MethodChannel(engine.dartExecutor.binaryMessenger, CalendarAlerts.CHANNEL).setMethodCallHandler { call, reply ->
             when (call.method) {
                 "currentPosition" -> deviceLocation.request(reply)

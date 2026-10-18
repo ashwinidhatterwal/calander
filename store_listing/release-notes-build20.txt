@@ -1,0 +1,1 @@
+Improved widget readability with slightly larger text, balanced spacing and 40% transparent backgrounds.

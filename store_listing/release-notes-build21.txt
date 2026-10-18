@@ -1,0 +1,11 @@
+हिन्दी
+• मासिक कैलेंडर में तिथि अब ऊपर बोल्ड और तारीख नीचे।
+• PDF साझा करें: एक महीने का 1 पृष्ठ या पूरे वर्ष के 12 पृष्ठ।
+• साफ़ हिन्दी/English PDF, त्योहार और ऐप का छोटा परिचय।
+• छोटे स्क्रीन पर तारीख कार्ड बेहतर दिखते हैं।
+
+English
+• Bold tithi above the date in month cards.
+• Share a monthly (1 page) or yearly (12 pages) calendar PDF.
+• Clear Hindi/English PDFs with festivals and a subtle app footer.
+• Better date-card sizing on narrow screens.

@@ -9,6 +9,7 @@ import '../core/locations.dart';
 import '../domain/festival_engine.dart';
 import '../domain/civil_holidays.dart';
 import '../data/current_location_service.dart';
+import '../data/calendar_pdf_service.dart';
 import '../domain/models.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/personal_event.dart';
@@ -91,11 +92,13 @@ class _CalendarScreenState extends State<CalendarScreen>
   void _scheduleMidnight() {
     _midnightTimer?.cancel();
     final now = DateTime.now();
-    _midnightTimer =
-        Timer(DateTime(now.year, now.month, now.day + 1).difference(now), () {
-      if (mounted) setState(() => _futureKey = null);
-      _scheduleMidnight();
-    });
+    _midnightTimer = Timer(
+      DateTime(now.year, now.month, now.day + 1).difference(now),
+      () {
+        if (mounted) setState(() => _futureKey = null);
+        _scheduleMidnight();
+      },
+    );
   }
 
   @override
@@ -135,8 +138,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     final majorKey = '${visibleMonth.year}|${widget.location.cacheKey}';
     if (_majorKey != majorKey) {
       _majorKey = majorKey;
-      majorFuture = widget.festival
-          .majorFestivalsAsync(visibleMonth.year, widget.location);
+      majorFuture = widget.festival.majorFestivalsAsync(
+        visibleMonth.year,
+        widget.location,
+      );
     }
   }
 
@@ -173,19 +178,25 @@ class _CalendarScreenState extends State<CalendarScreen>
                           children: [
                             if (_locating)
                               const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2))
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
                             else
                               const Icon(Icons.location_on_outlined, size: 16),
                             const SizedBox(width: 4),
                             Flexible(
-                                child: Text(
-                                    l.pick(widget.location.cityHi,
-                                        widget.location.cityEn),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis)),
+                              child: Text(
+                                l.pick(
+                                  widget.location.cityHi,
+                                  widget.location.cityEn,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                             const Icon(Icons.expand_more, size: 18),
                           ],
                         ),
@@ -218,26 +229,41 @@ class _CalendarScreenState extends State<CalendarScreen>
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
+                  if (value == 'pdf') {
+                    _shareCalendarPdf();
+                    return;
+                  }
                   if (value == 'about') {
                     _openAboutSupport();
                     return;
                   }
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => NotificationsScreen(
-                              language: widget.language,
-                              onRefresh: widget.onRefreshNotifications ??
-                                  () async {})));
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NotificationsScreen(
+                        language: widget.language,
+                        onRefresh: widget.onRefreshNotifications ?? () async {},
+                      ),
+                    ),
+                  );
                 },
                 itemBuilder: (_) => [
                   PopupMenuItem(
-                      value: 'notifications',
-                      child: Text(l.pick('सूचनाएँ', 'Notifications'))),
+                    value: 'pdf',
+                    child: Text(
+                      l.pick('कैलेंडर PDF साझा करें', 'Share calendar PDF'),
+                    ),
+                  ),
                   PopupMenuItem(
-                      value: 'about',
-                      child: Text(l.pick(
-                          'सेटिंग और ऐप के बारे में', 'Settings & About'))),
+                    value: 'notifications',
+                    child: Text(l.pick('सूचनाएँ', 'Notifications')),
+                  ),
+                  PopupMenuItem(
+                    value: 'about',
+                    child: Text(
+                      l.pick('सेटिंग और ऐप के बारे में', 'Settings & About'),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -305,30 +331,36 @@ class _CalendarScreenState extends State<CalendarScreen>
                             ? monthNamesHi[visibleMonth.month - 1]
                             : monthNamesEn[visibleMonth.month - 1];
                         final monthCell = _cellData(visibleMonth);
-                        final hinduMonth =
-                            l.pick(monthCell.month.hi, monthCell.month.en);
+                        final hinduMonth = l.pick(
+                          monthCell.month.hi,
+                          monthCell.month.en,
+                        );
                         return InkWell(
                           borderRadius: BorderRadius.circular(14),
                           onTap: _pickMonthYear,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             child: Column(
                               children: [
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Flexible(
-                                        child: Text(
-                                      '$month ${visibleMonth.year}',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w800),
-                                    )),
+                                      child: Text(
+                                        '$month ${visibleMonth.year}',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                      ),
+                                    ),
                                     const SizedBox(width: 3),
                                     const Icon(Icons.arrow_drop_down, size: 20),
                                   ],
@@ -395,138 +427,149 @@ class _CalendarScreenState extends State<CalendarScreen>
     final start = first.subtract(Duration(days: offset));
     final now = DateTime.now();
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 96),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        childAspectRatio: .62,
-        mainAxisSpacing: 6,
-        crossAxisSpacing: 5,
-      ),
-      itemCount: 42,
-      itemBuilder: (context, i) {
-        final d = start.add(Duration(days: i));
-        final inside = d.month == visibleMonth.month;
-        final cell = _cellData(d);
-        final majorEvents =
-            major.where((x) => _sameDate(x.localDate, d)).toList();
-        final personalForDay = widget.personalEvents
-            .where((event) => _personalEventMatches(event, d, cell))
-            .toList(growable: false);
-        final holiday =
-            nationalHolidays.where((h) => h.occursOn(d)).firstOrNull;
-        final eventLabel = _eventLabel(d, cell, majorEvents, personalForDay) ??
-            (holiday == null
-                ? null
-                : L10n(widget.language).pick(holiday.nameHi, holiday.nameEn));
-        final personalOnly = majorEvents.isEmpty && personalForDay.isNotEmpty;
-        final isToday =
-            d.year == now.year && d.month == now.month && d.day == now.day;
+    return LayoutBuilder(builder: (context, constraints) {
+      final width = (constraints.maxWidth - 46) / 7;
+      final naturalHeight = width / .62;
+      final minimumHeight =
+          84 * MediaQuery.textScalerOf(context).scale(10.5) / 10.5;
+      return GridView.builder(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 96),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 7,
+          mainAxisExtent:
+              naturalHeight > minimumHeight ? naturalHeight : minimumHeight,
+          mainAxisSpacing: 6,
+          crossAxisSpacing: 5,
+        ),
+        itemCount: 42,
+        itemBuilder: (context, i) {
+          final d = start.add(Duration(days: i));
+          final inside = d.month == visibleMonth.month;
+          final cell = _cellData(d);
+          final majorEvents =
+              major.where((x) => _sameDate(x.localDate, d)).toList();
+          final personalForDay = widget.personalEvents
+              .where((event) => _personalEventMatches(event, d, cell))
+              .toList(growable: false);
+          final holiday =
+              nationalHolidays.where((h) => h.occursOn(d)).firstOrNull;
+          final eventLabel = _eventLabel(
+                  d, cell, majorEvents, personalForDay) ??
+              (holiday == null
+                  ? null
+                  : L10n(widget.language).pick(holiday.nameHi, holiday.nameEn));
+          final personalOnly = majorEvents.isEmpty && personalForDay.isNotEmpty;
+          final isToday =
+              d.year == now.year && d.month == now.month && d.day == now.day;
 
-        final scheme = Theme.of(context).colorScheme;
-        final normalText = scheme.onSurface;
-        final mutedText = normalText.withAlpha(80);
-        final normalSub = scheme.onSurfaceVariant;
-        final mutedSub = normalSub.withAlpha(70);
+          final scheme = Theme.of(context).colorScheme;
+          final normalText = scheme.onSurface;
+          final mutedText = normalText.withAlpha(80);
+          final normalSub = scheme.onSurfaceVariant;
+          final mutedSub = normalSub.withAlpha(70);
 
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final tileColor =
-            isDark ? const Color(0xFF2D221E) : const Color(0xFFFFF0E7);
-        final tileBorder =
-            isDark ? const Color(0xFF523E35) : const Color(0xFFE7CFC2);
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final tileColor =
+              isDark ? const Color(0xFF2D221E) : const Color(0xFFFFF0E7);
+          final tileBorder =
+              isDark ? const Color(0xFF523E35) : const Color(0xFFE7CFC2);
 
-        Color background;
-        if (isToday && inside) {
-          background =
-              isDark ? const Color(0xFF3A2B22) : const Color(0xFFFFE0CF);
-        } else if (inside) {
-          background = tileColor;
-        } else {
-          background = Colors.transparent;
-        }
+          Color background;
+          if (isToday && inside) {
+            background =
+                isDark ? const Color(0xFF3A2B22) : const Color(0xFFFFE0CF);
+          } else if (inside) {
+            background = tileColor;
+          } else {
+            background = Colors.transparent;
+          }
 
-        return InkWell(
-          borderRadius: BorderRadius.circular(13),
-          onTap: () => _openDay(d),
-          child: AnimatedContainer(
-            key: ValueKey(
-                'calendar-cell-${d.year}-${d.month}-${d.day}-${isToday && inside}'),
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.fromLTRB(3, 6, 3, 5),
-            decoration: BoxDecoration(
-              color: background,
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(
-                color: isToday && inside
-                    ? scheme.primary.withAlpha(180)
-                    : (inside ? tileBorder : Colors.transparent),
-                width: isToday && inside ? 1.2 : 0.8,
+          return InkWell(
+            borderRadius: BorderRadius.circular(13),
+            onTap: () => _openDay(d),
+            child: AnimatedContainer(
+              key: ValueKey(
+                'calendar-cell-${d.year}-${d.month}-${d.day}-${isToday && inside}',
               ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(
-                  '${d.day}',
-                  style: TextStyle(
-                    fontSize: 17,
-                    height: 1,
-                    fontWeight: FontWeight.w900,
-                    color: inside ? normalText : mutedText,
-                  ),
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.fromLTRB(3, 6, 3, 5),
+              decoration: BoxDecoration(
+                color: background,
+                borderRadius: BorderRadius.circular(13),
+                border: Border.all(
+                  color: isToday && inside
+                      ? scheme.primary.withAlpha(180)
+                      : (inside ? tileBorder : Colors.transparent),
+                  width: isToday && inside ? 1.2 : 0.8,
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  widget.language == AppLanguage.hi
-                      ? cell.tithi.value.hi
-                      : cell.tithi.value.en,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 10.5,
-                    height: 1.05,
-                    fontWeight: FontWeight.w500,
-                    color: inside ? normalSub : mutedSub,
-                  ),
-                ),
-                const Spacer(),
-                if (eventLabel != null && inside)
-                  Container(
-                    width: double.infinity,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: majorEvents.isNotEmpty
-                          ? scheme.primaryContainer.withAlpha(190)
-                          : personalOnly
-                              ? scheme.secondaryContainer.withAlpha(190)
-                              : scheme.tertiaryContainer.withAlpha(170),
-                      borderRadius: BorderRadius.circular(7),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    widget.language == AppLanguage.hi
+                        ? cell.tithi.value.hi
+                        : cell.tithi.value.en,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      height: 1.05,
+                      fontWeight: FontWeight.w800,
+                      color: inside ? normalText : mutedSub,
                     ),
-                    child: Text(
-                      eventLabel,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 8.3,
-                        height: 1.05,
-                        fontWeight: FontWeight.w800,
+                  ),
+                  const Spacer(),
+                  if (eventLabel != null && inside)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
                         color: majorEvents.isNotEmpty
-                            ? scheme.onPrimaryContainer
+                            ? scheme.primaryContainer.withAlpha(190)
                             : personalOnly
-                                ? scheme.onSecondaryContainer
-                                : scheme.onTertiaryContainer,
+                                ? scheme.secondaryContainer.withAlpha(190)
+                                : scheme.tertiaryContainer.withAlpha(170),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Text(
+                        eventLabel,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 8.3,
+                          height: 1.05,
+                          fontWeight: FontWeight.w800,
+                          color: majorEvents.isNotEmpty
+                              ? scheme.onPrimaryContainer
+                              : personalOnly
+                                  ? scheme.onSecondaryContainer
+                                  : scheme.onTertiaryContainer,
+                        ),
                       ),
                     ),
+                  const SizedBox(height: 3),
+                  Text(
+                    '${d.day}',
+                    style: TextStyle(
+                      fontSize: 17,
+                      height: 1,
+                      fontWeight: FontWeight.w900,
+                      color: inside ? normalText : mutedText,
+                    ),
                   ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 
   _CalendarCellData _cellData(DateTime d) {
@@ -640,6 +683,114 @@ class _CalendarScreenState extends State<CalendarScreen>
   bool _sameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
+  bool _exportingPdf = false;
+
+  Future<void> _shareCalendarPdf() async {
+    if (_exportingPdf) return;
+    final l = L10n(widget.language);
+    final month = visibleMonth;
+    final language = widget.language;
+    final location = widget.location;
+    final names = language == AppLanguage.hi ? monthNamesHi : monthNamesEn;
+    final yearly = await showModalBottomSheet<bool>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.calendar_month_outlined),
+              title: Text(l.pick('एक महीने का कैलेंडर', 'Monthly calendar')),
+              subtitle: Text(
+                '${names[month.month - 1]} ${month.year} · ${l.pick('1 पृष्ठ', '1 page')}',
+              ),
+              onTap: () => Navigator.pop(sheet, false),
+            ),
+            ListTile(
+              leading: const Icon(Icons.date_range_outlined),
+              title: Text(l.pick('पूरे वर्ष का कैलेंडर', 'Yearly calendar')),
+              subtitle: Text(
+                '${month.year} · ${l.pick('12 पृष्ठ', '12 pages')}',
+              ),
+              onTap: () => Navigator.pop(sheet, true),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (yearly == null || !mounted) return;
+    _exportingPdf = true;
+    final progress = ValueNotifier<int>(0);
+    final total = yearly ? 12 : 1;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: ValueListenableBuilder<int>(
+              valueListenable: progress,
+              builder: (_, value, child) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 18),
+                  Text(l.pick('कैलेंडर तैयार हो रहा है', 'Preparing calendar')),
+                  const SizedBox(height: 6),
+                  Text('$value / $total'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    var dialogOpen = true;
+    try {
+      final bytes = await CalendarPdfService.build(
+        month: month,
+        yearly: yearly,
+        language: language,
+        location: location,
+        panchang: widget.panchang,
+        festival: widget.festival,
+        onProgress: (value) => progress.value = value,
+      );
+      if (!mounted) return;
+      navigator.pop();
+      dialogOpen = false;
+      final period = yearly
+          ? '${month.year}'
+          : '${month.year}-${month.month.toString().padLeft(2, '0')}';
+      await CalendarPdfService.share(
+        bytes,
+        'Hindu-Calendar-$period-${language.name}.pdf',
+      );
+    } catch (_) {
+      if (mounted) {
+        // The progress dialog may already have closed before sharing failed.
+        if (dialogOpen) navigator.pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l.pick(
+                'PDF साझा नहीं हो सका। दोबारा कोशिश करें।',
+                'Could not share the PDF. Please try again.',
+              ),
+            ),
+          ),
+        );
+      }
+    } finally {
+      _exportingPdf = false;
+      // The dialog's reverse animation may still be using this notifier.
+      Future<void>.delayed(const Duration(seconds: 1), progress.dispose);
+    }
+  }
+
   Future<void> _pickMonthYear() async {
     var year = visibleMonth.year;
     final selected = await showModalBottomSheet<DateTime>(
@@ -678,7 +829,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                           onPressed: () {
                             final now = DateTime.now();
                             Navigator.pop(
-                                context, DateTime.utc(now.year, now.month, 1));
+                              context,
+                              DateTime.utc(now.year, now.month, 1),
+                            );
                           },
                           icon: const Icon(Icons.today_outlined),
                         ),
@@ -689,8 +842,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         border: Border.all(
-                            color:
-                                Theme.of(context).colorScheme.outlineVariant),
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
@@ -710,8 +863,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                                 items: [
                                   for (var y = 1900; y <= 2100; y++)
                                     DropdownMenuItem(
-                                        value: y,
-                                        child: Center(child: Text('$y'))),
+                                      value: y,
+                                      child: Center(child: Text('$y')),
+                                    ),
                                 ],
                                 onChanged: (value) {
                                   if (value != null) {
@@ -753,9 +907,13 @@ class _CalendarScreenState extends State<CalendarScreen>
                                 : null,
                           ),
                           onPressed: () => Navigator.pop(
-                              context, DateTime.utc(year, i + 1, 1)),
-                          child:
-                              Text(monthNames[i], textAlign: TextAlign.center),
+                            context,
+                            DateTime.utc(year, i + 1, 1),
+                          ),
+                          child: Text(
+                            monthNames[i],
+                            textAlign: TextAlign.center,
+                          ),
                         );
                       },
                     ),
@@ -776,8 +934,11 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   void _moveMonth(int delta) {
     setState(() {
-      visibleMonth =
-          DateTime.utc(visibleMonth.year, visibleMonth.month + delta, 1);
+      visibleMonth = DateTime.utc(
+        visibleMonth.year,
+        visibleMonth.month + delta,
+        1,
+      );
     });
   }
 
@@ -796,11 +957,16 @@ class _CalendarScreenState extends State<CalendarScreen>
         children: [
           ListTile(
             leading: const Icon(Icons.my_location),
-            title: Text(L10n(widget.language)
-                .pick('वर्तमान स्थान इस्तेमाल करें', 'Use current location')),
-            subtitle: Text(L10n(widget.language).pick(
+            title: Text(
+              L10n(widget.language)
+                  .pick('वर्तमान स्थान इस्तेमाल करें', 'Use current location'),
+            ),
+            subtitle: Text(
+              L10n(widget.language).pick(
                 'एक बार स्थान लें; फिर ऑफ़लाइन इस्तेमाल करें',
-                'Save once, then use offline. Tap again to refresh.')),
+                'Save once, then use offline. Tap again to refresh.',
+              ),
+            ),
             onTap: () {
               Navigator.pop(context);
               _useCurrentLocation();
@@ -809,17 +975,23 @@ class _CalendarScreenState extends State<CalendarScreen>
           if (widget.location.id == 'current')
             ListTile(
               leading: const Icon(Icons.check),
-              title: Text(L10n(widget.language)
-                  .pick('सहेजा हुआ वर्तमान स्थान', 'Saved current location')),
-              subtitle: Text(L10n(widget.language).pick(
+              title: Text(
+                L10n(widget.language)
+                    .pick('सहेजा हुआ वर्तमान स्थान', 'Saved current location'),
+              ),
+              subtitle: Text(
+                L10n(widget.language).pick(
                   '${widget.location.cityHi} · ${widget.location.stateHi}',
-                  '${widget.location.cityEn} · ${widget.location.stateEn}')),
+                  '${widget.location.cityEn} · ${widget.location.stateEn}',
+                ),
+              ),
             ),
           for (final x in locations)
             ListTile(
               leading: const Icon(Icons.location_city_outlined),
-              title:
-                  Text(widget.language == AppLanguage.hi ? x.cityHi : x.cityEn),
+              title: Text(
+                widget.language == AppLanguage.hi ? x.cityHi : x.cityEn,
+              ),
               subtitle: Text(
                 widget.language == AppLanguage.hi ? x.stateHi : x.stateEn,
               ),
@@ -837,10 +1009,16 @@ class _CalendarScreenState extends State<CalendarScreen>
         await widget.onLocationChanged(choice);
       } catch (_) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(L10n(widget.language).pick(
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              L10n(widget.language).pick(
                 'स्थान सहेजा नहीं जा सका। दोबारा कोशिश करें।',
-                'Could not save location. Please retry.'))));
+                'Could not save location. Please retry.',
+              ),
+            ),
+          ),
+        );
       } finally {
         if (mounted) setState(() => _locating = false);
       }
@@ -849,18 +1027,26 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   void _showLocationDiagnostics(String report) {
     final l = L10n(widget.language);
-    showDialog<void>(context: context, builder: (context) => AlertDialog(
-      title: Text(l.pick('स्थान जाँच', 'Location diagnostics')),
-      content: SingleChildScrollView(child: SelectableText(report)),
-      actions: [
-        TextButton(onPressed: () async {
-          await Clipboard.setData(ClipboardData(text: report));
-          if (context.mounted) Navigator.pop(context);
-        }, child: Text(l.pick('कॉपी करें', 'Copy'))),
-        TextButton(onPressed: () => Navigator.pop(context),
-            child: Text(l.pick('बंद करें', 'Close'))),
-      ],
-    ));
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l.pick('स्थान जाँच', 'Location diagnostics')),
+        content: SingleChildScrollView(child: SelectableText(report)),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: report));
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: Text(l.pick('कॉपी करें', 'Copy')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l.pick('बंद करें', 'Close')),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _useCurrentLocation() async {
@@ -878,48 +1064,78 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           persist: false,
           duration: const Duration(seconds: 3),
-          content: Text(l.pick('स्थान सहेजा गया। गणना IST में है।',
-              'Location saved. Calculations use IST.')),
-          action: SnackBarAction(label: l.pick('विवरण', 'Details'),
-              onPressed: () => _showLocationDiagnostics(LocationDiagnostics.report))));
+          content: Text(
+            l.pick(
+              'स्थान सहेजा गया। गणना IST में है।',
+              'Location saved. Calculations use IST.',
+            ),
+          ),
+          action: SnackBarAction(
+            label: l.pick('विवरण', 'Details'),
+            onPressed: () =>
+                _showLocationDiagnostics(LocationDiagnostics.report),
+          ),
+        ),
+      );
     } catch (error) {
       LocationDiagnostics.error('Location flow stopped', error);
       if (!mounted) return;
-      final code =
-          error is CurrentLocationException ? error.code
-              : error is TimeoutException ? 'timeout' : 'unavailable';
+      final code = error is CurrentLocationException
+          ? error.code
+          : error is TimeoutException
+              ? 'timeout'
+              : 'unavailable';
       final message = switch (code) {
         'noProvider' => l.pick(
             'GPS या नेटवर्क स्थान उपलब्ध नहीं है। फ़ोन का स्थान और सटीक अनुमति जाँचें।',
-            'No GPS/network provider is available. Check device location and precise permission.'),
+            'No GPS/network provider is available. Check device location and precise permission.',
+          ),
         'provider' => l.pick(
             'फ़ोन की स्थान सेवा ने त्रुटि दी। विवरण देखें या दोबारा कोशिश करें।',
-            'The phone location provider returned an error. View details or retry.'),
+            'The phone location provider returned an error. View details or retry.',
+          ),
         'saveFailed' => l.pick(
             'स्थान मिल गया, लेकिन सहेजा नहीं जा सका। दोबारा कोशिश करें।',
-            'Location found, but could not be saved. Please retry.'),
+            'Location found, but could not be saved. Please retry.',
+          ),
         'timeout' => l.pick(
             'फ़ोन से स्थान मिलने में समय लगा। खुली जगह में दोबारा कोशिश करें; सटीक स्थान अनुमति से मदद मिलेगी।',
-            'The phone could not get a location fix in time. Retry outdoors; precise location permission can help.'),
-        'disabled' => l.pick('फ़ोन का स्थान चालू करें या शहर चुनें।',
-            'Turn on device location or choose a city.'),
+            'The phone could not get a location fix in time. Retry outdoors; precise location permission can help.',
+          ),
+        'disabled' => l.pick(
+            'फ़ोन का स्थान चालू करें या शहर चुनें।',
+            'Turn on device location or choose a city.',
+          ),
         'deniedForever' => l.pick(
             'ऐप की सेटिंग में स्थान अनुमति दें या शहर चुनें।',
-            'Allow location in app settings or choose a city.'),
-        'denied' => l.pick('स्थान अनुमति नहीं मिली। शहर चुन सकते हैं।',
-            'Location permission denied. You can choose a city.'),
-        _ => l.pick('स्थान नहीं मिला। दोबारा कोशिश करें या शहर चुनें।',
-            'Location unavailable. Retry or choose a city.'),
+            'Allow location in app settings or choose a city.',
+          ),
+        'denied' => l.pick(
+            'स्थान अनुमति नहीं मिली। शहर चुन सकते हैं।',
+            'Location permission denied. You can choose a city.',
+          ),
+        _ => l.pick(
+            'स्थान नहीं मिला। दोबारा कोशिश करें या शहर चुनें।',
+            'Location unavailable. Retry or choose a city.',
+          ),
       };
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(persist: false, content: Text(message),
-              duration: const Duration(seconds: 12),
-              action: SnackBarAction(label: l.pick('विवरण', 'Details'),
-                  onPressed: () => _showLocationDiagnostics(LocationDiagnostics.report))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          persist: false,
+          content: Text(message),
+          duration: const Duration(seconds: 12),
+          action: SnackBarAction(
+            label: l.pick('विवरण', 'Details'),
+            onPressed: () =>
+                _showLocationDiagnostics(LocationDiagnostics.report),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _locating = false);
     }
@@ -969,7 +1185,12 @@ class _CalendarScreenState extends State<CalendarScreen>
 
 class _CalendarCellData {
   const _CalendarCellData(
-      this.tithi, this.pakshaHi, this.pakshaEn, this.month, this.adhik);
+    this.tithi,
+    this.pakshaHi,
+    this.pakshaEn,
+    this.month,
+    this.adhik,
+  );
   final TithiState tithi;
   final String pakshaHi;
   final String pakshaEn;
