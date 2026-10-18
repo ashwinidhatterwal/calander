@@ -38,10 +38,23 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
         MethodChannel(engine.dartExecutor.binaryMessenger, "in.hinducalendar/calendar_pdf").setMethodCallHandler { call, reply ->
-            if (call.method != "share") {
-                reply.notImplemented()
-            } else {
-                try {
+            when (call.method) {
+                "buildVector" -> {
+                    val pages = call.argument<List<Map<String, Any?>>>("pages")
+                    if (pages == null || call.argument<String>("playStoreUrl") != CalendarVectorPdf.STORE_URL) {
+                        reply.error("pdf_build_failed", "Invalid PDF request", null)
+                    } else {
+                        Executors.newSingleThreadExecutor().also { pool -> pool.execute {
+                            try {
+                                val bytes = CalendarVectorPdf.build(applicationContext, pages)
+                                runOnUiThread { reply.success(bytes) }
+                            } catch (error: Exception) {
+                                runOnUiThread { reply.error("pdf_build_failed", error.message, null) }
+                            } finally { pool.shutdown() }
+                        } }
+                    }
+                }
+                "share" -> try {
                     CalendarPdfShare.share(this,
                         requireNotNull(call.argument<ByteArray>("bytes")),
                         requireNotNull(call.argument<String>("filename")))
@@ -49,6 +62,7 @@ class MainActivity : FlutterActivity() {
                 } catch (error: Exception) {
                     reply.error("pdf_share_failed", error.message, null)
                 }
+                else -> reply.notImplemented()
             }
         }
         MethodChannel(engine.dartExecutor.binaryMessenger, CalendarAlerts.CHANNEL).setMethodCallHandler { call, reply ->

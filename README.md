@@ -1,3 +1,8 @@
+# Build 23: compact calendar cards and vector PDF exports
+
+See [README-FIX.txt](README-FIX.txt) and [validation](docs/CHECKPOINT_23.md)
+for the current release. The full prior implementation remains included.
+
 # Hindu Calendar — Checkpoint 15 Notification Settings
 
 Build 1.0.0+15 removes notification test buttons and diagnostic/report controls from the user settings screen. Reminder toggles, independent times, chime, permission, precise timing and conditional battery settings remain. See `docs/CHECKPOINT_15.md`.

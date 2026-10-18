@@ -163,6 +163,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                   children: [
                     Text(
                       l.appName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -429,16 +431,20 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     return LayoutBuilder(builder: (context, constraints) {
       final width = (constraints.maxWidth - 46) / 7;
-      final naturalHeight = width / .62;
-      final minimumHeight =
-          98 * MediaQuery.textScalerOf(context).scale(10.5) / 10.5;
+      final scale = MediaQuery.textScalerOf(context).scale(10.5) / 10.5;
+      final rows = dates.length ~/ 7;
+      final available = (constraints.maxHeight - 12 - (rows - 1) * 5) / rows;
+      // Fit full weeks on ordinary screens. Large accessibility text retains
+      // a readable minimum and can scroll instead of being clipped.
+      final minimumHeight = 52 * scale;
+      final naturalHeight = (width / .72).clamp(minimumHeight, 88 * scale);
+      final tileHeight = available.clamp(minimumHeight, naturalHeight);
       return GridView.builder(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 7,
-          mainAxisExtent:
-              naturalHeight > minimumHeight ? naturalHeight : minimumHeight,
-          mainAxisSpacing: 6,
+          mainAxisExtent: tileHeight,
+          mainAxisSpacing: 5,
           crossAxisSpacing: 5,
         ),
         itemCount: dates.length,
@@ -496,7 +502,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 'calendar-cell-${d.year}-${d.month}-${d.day}-${isToday && inside}',
               ),
               duration: const Duration(milliseconds: 150),
-              padding: const EdgeInsets.fromLTRB(3, 6, 3, 5),
+              padding: const EdgeInsets.fromLTRB(3, 4, 3, 3),
               decoration: BoxDecoration(
                 color: background,
                 borderRadius: BorderRadius.circular(13),
@@ -510,71 +516,93 @@ class _CalendarScreenState extends State<CalendarScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(
-                    widget.language == AppLanguage.hi
-                        ? cell.tithi.value.hi
-                        : cell.tithi.value.en,
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      height: 1.05,
-                      fontWeight: FontWeight.w800,
-                      color: inside ? normalText : mutedSub,
-                    ),
-                  ),
-                  if (startsHinduMonth)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3),
+                  SizedBox(
+                    height: 13 * scale,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
                       child: Text(
-                        '${cell.adhik ? '${L10n(widget.language).adhik} ' : ''}${L10n(widget.language).pick(cell.month.hi, cell.month.en)} ${L10n(widget.language).month}',
-                        key: ValueKey(
-                            'hindu-month-start-${d.year}-${d.month}-${d.day}'),
-                        maxLines: 2,
+                        widget.language == AppLanguage.hi
+                            ? cell.tithi.value.hi
+                            : cell.tithi.value.en,
+                        maxLines: 1,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontSize: 8.5,
-                            height: 1.05,
-                            fontWeight: FontWeight.w800,
-                            color: scheme.primary),
-                      ),
-                    ),
-                  const Spacer(),
-                  if (eventLabel != null && inside)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: majorEvents.isNotEmpty
-                            ? scheme.primaryContainer.withAlpha(190)
-                            : personalOnly
-                                ? scheme.secondaryContainer.withAlpha(190)
-                                : scheme.tertiaryContainer.withAlpha(170),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Text(
-                        eventLabel,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 8.3,
+                          fontSize: 10.5,
                           height: 1.05,
                           fontWeight: FontWeight.w800,
-                          color: majorEvents.isNotEmpty
-                              ? scheme.onPrimaryContainer
-                              : personalOnly
-                                  ? scheme.onSecondaryContainer
-                                  : scheme.onTertiaryContainer,
+                          color: inside ? normalText : mutedSub,
                         ),
                       ),
                     ),
-                  const SizedBox(height: 3),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: SizedBox(
+                          width: width - 6,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (startsHinduMonth)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    '${cell.adhik ? '${L10n(widget.language).adhik} ' : ''}${L10n(widget.language).pick(cell.month.hi, cell.month.en)} ${L10n(widget.language).month}',
+                                    key: ValueKey(
+                                        'hindu-month-start-${d.year}-${d.month}-${d.day}'),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 8.5,
+                                        height: 1.05,
+                                        fontWeight: FontWeight.w800,
+                                        color: scheme.primary),
+                                  ),
+                                ),
+                              if (eventLabel != null && inside)
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: majorEvents.isNotEmpty
+                                        ? scheme.primaryContainer.withAlpha(190)
+                                        : personalOnly
+                                            ? scheme.secondaryContainer
+                                                .withAlpha(190)
+                                            : scheme.tertiaryContainer
+                                                .withAlpha(170),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Text(
+                                    eventLabel,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 8.3,
+                                      height: 1.05,
+                                      fontWeight: FontWeight.w800,
+                                      color: majorEvents.isNotEmpty
+                                          ? scheme.onPrimaryContainer
+                                          : personalOnly
+                                              ? scheme.onSecondaryContainer
+                                              : scheme.onTertiaryContainer,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     '${d.day}',
                     style: TextStyle(
@@ -1254,7 +1282,7 @@ class _TodayCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: day == null
                 ? const SizedBox(
                     height: 70,
@@ -1264,39 +1292,52 @@ class _TodayCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '$title · ${l.pick(day!.weekdayHi, day!.weekdayEn)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.labelLarge,
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 3),
                             Text(
                               '${l.pick(day!.pakshaHi, day!.pakshaEn)} ${l.pick(day!.tithi.hi, day!.tithi.en)}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleLarge
+                                  .titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               '${day!.adhikMonth ? '${l.adhik} ' : ''}${l.pick(day!.purnimantaMonth.hi, day!.purnimantaMonth.en)} ${l.month}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${l.sunrise} ${panchang.time12(day!.sunriseUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
-                          ),
-                          Text(
-                            '${l.sunset} ${panchang.time12(day!.sunsetUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
-                          ),
-                          const SizedBox(height: 8),
-                          const Icon(Icons.chevron_right),
-                        ],
+                      const SizedBox(width: 8),
+                      DefaultTextStyle.merge(
+                        style: const TextStyle(fontSize: 11),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${l.sunrise} ${panchang.time12(day!.sunriseUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
+                            ),
+                            Text(
+                              '${l.sunset} ${panchang.time12(day!.sunsetUtc, location, amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'))}',
+                            ),
+                            const SizedBox(height: 8),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
                       ),
                     ],
                   ),

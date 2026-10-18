@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,18 @@ void main() {
     testWidgets(
       'PDF ${language.name}: six-row month and leap-year 12-page export',
       (tester) async {
+        final requests = <Map<Object?, Object?>>[];
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          CalendarPdfService.channel,
+          (call) async {
+            expect(call.method, 'buildVector');
+            final arguments = Map<Object?, Object?>.from(call.arguments as Map);
+            requests.add(arguments);
+            return Uint8List.fromList(ascii.encode('%PDF-native-test'));
+          },
+        );
+        addTearDown(() => tester.binding.defaultBinaryMessenger
+            .setMockMethodCallHandler(CalendarPdfService.channel, null));
         await tester.runAsync(() async {
           final engine = PanchangEngine();
           final festivals = FestivalEngine(engine);
@@ -31,26 +44,28 @@ void main() {
               festival: festivals,
               onProgress: progress.add,
             );
-            final text = latin1.decode(bytes);
+            expect(ascii.decode(bytes), '%PDF-native-test');
             final count = yearly ? 12 : 1;
-            expect(text.startsWith('%PDF-1.4'), isTrue);
-            expect(RegExp(r'/Type /Page\s').allMatches(text).length, count);
+            final request = requests.last;
+            final pages = request['pages'] as List;
+            expect(pages.length, count);
             expect(progress, List.generate(count, (i) => i + 1));
-            expect(text, contains('/Count $count '));
-            expect(text, contains('/MediaBox [0 0 595 842]'));
-            expect(
-              text,
-              contains(
-                'play.google.com/store/apps/details?id=in.hinducalendar.hindu_calendar',
-              ),
-            );
-            // This date forces six rows; leap-year yearly export includes Feb 29.
-            final previewDir = Platform.environment['CALENDAR_PDF_PREVIEW_DIR'];
-            if (previewDir != null) {
-              await Directory(previewDir).create(recursive: true);
+            expect(request['playStoreUrl'], CalendarPdfService.playStoreUrl);
+            final march = pages[yearly ? 2 : 0] as Map;
+            expect(march['offset'], 5);
+            expect((march['days'] as List).length, 31);
+            expect((march['days'] as List).first['tithi'], isNotEmpty);
+            expect(march['weekdays'], hasLength(7));
+            if (yearly) {
+              final february = pages[1] as Map;
+              expect((february['days'] as List).length, 29);
+            }
+            final dir = Platform.environment['CALENDAR_PDF_PAYLOAD_DIR'];
+            if (dir != null) {
+              await Directory(dir).create(recursive: true);
               await File(
-                '$previewDir/${language.name}-${yearly ? 'year' : 'month'}.pdf',
-              ).writeAsBytes(bytes);
+                      '$dir/${language.name}-${yearly ? 'year' : 'month'}.json')
+                  .writeAsString(jsonEncode(request));
             }
           }
         });

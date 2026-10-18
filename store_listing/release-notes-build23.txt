@@ -1,0 +1,7 @@
+हिन्दी:
+महीने की तारीखों के कार्ड अब छोटे और स्क्रीन के हिसाब से व्यवस्थित हैं।
+कैलेंडर PDF का टेक्स्ट ज़ूम करने पर भी साफ़ रहता है।
+
+English:
+More compact month cards adapt to the available screen space.
+Calendar PDF text remains sharp when zoomed.

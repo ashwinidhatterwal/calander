@@ -55,4 +55,49 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+  for (final size in [const Size(360, 740), const Size(400, 800)]) {
+    for (final language in AppLanguage.values) {
+      testWidgets('six weeks fit ${size.width}x${size.height} ${language.name}',
+          (tester) async {
+        await tester.binding.setSurfaceSize(size);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(HinduCalendarApp(
+          holikaOverrides: {},
+          initialLanguage: language,
+        ));
+        await settleCalendar(tester);
+        final now = DateTime.now();
+        var month = DateTime.utc(now.year, now.month);
+        for (var step = 0; step < 14; step++) {
+          final dates = monthGridDates(month);
+          final grid = find.byType(GridView).first;
+          final scroll =
+              find.descendant(of: grid, matching: find.byType(Scrollable));
+          final state = tester.state<ScrollableState>(scroll);
+          expect(state.position.maxScrollExtent, 0,
+              reason:
+                  'The final week must fit without scrolling at normal text size');
+          if (dates.length == 42) {
+            final last = dates.last;
+            final today = last.year == now.year &&
+                last.month == now.month &&
+                last.day == now.day;
+            final tile = find.byKey(ValueKey(
+                'calendar-cell-${last.year}-${last.month}-${last.day}-$today'));
+            expect(tile, findsOneWidget);
+            expect(tester.getBottomRight(tile).dy,
+                lessThanOrEqualTo(tester.getBottomRight(grid).dy));
+            expect(tester.takeException(), isNull);
+            break;
+          }
+          await tester
+              .tap(find.widgetWithIcon(IconButton, Icons.chevron_right).first);
+          await settleCalendar(tester);
+          month = DateTime.utc(month.year, month.month + 1);
+          if (step == 13) fail('Did not reach a six-row month');
+        }
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
+  }
 }

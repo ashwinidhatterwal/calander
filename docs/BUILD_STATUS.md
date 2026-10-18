@@ -1,12 +1,10 @@
-# Current checkpoint: 1.0.0+22
+# Current checkpoint: 1.0.0+23
 
-Widget layout repair, portrait PDFs with Hindu/Gregorian headers, useful daily
-Panchang details and a Hindi app-download footer/QR; Hindu month transitions
-and complete-week month grids.
+Compact month cards and vector-text PDF export with the existing portrait
+calendar theme. Complete validation and its limits: CHECKPOINT_23.md.
 
-Local analyzer, actual PDF render/QR and app layout checks pass.
-Both native widget layout tests pass locally: 72 combinations on Android 9/15,
-with strict text-height, row-bound and ellipsis checks. The preceding GitHub run
-passed analysis and 63 Flutter tests but failed these two native tests.
-The updated full GitHub suite, Android packaging and phone/launcher tests remain
-pending. See CI_FIX_22_02.md and CHECKPOINT_22.md for precise coverage.
+Analysis, all 67 Flutter tests, 74 source checks, six permission tests and native
+page-design/widget layout verification pass. GitHub APK/AAB packaging and
+physical-phone sharing remain to be checked. Actual Android 9 month/year PDF
+generation, page counts, vector glyph paths, links, QR decoding and rendered
+Hindi/English layouts have passed inspection.
