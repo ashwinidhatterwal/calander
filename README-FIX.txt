@@ -1,18 +1,14 @@
-HINDU CALENDAR — BUILD 24 COMPLETE SOURCE
+HINDU CALENDAR — BUILD 25 COMPLETE SOURCE
 
-PDF opening optimisation:
-- Static regular/bold TrueType fonts replace the variable font and fake bold
-  in PDF exports. Hindi shaping and vector text are retained.
-- QR runs are merged vertically without changing their pixels or link.
-- The small footer icon is decoded at 128x128 rather than 1024x1024.
-- Portrait page layout, calendar calculations and app/widget UI are retained.
+- Each PDF date card shows the correct Hindu month beneath the tithi.
+  Adhik months retain their prefix. Paksha sits beside the date at the bottom.
+- The app month grid fills its available height for four, five and six weeks.
+  Minimum tile height scales with text. Short windows scroll vertically;
+  extremely narrow windows retain minimum column width and scroll horizontally.
+- Build 24's fast-opening PDF fonts/QR/image optimisation is retained.
 
-Upload the complete contents to the existing GitHub repository.
-Run Android QA build and Production Play bundle on the same commit.
-Install the new QA APK, generate a NEW monthly and yearly PDF, and open both
-in the phone viewer that previously showed a blank page. Old PDF files do
-not change when the app updates.
-Only publish the build 24 AAB after CI passes and phone testing succeeds.
-Version: 1.0.0+24. Signing secrets remain the same.
-
-See docs/CHECKPOINT_24.md for evidence and remaining validation limits.
+Upload all contents to the existing repository, run Android QA build and
+Production Play bundle on the same commit. Test the QA APK at your normal
+screen/text size and generate NEW monthly/yearly PDFs before publishing.
+Version 1.0.0+25. Signing secrets remain unchanged.
+See docs/CHECKPOINT_25.md for completed checks and remaining limitations.

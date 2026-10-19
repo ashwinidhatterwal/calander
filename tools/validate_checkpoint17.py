@@ -21,7 +21,7 @@ calendar = source('flutter_app/lib/screens/calendar_screen.dart')
 main = source('flutter_app/lib/main.dart')
 holidays = source('flutter_app/lib/domain/state_holidays_2026.dart')
 festival_ui = source('flutter_app/lib/screens/festivals_screen.dart')
-check('version: 1.0.0+24' in pubspec, 'version is 1.0.0+24')
+check('version: 1.0.0+25' in pubspec, 'version is 1.0.0+25')
 check('assets/data/district_boundaries.json' in pubspec, 'district geometry is bundled')
 check('compute(findDistrict' in lookup, 'district parsing and geometry run in a background isolate')
 check('repairSavedDistrict' in main and 'repairSavedDistrict' in location, 'old saved division labels are repaired without GPS')
@@ -181,6 +181,11 @@ for label in ['Regular', 'Bold']:
           f'PDF {label} font is bundled for Android exports')
 check('isFakeBoldText' not in source('flutter_app/android_widget/kotlin/CalendarVectorPdf.kt'),
       'PDF exporter avoids synthetic bold glyph paths')
+
+check('text(d("hinduMonth"),x+8,y+36' in source('flutter_app/android_widget/kotlin/CalendarVectorPdf.kt'),
+      'PDF date cards render their own Hindu month')
+check('calendarTileHeight(' in calendar and 'naturalHeight' not in calendar,
+      'month grid uses viewport sizing without the old height cap')
 
 for ok, description in checks:
     print(('PASS' if ok else 'FAIL') + ' - ' + description)

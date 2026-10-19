@@ -28,6 +28,7 @@ class CalendarVectorPdfTest {
         "offset" to 5,
         "days" to (1..(if(index==1) 29 else 31)).map { day -> mapOf(
             "day" to "$day", "tithi" to if(hindi) "द्वादशी" else "Dwadashi",
+            "hinduMonth" to if(hindi) "अधिक मार्गशीर्ष" else "Adhika Margashirsha",
             "paksha" to if(hindi) "शुक्ल पक्ष" else "Shukla Paksha",
             "events" to if(day==25) (if(hindi) "होली • पूर्णिमा व्रत" else "Holi • Purnima Vrat") else "",
             "nakshatra" to if(hindi) "उत्तराभाद्रपद" else "Uttara Bhadrapada",

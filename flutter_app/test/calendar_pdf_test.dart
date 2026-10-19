@@ -28,8 +28,12 @@ void main() {
             return Uint8List.fromList(ascii.encode('%PDF-native-test'));
           },
         );
-        addTearDown(() => tester.binding.defaultBinaryMessenger
-            .setMockMethodCallHandler(CalendarPdfService.channel, null));
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            CalendarPdfService.channel,
+            null,
+          ),
+        );
         await tester.runAsync(() async {
           final engine = PanchangEngine();
           final festivals = FestivalEngine(engine);
@@ -56,6 +60,22 @@ void main() {
             expect((march['days'] as List).length, 31);
             expect((march['days'] as List).first['tithi'], isNotEmpty);
             expect(march['weekdays'], hasLength(7));
+            for (final page in pages.cast<Map>()) {
+              final month = yearly ? pages.indexOf(page) + 1 : 3;
+              for (final day in (page['days'] as List).cast<Map>()) {
+                final civil = DateTime.utc(
+                  2024,
+                  month,
+                  int.parse(day['day'] as String),
+                );
+                final cell = engine.monthCell(civil, locations.first);
+                final l = L10n(language);
+                expect(
+                  day['hinduMonth'],
+                  '${cell.adhik ? '${l.adhik} ' : ''}${l.pick(cell.month.hi, cell.month.en)}',
+                );
+              }
+            }
             if (yearly) {
               final february = pages[1] as Map;
               expect((february['days'] as List).length, 29);
@@ -64,8 +84,8 @@ void main() {
             if (dir != null) {
               await Directory(dir).create(recursive: true);
               await File(
-                      '$dir/${language.name}-${yearly ? 'year' : 'month'}.json')
-                  .writeAsString(jsonEncode(request));
+                '$dir/${language.name}-${yearly ? 'year' : 'month'}.json',
+              ).writeAsString(jsonEncode(request));
             }
           }
         });

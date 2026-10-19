@@ -105,12 +105,15 @@ object CalendarVectorPdf {
             rect(x,y,cellW,cellH,Color.rgb(255,240,229),10f)
             rect(x,y,cellW,cellH,Color.rgb(232,213,199),10f,true)
             text(d("tithi"),x+8,y+8,cellW-16,21f,bold=true)
-            text(d("paksha"),x+8,y+36,cellW-16,12.5f,muted)
+            // The month belongs to this date's sunrise, not the page header.
+            text(d("hinduMonth"),x+8,y+36,cellW-16,12.5f,muted)
             text(d("events"),x+8,y+55,cellW-16,13f,accent,true,2)
             text("${value("nakshatraLabel")} ${d("nakshatra")}",x+8,y+cellH-96,cellW-16,12f,muted)
             text("${value("sunriseLabel")} ${d("sunrise")}",x+8,y+cellH-79,cellW-16,12f,muted)
             text("${value("sunsetLabel")} ${d("sunset")}",x+8,y+cellH-62,cellW-16,12f,muted)
             text("${value("tithiEndLabel")} ${d("tithiEnd")}",x+8,y+cellH-45,cellW-16,11.5f,muted)
+            // Keep paksha separate from the month, beside the Gregorian date.
+            text(d("paksha"),x+8,y+cellH-25,cellW-53,10.5f,muted)
             text(d("day"),x+8,y+cellH-29,cellW-16,23f,if(slot%7==0) accent else ink,true,
                 align=Layout.Alignment.ALIGN_OPPOSITE)
         }

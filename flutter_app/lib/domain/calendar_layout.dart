@@ -8,3 +8,22 @@ List<DateTime> monthGridDates(DateTime month) {
   final start = first.subtract(Duration(days: offset));
   return List.generate(count, (i) => start.add(Duration(days: i)));
 }
+
+/// Fill the viewport without shrinking below the space needed by card labels.
+/// The grid scrolls if its minimum content height exceeds the viewport.
+double calendarTileHeight({
+  required double viewportHeight,
+  required int rows,
+  required double textScale,
+}) {
+  assert(rows >= 4 && rows <= 6);
+  final scale = textScale.isFinite && textScale > 1 ? textScale : 1.0;
+  final minimum = 52.0 * scale;
+  if (!viewportHeight.isFinite) {
+    return minimum;
+  }
+  // Leave a sub-pixel tolerance so floating-point rounding cannot create
+  // a spurious scroll extent when full weeks fit exactly.
+  final available = (viewportHeight - 12 - (rows - 1) * 5 - .01) / rows;
+  return available < minimum ? minimum : available;
+}
