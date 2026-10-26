@@ -24,6 +24,67 @@ class FestivalRule {
 
 const majorRules = <FestivalRule>[
   FestivalRule(
+    'devutthana_ekadashi',
+    'देवउठनी ग्यारस / प्रबोधिनी एकादशी',
+    'Dev Uthani / Prabodhini Ekadashi',
+    'Kartika',
+    'shukla',
+    11,
+    'sunrise',
+    [10, 11, 12],
+    importance: 5,
+    notesHi:
+        'सामान्य उत्तर भारतीय परम्परा; वैष्णव व्रत और क्षेत्रीय तिथि अलग हो सकती है।',
+    notesEn:
+        'General North Indian observance; Vaishnava fasting and regional dates may differ.',
+  ),
+  FestivalRule(
+    'devshayani_ekadashi',
+    'देवशयनी एकादशी',
+    'Devshayani Ekadashi',
+    'Ashadha',
+    'shukla',
+    11,
+    'sunrise',
+    [6, 7, 8],
+    importance: 5,
+    notesHi:
+        'सामान्य उत्तर भारतीय परम्परा; वैष्णव व्रत और क्षेत्रीय तिथि अलग हो सकती है।',
+    notesEn:
+        'General North Indian observance; Vaishnava fasting and regional dates may differ.',
+  ),
+  FestivalRule(
+    'nirjala_ekadashi',
+    'निर्जला एकादशी',
+    'Nirjala Ekadashi',
+    'Jyeshtha',
+    'shukla',
+    11,
+    'sunrise',
+    [5, 6, 7],
+    importance: 5,
+    notesHi:
+        'सामान्य उत्तर भारतीय परम्परा; वैष्णव व्रत और क्षेत्रीय तिथि अलग हो सकती है।',
+    notesEn:
+        'General North Indian observance; Vaishnava fasting and regional dates may differ.',
+  ),
+  FestivalRule(
+    'tulsi_vivah',
+    'तुलसी विवाह',
+    'Tulsi Vivah',
+    'Kartika',
+    'shukla',
+    12,
+    'sunrise',
+    [10, 11, 12],
+    importance: 5,
+    notesHi:
+        'सामान्य उत्तर भारतीय परम्परा; वैष्णव व्रत और क्षेत्रीय तिथि अलग हो सकती है।',
+    notesEn:
+        'General North Indian observance; Vaishnava fasting and regional dates may differ.',
+  ),
+
+  FestivalRule(
     'maha_shivaratri',
     'महाशिवरात्रि',
     'Maha Shivaratri',
@@ -378,6 +439,35 @@ class FestivalEngine {
           notesHi: rule.notesHi,
           notesEn: rule.notesEn,
         );
+      }
+    }
+    if (id.endsWith('_ekadashi') || id == 'tulsi_vivah') {
+      final fallback = FestivalRule(
+        rule.id,
+        rule.nameHi,
+        rule.nameEn,
+        rule.monthEn,
+        rule.paksha,
+        rule.tithiIndex,
+        'daylight',
+        rule.gregorianMonths,
+      );
+      for (final d in _candidates(year, rule.gregorianMonths)) {
+        final match = _matches(d, loc, fallback);
+        if (match.match) {
+          return FestivalObservance(
+            id: rule.id,
+            nameHi: rule.nameHi,
+            nameEn: rule.nameEn,
+            localDate: d,
+            category: 'festival',
+            importance: rule.importance,
+            selectionBasis: 'kshaya_daylight_fallback',
+            basisTimeUtc: match.basis,
+            notesHi: rule.notesHi,
+            notesEn: rule.notesEn,
+          );
+        }
       }
     }
     // Explicit traditional fallbacks when the target tithi is absent from

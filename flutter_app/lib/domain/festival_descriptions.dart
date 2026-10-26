@@ -1,5 +1,21 @@
 /// Short cultural explanations; observance customs vary by family and region.
 const festivalDescriptions = <String, (String, String)>{
+  'devutthana_ekadashi': (
+    'देवउठनी ग्यारस / प्रबोधिनी एकादशी में भगवान विष्णु की पूजा और पारम्परिक अनुष्ठान किए जाते हैं। स्थानीय व्रत परम्परा का पालन करें।',
+    'Dev Uthani / Prabodhini Ekadashi is a traditional Vishnu observance. Follow local customs for worship and fasting; dates may vary by tradition.',
+  ),
+  'devshayani_ekadashi': (
+    'देवशयनी एकादशी में भगवान विष्णु की पूजा और पारम्परिक अनुष्ठान किए जाते हैं। स्थानीय व्रत परम्परा का पालन करें।',
+    'Devshayani Ekadashi is a traditional Vishnu observance. Follow local customs for worship and fasting; dates may vary by tradition.',
+  ),
+  'nirjala_ekadashi': (
+    'निर्जला एकादशी में भगवान विष्णु की पूजा और पारम्परिक अनुष्ठान किए जाते हैं। स्थानीय व्रत परम्परा का पालन करें।',
+    'Nirjala Ekadashi is a traditional Vishnu observance. Follow local customs for worship and fasting; dates may vary by tradition.',
+  ),
+  'tulsi_vivah': (
+    'तुलसी विवाह में भगवान विष्णु की पूजा और पारम्परिक अनुष्ठान किए जाते हैं। स्थानीय व्रत परम्परा का पालन करें।',
+    'Tulsi Vivah is a traditional Vishnu observance. Follow local customs for worship and fasting; dates may vary by tradition.',
+  ),
   'sharad_purnima': (
     'आश्विन पूर्णिमा की रात मनाया जाने वाला पर्व। चंद्र दर्शन, खीर रखने और कोजागरी लक्ष्मी पूजन की परंपराएँ हैं। पर्व की रात और सूर्योदय वाली पूर्णिमा की तारीख अलग हो सकती है।',
     'An Ashwin full-moon night observance associated with moon viewing, kheer and Kojagari Lakshmi worship. Its festival date can differ from the date having Purnima at sunrise.',
