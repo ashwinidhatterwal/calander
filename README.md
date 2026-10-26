@@ -1,6 +1,6 @@
-# Build 25: Hindu month labels and adaptive month grid
+# Build 26: festival rules and visible tithi transitions
 
-See [README-FIX.txt](README-FIX.txt) and [validation](docs/CHECKPOINT_25.md)
+See [README-FIX.txt](README-FIX.txt) and [validation](docs/CHECKPOINT_26.md)
 for the current release. Previous feature checkpoints remain below as history.
 
 # Hindu Calendar — Checkpoint 15 Notification Settings
@@ -10,7 +10,7 @@ Build 1.0.0+15 removes notification test buttons and diagnostic/report controls 
 ## Release identity
 
 - App name: `हिन्दू कैलेंडर` / Hindu Calendar
-- Version: `1.0.0+25`
+- Version: `1.0.0+26`
 - Android application id: `in.hinducalendar.hindu_calendar`
 - Main Panchang profile: North India / Purnimanta
 - Backend/account required: No

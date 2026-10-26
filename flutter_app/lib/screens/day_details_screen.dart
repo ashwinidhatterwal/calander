@@ -45,17 +45,18 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
     future = widget.festival
         .majorFestivalsAsync(date.year, widget.location)
         .then((major) {
-      final date = requestedDate;
-      final day = widget.panchang.buildDay(date, widget.location);
-      final events = widget.festival.lightweightForDate(
-        date,
-        widget.location,
-        major: major,
-      );
-      final personal = PersonalEventMatcher(widget.panchang)
-          .eventsOnDate(widget.personalEvents, date, widget.location);
-      return _DayBundle(day, events, personal);
-    });
+          final date = requestedDate;
+          final day = widget.panchang.buildDay(date, widget.location);
+          final events = widget.festival.lightweightForDate(
+            date,
+            widget.location,
+            major: major,
+          );
+          final personal = PersonalEventMatcher(
+            widget.panchang,
+          ).eventsOnDate(widget.personalEvents, date, widget.location);
+          return _DayBundle(day, events, personal);
+        });
   }
 
   void _move(int deltaDays) {
@@ -96,12 +97,12 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
     final dayPart = local.hour < 4
         ? 'रात'
         : local.hour < 12
-            ? 'सुबह'
-            : local.hour < 17
-                ? 'दोपहर'
-                : local.hour < 20
-                    ? 'शाम'
-                    : 'रात';
+        ? 'सुबह'
+        : local.hour < 17
+        ? 'दोपहर'
+        : local.hour < 20
+        ? 'शाम'
+        : 'रात';
     return '$prefix $dayPart $hour:$minute बजे';
   }
 
@@ -169,9 +170,10 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.bookmark_outline),
-                        title: Text(event.title,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w800)),
+                        title: Text(
+                          event.title,
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
                         subtitle: event.note.isEmpty ? null : Text(event.note),
                       ),
                   ],
@@ -199,17 +201,20 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                             ),
                             label: Text(
                               l.pick(event.nameHi, event.nameEn),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w700),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                       ],
                     ),
                     for (final event in bundle.events)
                       Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                              '${bundle.events.length > 1 ? '${l.pick(event.nameHi, event.nameEn)}: ' : ''}${festivalDescription(event.id, widget.language == AppLanguage.hi)}')),
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          '${bundle.events.length > 1 ? '${l.pick(event.nameHi, event.nameEn)}: ' : ''}${festivalDescription(event.id, widget.language == AppLanguage.hi)}',
+                        ),
+                      ),
                     for (final event in bundle.events)
                       if (_festivalNote(event).isNotEmpty)
                         Padding(
@@ -230,18 +235,25 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                 icon: Icons.auto_awesome_outlined,
                 children: [
                   _ValueRow(
-                    label: l.tithi,
+                    label: l.pick('सूर्योदय की तिथि', 'Tithi at sunrise'),
                     value:
                         '${l.pick(p.pakshaHi, p.pakshaEn)} ${l.pick(p.tithi.hi, p.tithi.en)}',
                   ),
                   _ValueRow(
                     label: l.pick('तिथि समाप्त', 'Tithi ends'),
-                    value:
-                        '${_until(p.tithiEndUtc)} ${l.pick('तक', '')}'.trim(),
+                    value: '${_until(p.tithiEndUtc)} ${l.pick('तक', '')}'
+                        .trim(),
                   ),
                   _ValueRow(
                     label: l.pick('अगली तिथि', 'Next Tithi'),
                     value: l.pick(p.nextTithi.hi, p.nextTithi.en),
+                  ),
+                  _ValueRow(
+                    label: l.pick('दिन में तिथियाँ', 'Tithis during the day'),
+                    value: widget.panchang
+                        .tithisForDay(p.localDate, widget.location)
+                        .map((part) => l.pick(part.tithi.hi, part.tithi.en))
+                        .join(' → '),
                   ),
                   _ValueRow(
                     label: l.month,
@@ -334,8 +346,10 @@ class _DayDetailsScreenState extends State<DayDetailsScreen> {
                   ),
                   _ValueRow(
                     label: l.brahma,
-                    value:
-                        widget.panchang.range(p.brahmaMuhurta, widget.location),
+                    value: widget.panchang.range(
+                      p.brahmaMuhurta,
+                      widget.location,
+                    ),
                   ),
                 ],
               ),
@@ -389,11 +403,7 @@ class _DayBundle {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({
-    required this.p,
-    required this.l,
-    required this.language,
-  });
+  const _Header({required this.p, required this.l, required this.language});
 
   final PanchangDay p;
   final L10n l;
@@ -415,10 +425,9 @@ class _Header extends StatelessWidget {
           ),
           Text(
             '${p.localDate.day} $month ${p.localDate.year}',
-            style: Theme.of(context)
-                .textTheme
-                .headlineMedium
-                ?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
           Text(
@@ -464,10 +473,9 @@ class _InfoCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ],

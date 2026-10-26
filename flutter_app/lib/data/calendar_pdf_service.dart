@@ -27,16 +27,23 @@ class CalendarPdfService {
     for (var index = 0; index < (yearly ? 12 : 1); index++) {
       final date = DateTime.utc(month.year, yearly ? index + 1 : month.month);
       final days = <Map<String, String>>[];
-      for (var day = 1;
-          day <= DateTime.utc(date.year, date.month + 1, 0).day;
-          day++) {
+      for (
+        var day = 1;
+        day <= DateTime.utc(date.year, date.month + 1, 0).day;
+        day++
+      ) {
         final d = DateTime.utc(date.year, date.month, day);
         final cell = panchang.monthCell(d, location);
         final detail = panchang.buildDay(d, location);
-        String time(DateTime utc) => panchang.time12(utc, location,
-            amLabel: l.pick('पु.', 'AM'), pmLabel: l.pick('अप.', 'PM'));
-        final nextDay =
-            panchang.localDateOfUtc(detail.tithiEndUtc, location).isAfter(d);
+        String time(DateTime utc) => panchang.time12(
+          utc,
+          location,
+          amLabel: l.pick('पु.', 'AM'),
+          pmLabel: l.pick('अप.', 'PM'),
+        );
+        final nextDay = panchang
+            .localDateOfUtc(detail.tithiEndUtc, location)
+            .isAfter(d);
         final raw =
             cell.tithi.index + (cell.pakshaHi.startsWith('शुक्ल') ? 0 : 15);
         final events = major
@@ -61,7 +68,10 @@ class CalendarPdfService {
         };
         days.add({
           'day': '$day',
-          'tithi': l.pick(cell.tithi.hi, cell.tithi.en),
+          'tithi': panchang
+              .tithisForDay(d, location)
+              .map((part) => l.pick(part.tithi.hi, part.tithi.en))
+              .join(' → '),
           'paksha': l.pick(cell.pakshaHi, cell.pakshaEn),
           'events': names.join(' · '),
           'hinduMonth':
@@ -85,15 +95,19 @@ class CalendarPdfService {
             '${days.map((d) => d['hinduMonth']!).toSet().join(' • ')} ${l.month}',
         'gregorianMonth': '${months[date.month - 1]} ${date.year}',
         'samvat': l.pick('विक्रम संवत $years', 'Vikram Samvat $years'),
-        'caption':
-            l.pick('सूर्योदय की तिथि • भारतीय समय', 'Tithi at sunrise • IST'),
+        'caption': l.pick(
+          'सूर्योदय से तिथि क्रम • भारतीय समय',
+          'Tithis from sunrise • IST',
+        ),
         'weekdays': language == AppLanguage.hi ? shortWeekHi : shortWeekEn,
-        'note': l.pick('तिथि सूर्योदय के समय की है। +1 का अर्थ अगला दिन है।',
-            'Tithi is shown at sunrise. +1 means the following day.'),
+        'note': l.pick(
+          '→ तिथि बदलने का क्रम। समय पहले बदलाव का है। +1 का अर्थ अगला दिन है।',
+          '→ shows tithi changes. Time is the first change; +1 means the following day.',
+        ),
         'nakshatraLabel': l.pick('नक्षत्र', 'Nak.'),
         'sunriseLabel': l.sunrise,
         'sunsetLabel': l.sunset,
-        'tithiEndLabel': l.pick('तिथि अंत', 'Ends'),
+        'tithiEndLabel': l.pick('बदलाव', 'Changes'),
       });
       onProgress?.call(index + 1);
       // Let the progress indicator paint between months.

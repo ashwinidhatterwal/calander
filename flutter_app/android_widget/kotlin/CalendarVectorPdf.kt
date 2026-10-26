@@ -65,10 +65,14 @@ object CalendarVectorPdf {
         }
         fun text(value: String, x: Float, y: Float, w: Float, size: Float,
                  color: Int = ink, bold: Boolean = false, lines: Int = 1,
-                 align: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL) {
+                 align: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL, fitWidth: Boolean = false) {
             if (value.isEmpty()) return
             val p = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 this.color = color; textSize = size; typeface = if (bold) boldFace else face
+            }
+            if (fitWidth) {
+                val measured = p.measureText(value)
+                if (measured > w && measured > 0f) p.textSize = size * w / measured
             }
             val layout = StaticLayout.Builder.obtain(value, 0, value.length, p, w.toInt())
                 .setAlignment(align).setIncludePad(false).setLineSpacing(0f, 1.18f)
@@ -104,7 +108,7 @@ object CalendarVectorPdf {
             val y = 248f+(slot/7)*(cellH+6)
             rect(x,y,cellW,cellH,Color.rgb(255,240,229),10f)
             rect(x,y,cellW,cellH,Color.rgb(232,213,199),10f,true)
-            text(d("tithi"),x+8,y+8,cellW-16,21f,bold=true)
+            text(d("tithi"),x+8,y+8,cellW-16,21f,bold=true,fitWidth=true)
             // The month belongs to this date's sunrise, not the page header.
             text(d("hinduMonth"),x+8,y+36,cellW-16,12.5f,muted)
             text(d("events"),x+8,y+55,cellW-16,13f,accent,true,2)

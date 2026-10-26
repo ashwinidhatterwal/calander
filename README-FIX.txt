@@ -1,14 +1,19 @@
-HINDU CALENDAR — BUILD 25 COMPLETE SOURCE
+HINDU CALENDAR — BUILD 26 COMPLETE SOURCE
 
-- Each PDF date card shows the correct Hindu month beneath the tithi.
-  Adhik months retain their prefix. Paksha sits beside the date at the bottom.
-- The app month grid fills its available height for four, five and six weeks.
-  Minimum tile height scales with text. Short windows scroll vertically;
-  extremely narrow windows retain minimum column width and scroll horizontally.
-- Build 24's fast-opening PDF fonts/QR/image optimisation is retained.
+- Added annual Sharad Purnima / Kojagari, selected from the nighttime tithi.
+- Dussehra remains October 20, 2026 for the North Indian profile. The card
+  shows Navami at sunrise followed by Dashami, instead of hiding the change.
+- Month cards, Today and PDF show the tithis occurring in the Panchang day.
+  Day Details explicitly identifies the sunrise tithi and shows the sequence.
+- Puja-window matching now walks exact tithi boundaries instead of sampling
+  five instants, avoiding missed short overlaps.
+- Targeted Karwa Chauth, Govardhan and Dhanteras missing-window fallbacks
+  prevent the confirmed annual-list failures.
+- Reviewed North India Janmashtami 2025 exception: August 15. Complex sect
+  differences remain explicitly noted; no claim of universal tradition support.
+- Existing PDF speed, widget and adaptive-grid improvements are retained.
 
-Upload all contents to the existing repository, run Android QA build and
-Production Play bundle on the same commit. Test the QA APK at your normal
-screen/text size and generate NEW monthly/yearly PDFs before publishing.
-Version 1.0.0+25. Signing secrets remain unchanged.
-See docs/CHECKPOINT_25.md for completed checks and remaining limitations.
+Upload all files to the existing GitHub repository. Run QA and Production Play
+bundle on the same commit. Test the QA APK on your phone and generate a NEW
+PDF before publishing the build 26 AAB. Signing secrets remain unchanged.
+Validation and source references: docs/CHECKPOINT_26.md.

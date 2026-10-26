@@ -21,7 +21,7 @@ calendar = source('flutter_app/lib/screens/calendar_screen.dart')
 main = source('flutter_app/lib/main.dart')
 holidays = source('flutter_app/lib/domain/state_holidays_2026.dart')
 festival_ui = source('flutter_app/lib/screens/festivals_screen.dart')
-check('version: 1.0.0+25' in pubspec, 'version is 1.0.0+25')
+check('version: 1.0.0+26' in pubspec, 'version is 1.0.0+26')
 check('assets/data/district_boundaries.json' in pubspec, 'district geometry is bundled')
 check('compute(findDistrict' in lookup, 'district parsing and geometry run in a background isolate')
 check('repairSavedDistrict' in main and 'repairSavedDistrict' in location, 'old saved division labels are repaired without GPS')
@@ -186,6 +186,15 @@ check('text(d("hinduMonth"),x+8,y+36' in source('flutter_app/android_widget/kotl
       'PDF date cards render their own Hindu month')
 check('calendarTileHeight(' in calendar and 'naturalHeight' not in calendar,
       'month grid uses viewport sizing without the old height cap')
+
+check("FestivalRule('sharad_purnima'" in source('flutter_app/lib/domain/festival_engine.dart')
+      or "'sharad_purnima'," in source('flutter_app/lib/domain/festival_engine.dart'),
+      'Sharad Purnima has an annual festival rule')
+check('_probes' not in source('flutter_app/lib/domain/festival_engine.dart')
+      and 'nextTithiTransition(cursor)' in source('flutter_app/lib/domain/festival_engine.dart'),
+      'puja windows inspect complete tithi intervals rather than sparse samples')
+check('followingTithis' in calendar and 'Tithi at sunrise' in source('flutter_app/lib/screens/day_details_screen.dart'),
+      'calendar transitions and explicit sunrise detail label are present')
 
 for ok, description in checks:
     print(('PASS' if ok else 'FAIL') + ' - ' + description)

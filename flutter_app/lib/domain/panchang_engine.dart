@@ -317,6 +317,30 @@ class PanchangEngine {
   }
 
   /// Fast month-cell summary: no moonrise or transition searches.
+  /// Tithis that occur during this local sunrise-to-sunrise Panchang day.
+  /// The first remains the sunrise tithi. A vriddhi day need not change;
+  /// a kshaya day can contain more than one transition.
+  List<({NamedValue tithi, DateTime startsUtc, DateTime endsUtc})> tithisForDay(
+    DateTime localDate,
+    GeoLocation loc,
+  ) {
+    final sunrise = sunriseSunset(localDate, loc)[0];
+    final end = sunriseSunset(nextCivilDay(localDate), loc)[0];
+    final out = <({NamedValue tithi, DateTime startsUtc, DateTime endsUtc})>[];
+    var cursor = sunrise;
+    while (cursor.isBefore(end)) {
+      final transition = nextTithiTransition(cursor);
+      out.add((
+        tithi: tithiAt(cursor).value,
+        startsUtc: cursor,
+        endsUtc: transition,
+      ));
+      cursor = transition.add(const Duration(milliseconds: 1));
+    }
+    return List.unmodifiable(out);
+  }
+
+
   ({NamedValue tithi,String pakshaHi,String pakshaEn,NamedValue month,bool adhik}) monthCell(DateTime localDate,GeoLocation loc){
     final sunrise=sunriseSunset(localDate,loc)[0],ts=tithiAt(sunrise),month=lunarMonthDetailsAt(sunrise);
     return (tithi:ts.value,pakshaHi:ts.pakshaHi,pakshaEn:ts.pakshaEn,month:month.purnimanta,adhik:month.adhik);

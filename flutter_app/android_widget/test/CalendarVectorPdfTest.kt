@@ -27,7 +27,7 @@ class CalendarVectorPdfTest {
         "weekdays" to if(hindi) listOf("रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि") else listOf("Sun","Mon","Tue","Wed","Thu","Fri","Sat"),
         "offset" to 5,
         "days" to (1..(if(index==1) 29 else 31)).map { day -> mapOf(
-            "day" to "$day", "tithi" to if(hindi) "द्वादशी" else "Dwadashi",
+            "day" to "$day", "tithi" to if(hindi) "चतुर्दशी → पूर्णिमा" else "Chaturdashi → Purnima",
             "hinduMonth" to if(hindi) "अधिक मार्गशीर्ष" else "Adhika Margashirsha",
             "paksha" to if(hindi) "शुक्ल पक्ष" else "Shukla Paksha",
             "events" to if(day==25) (if(hindi) "होली • पूर्णिमा व्रत" else "Holi • Purnima Vrat") else "",

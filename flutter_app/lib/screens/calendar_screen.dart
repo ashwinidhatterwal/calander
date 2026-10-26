@@ -557,6 +557,22 @@ class _CalendarScreenState extends State<CalendarScreen>
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                if (cell.followingTithis.isNotEmpty)
+                                  Text(
+                                    '→ ${cell.followingTithis.map((t) => L10n(widget.language).pick(t.hi, t.en)).join(' → ')}',
+                                    key: ValueKey(
+                                      'tithi-change-${d.year}-${d.month}-${d.day}',
+                                    ),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 8.3,
+                                      height: 1.05,
+                                      fontWeight: FontWeight.w700,
+                                      color: mutedSub,
+                                    ),
+                                  ),
                                 if (startsHinduMonth)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2),
@@ -666,6 +682,11 @@ class _CalendarScreenState extends State<CalendarScreen>
       value.pakshaEn,
       value.month,
       value.adhik,
+      widget.panchang
+          .tithisForDay(d, widget.location)
+          .skip(1)
+          .map((part) => part.tithi)
+          .toList(growable: false),
     );
     _cellCache[key] = cell;
 
@@ -733,6 +754,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       'durga_ashtami': 'दुर्गा अष्टमी',
       'chaitra_durga_ashtami': 'दुर्गा अष्टमी',
       'vijayadashami': 'दशहरा',
+      'sharad_purnima': 'शरद पूर्णिमा',
       'karwa_chauth': 'करवा चौथ',
       'dhanteras': 'धनतेरस',
       'diwali': 'दीपावली',
@@ -752,6 +774,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       'durga_ashtami': 'Durga Ashtami',
       'chaitra_durga_ashtami': 'Durga Ashtami',
       'vijayadashami': 'Dussehra',
+      'sharad_purnima': 'Sharad Purnima',
       'karwa_chauth': 'Karwa Chauth',
       'dhanteras': 'Dhanteras',
       'diwali': 'Diwali',
@@ -1275,7 +1298,9 @@ class _CalendarCellData {
     this.pakshaEn,
     this.month,
     this.adhik,
+    this.followingTithis,
   );
+  final List<NamedValue> followingTithis;
   final TithiState tithi;
   final String pakshaHi;
   final String pakshaEn;
@@ -1340,7 +1365,13 @@ class _TodayCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              '${l.pick(day!.pakshaHi, day!.pakshaEn)} ${l.pick(day!.tithi.hi, day!.tithi.en)}',
+                              panchang
+                                  .tithisForDay(day!.localDate, location)
+                                  .map(
+                                    (part) =>
+                                        l.pick(part.tithi.hi, part.tithi.en),
+                                  )
+                                  .join(' → '),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleMedium
