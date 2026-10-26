@@ -17,3 +17,6 @@ Upload all files to the existing GitHub repository. Run QA and Production Play
 bundle on the same commit. Test the QA APK on your phone and generate a NEW
 PDF before publishing the build 26 AAB. Signing secrets remain unchanged.
 Validation and source references: docs/CHECKPOINT_26.md.
+
+CI import-lint correction: docs/CI_FIX_26_01.md. Commit the corrected files to
+start a NEW QA run; rerunning the old commit keeps the failing imports.

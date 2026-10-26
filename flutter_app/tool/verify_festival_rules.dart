@@ -1,9 +1,9 @@
 // Published North India fixtures; source links and scope: docs/CHECKPOINT_26.md.
 // Uses the production synchronous calculation code, without mocking astronomy.
 import 'dart:io';
-import '../lib/domain/festival_engine.dart';
-import '../lib/domain/models.dart';
-import '../lib/domain/panchang_engine.dart';
+import 'package:hindu_calendar/domain/festival_engine.dart';
+import 'package:hindu_calendar/domain/models.dart';
+import 'package:hindu_calendar/domain/panchang_engine.dart';
 
 void _check(bool ok, String message) {
   if (!ok) {
