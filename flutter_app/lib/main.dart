@@ -20,6 +20,7 @@ import 'domain/personal_event.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/festivals_screen.dart';
 import 'screens/my_days_screen.dart';
+import 'screens/discover_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -382,6 +383,7 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
                 onUpsert: _upsertEvent,
                 onDelete: _deleteEvent,
               ),
+              DiscoverScreen(language: language, active: tab == 3),
             ],
           ),
         ),
@@ -403,6 +405,11 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
               icon: const Icon(Icons.event_repeat_outlined),
               selectedIcon: const Icon(Icons.event_repeat),
               label: l10n.myDays,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.auto_stories_outlined),
+              selectedIcon: const Icon(Icons.auto_stories),
+              label: l10n.pick('ज्ञान', 'Discover'),
             ),
           ],
         ),

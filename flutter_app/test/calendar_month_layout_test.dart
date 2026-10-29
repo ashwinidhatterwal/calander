@@ -65,6 +65,16 @@ void main() {
       ),
     );
     await settleCalendar(tester);
+    final primary = find.byKey(const ValueKey('primary-vikram-samvat'));
+    final secondary = find.byKey(const ValueKey('secondary-gregorian-year'));
+    final hinduMonth = find.byKey(const ValueKey('primary-hindu-month'));
+    expect(hinduMonth, findsOneWidget);
+    expect(tester.getTopLeft(hinduMonth).dy, lessThan(tester.getTopLeft(secondary).dy));
+    expect(primary, findsOneWidget);
+    expect(secondary, findsOneWidget);
+    expect(tester.widget<Text>(primary).data, startsWith('Vikram Samvat '));
+    expect(tester.getTopLeft(primary).dy, lessThan(tester.getTopLeft(secondary).dy));
+    expect(tester.widget<Text>(primary).style!.fontWeight, FontWeight.w900);
     final now = DateTime.now();
     final dates = monthGridDates(DateTime.utc(now.year, now.month));
     const engine = PanchangEngine();

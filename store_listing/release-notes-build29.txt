@@ -1,0 +1,5 @@
+नया ज्ञान टैब: भारतीय संस्कृति और इतिहास की रोचक जानकारी, स्रोत लिंक सहित।
+कैलेंडर में विक्रम संवत और हिंदू मास को प्रमुखता; ग्रेगोरियन माह और वर्ष नीचे।
+
+New Discover tab with daily cultural facts, historical anniversaries and source links.
+Calendar heading now prioritises Vikram Samvat and Hindu months above the Gregorian month and year.

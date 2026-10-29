@@ -288,6 +288,19 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
+  // Cache the month’s era label so drag frames never repeat astronomy work.
+  final Map<String, String> _samvatLabels = {};
+
+  String _visibleSamvat() {
+    final key = '${visibleMonth.year}-${visibleMonth.month}|${widget.location.cacheKey}';
+    return _samvatLabels.putIfAbsent(key, () {
+      final first = widget.panchang.vikramSamvatYear(visibleMonth, widget.location);
+      final last = widget.panchang.vikramSamvatYear(
+        DateTime.utc(visibleMonth.year, visibleMonth.month + 1, 0), widget.location);
+      return first == last ? '$first' : '$first–$last';
+    });
+  }
+
   Widget _monthPanel(L10n l) {
     final resistedOffset = (_monthDragDx * 0.16).clamp(-18.0, 18.0).toDouble();
     return GestureDetector(
@@ -333,11 +346,15 @@ class _CalendarScreenState extends State<CalendarScreen>
                         final month = widget.language == AppLanguage.hi
                             ? monthNamesHi[visibleMonth.month - 1]
                             : monthNamesEn[visibleMonth.month - 1];
-                        final monthCell = _cellData(visibleMonth);
-                        final hinduMonth = l.pick(
-                          monthCell.month.hi,
-                          monthCell.month.en,
-                        );
+                        final firstCell = _cellData(visibleMonth);
+                        final lastCell = _cellData(DateTime.utc(
+                          visibleMonth.year, visibleMonth.month + 1, 0));
+                        String monthLabel(_CalendarCellData cell) =>
+                            '${cell.adhik ? '${l.adhik} ' : ''}${l.pick(cell.month.hi, cell.month.en)}';
+                        final firstLabel = monthLabel(firstCell);
+                        final lastLabel = monthLabel(lastCell);
+                        final hinduMonth = firstLabel == lastLabel
+                            ? firstLabel : '$firstLabel – $lastLabel';
                         return InkWell(
                           borderRadius: BorderRadius.circular(14),
                           onTap: _pickMonthYear,
@@ -353,14 +370,16 @@ class _CalendarScreenState extends State<CalendarScreen>
                                   children: [
                                     Flexible(
                                       child: Text(
-                                        '$month ${visibleMonth.year}',
+                                        '${l.pick('विक्रम संवत', 'Vikram Samvat')} ${_visibleSamvat()}',
+                                        key: const ValueKey('primary-vikram-samvat'),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium
                                             ?.copyWith(
-                                              fontWeight: FontWeight.w800,
+                                              fontWeight: FontWeight.w900,
+                                              color: Theme.of(context).colorScheme.primary,
                                             ),
                                       ),
                                     ),
@@ -369,8 +388,21 @@ class _CalendarScreenState extends State<CalendarScreen>
                                   ],
                                 ),
                                 Text(
-                                  '${monthCell.adhik ? '${l.adhik} ' : ''}$hinduMonth ${l.month}',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  hinduMonth,
+                                  key: const ValueKey('primary-hindu-month'),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w800),
+                                ),
+                                Text(
+                                  '$month ${visibleMonth.year}',
+                                  key: const ValueKey('secondary-gregorian-year'),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                               ],
                             ),
