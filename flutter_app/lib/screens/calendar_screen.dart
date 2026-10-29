@@ -361,7 +361,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 4,
+                              vertical: 0,
                             ),
                             child: Column(
                               children: [
@@ -379,6 +379,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                             .titleMedium
                                             ?.copyWith(
                                               fontWeight: FontWeight.w900,
+                                              fontSize: 14, height: 1.15,
                                               color: Theme.of(context).colorScheme.primary,
                                             ),
                                       ),
@@ -391,10 +392,10 @@ class _CalendarScreenState extends State<CalendarScreen>
                                   hinduMonth,
                                   key: const ValueKey('primary-hindu-month'),
                                   textAlign: TextAlign.center,
-                                  maxLines: 2,
+                                  maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w800),
+                                    fontWeight: FontWeight.w800, fontSize: 13, height: 1.15),
                                 ),
                                 Text(
                                   '$month ${visibleMonth.year}',

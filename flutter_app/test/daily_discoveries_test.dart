@@ -51,11 +51,14 @@ void main() {
       body: MediaQuery(data: const MediaQueryData(textScaler: TextScaler.linear(1.6)),
         child: DiscoverScreen(language: language, active: active, clock: clock))));
     await tester.pumpWidget(app(true, AppLanguage.en));
+    await tester.scrollUntilVisible(find.text('An early step towards the internet'), 120);
     expect(find.text('An early step towards the internet'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(app(false, AppLanguage.en));
     now = DateTime(2026, 10, 30, 12);
     await tester.pumpWidget(app(true, AppLanguage.hi));
+    await tester.drag(find.byType(ListView), const Offset(0, 1000));
+    await tester.pump();
     expect(find.text('आज का ज्ञान'), findsOneWidget);
     expect(find.text('An early step towards the internet'), findsNothing);
     expect(tester.takeException(), isNull);
