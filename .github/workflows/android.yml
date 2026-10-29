@@ -95,7 +95,12 @@ jobs:
           appid="$($tool manifest application-id build/app/outputs/flutter-apk/app-release.apk)"
           version="$($tool manifest version-code build/app/outputs/flutter-apk/app-release.apk)"
           [ "$appid" = "in.hinducalendar.hindu_calendar" ]
-          [ "$version" = "26" ]
+          expected_version="$(sed -nE 's/^version:.*[+]([0-9]+).*$/\1/p' pubspec.yaml)"
+          echo "Version code: $version; expected: $expected_version"
+          if [ -z "$expected_version" ] || [ "$version" != "$expected_version" ]; then
+            echo "::error::APK version code does not match pubspec.yaml"
+            exit 1
+          fi
           if [ "$target" -lt 36 ]; then
             echo "::error::Google Play requires target API 36+ for new apps as of Aug 31, 2026"
             exit 1
