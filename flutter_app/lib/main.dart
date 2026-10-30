@@ -21,6 +21,7 @@ import 'screens/calendar_screen.dart';
 import 'screens/festivals_screen.dart';
 import 'screens/my_days_screen.dart';
 import 'screens/discover_screen.dart';
+import 'screens/rating_prompt.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -241,9 +242,11 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _syncHomeWidgets();
       final savedLocation = location;
-      unawaited(const CurrentLocationService().repairSavedDistrict(savedLocation)
+      unawaited(const CurrentLocationService()
+          .repairSavedDistrict(savedLocation)
           .then((repaired) async {
-        if (mounted && identical(location, savedLocation) &&
+        if (mounted &&
+            identical(location, savedLocation) &&
             !identical(repaired, savedLocation)) {
           await widget.onLocationChanged?.call(repaired);
           if (!mounted || !identical(location, savedLocation)) return;
@@ -251,7 +254,9 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
           _syncHomeWidgets();
         }
       }).catchError((Object _) {}));
-      unawaited(NotificationService.initialize().then((_) => _refreshNotifications()).catchError((Object _) {}));
+      unawaited(NotificationService.initialize()
+          .then((_) => _refreshNotifications())
+          .catchError((Object _) {}));
     });
   }
 
@@ -348,72 +353,78 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
       themeMode: themePreference == AppThemePreference.dark
           ? ThemeMode.dark
           : ThemeMode.light,
-      home: Scaffold(
-        body: SafeArea(
-          child: IndexedStack(
-            index: tab,
-            children: [
-              CalendarScreen(
-                panchang: panchang,
-                festival: festival,
-                onRefreshNotifications: _refreshNotifications,
-                language: language,
-                location: location,
-                personalEvents: personalEvents,
-                onUpsertPersonalEvent: _upsertEvent,
-                onLanguageChanged: _changeLanguage,
-                onLocationChanged: _changeLocation,
-                offerCurrentLocation: widget.offerCurrentLocation,
-                onLocationOfferSeen: widget.onLocationOfferSeen,
-                themePreference: themePreference,
-                onThemeChanged: _changeTheme,
+      home: RatingPromptGate(
+          language: language,
+          child: Scaffold(
+            body: SafeArea(
+              child: IndexedStack(
+                index: tab,
+                children: [
+                  CalendarScreen(
+                    panchang: panchang,
+                    festival: festival,
+                    onRefreshNotifications: _refreshNotifications,
+                    language: language,
+                    location: location,
+                    personalEvents: personalEvents,
+                    onUpsertPersonalEvent: _upsertEvent,
+                    onLanguageChanged: _changeLanguage,
+                    onLocationChanged: _changeLocation,
+                    offerCurrentLocation: widget.offerCurrentLocation,
+                    onLocationOfferSeen: widget.onLocationOfferSeen,
+                    themePreference: themePreference,
+                    onThemeChanged: _changeTheme,
+                  ),
+                  FestivalsScreen(
+                    festival: festival,
+                    language: language,
+                    location: location,
+                    personalEvents: personalEvents,
+                  ),
+                  MyDaysScreen(
+                    events: personalEvents,
+                    language: language,
+                    location: location,
+                    panchang: panchang,
+                    active: tab == 2,
+                    onUpsert: _upsertEvent,
+                    onDelete: _deleteEvent,
+                  ),
+                  DiscoverScreen(
+                      language: language,
+                      active: tab == 3,
+                      location: location,
+                      festival: festival),
+                ],
               ),
-              FestivalsScreen(
-                festival: festival,
-                language: language,
-                location: location,
-                personalEvents: personalEvents,
-              ),
-              MyDaysScreen(
-                events: personalEvents,
-                language: language,
-                location: location,
-                panchang: panchang,
-                active: tab == 2,
-                onUpsert: _upsertEvent,
-                onDelete: _deleteEvent,
-              ),
-              DiscoverScreen(language: language, active: tab == 3, location: location, festival: festival),
-            ],
-          ),
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: tab,
-          onDestinationSelected: (v) => setState(() => tab = v),
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.calendar_month_outlined),
-              selectedIcon: const Icon(Icons.calendar_month),
-              label: l10n.calendar,
             ),
-            NavigationDestination(
-              icon: const Icon(Icons.celebration_outlined),
-              selectedIcon: const Icon(Icons.celebration),
-              label: l10n.festivals,
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: tab,
+              onDestinationSelected: (v) => setState(() => tab = v),
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  selectedIcon: const Icon(Icons.calendar_month),
+                  label: l10n.calendar,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.celebration_outlined),
+                  selectedIcon: const Icon(Icons.celebration),
+                  label: l10n.festivals,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.event_repeat_outlined),
+                  selectedIcon: const Icon(Icons.event_repeat),
+                  label: l10n.myDays,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.auto_stories_outlined),
+                  selectedIcon: const Icon(Icons.auto_stories),
+                  label: l10n.pick('ज्ञान', 'Discover'),
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: const Icon(Icons.event_repeat_outlined),
-              selectedIcon: const Icon(Icons.event_repeat),
-              label: l10n.myDays,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.auto_stories_outlined),
-              selectedIcon: const Icon(Icons.auto_stories),
-              label: l10n.pick('ज्ञान', 'Discover'),
-            ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }

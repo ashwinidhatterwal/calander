@@ -5,6 +5,8 @@ part of 'daily_discoveries.dart';
 const wisdomReadings = <DailyDiscovery>[
   DailyDiscovery(
     id: "chanakya-inquiry",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.2",
     titleHi: "फैसले से पहले ठहरें",
     titleEn: "Inquiry before a decision",
@@ -26,6 +28,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-many-disciplines",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.2",
     titleHi: "ज्ञान की खिड़कियाँ खुली रखें",
     titleEn: "Learning across disciplines",
@@ -47,6 +51,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-learning-cycle",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.5",
     titleHi: "सुन लिया, पर समझा भी?",
     titleEn: "Beyond simply hearing",
@@ -69,6 +75,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-revisit",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.5",
     titleHi: "दोबारा पूछने में संकोच कैसा?",
     titleEn: "Return to the unclear lesson",
@@ -90,6 +98,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-inner-enemies",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.6",
     titleHi: "पहले मन को जीतें",
     titleEn: "Six enemies within",
@@ -111,6 +121,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-power-restraint",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.6",
     titleHi: "सामर्थ्य के साथ संयम",
     titleEn: "Power needs restraint",
@@ -132,6 +144,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-five-questions",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.15",
     titleHi: "अच्छी योजना की पहचान",
     titleEn: "Five questions for a plan",
@@ -154,6 +168,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-reasons",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.15",
     titleHi: "सलाह लें, कारण भी समझें",
     titleEn: "Ask why advice makes sense",
@@ -175,6 +191,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-public-welfare",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.19",
     titleHi: "प्रजा के सुख में राजा का सुख",
     titleEn: "Leadership measured by welfare",
@@ -196,6 +214,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "chanakya-accessible",
+    contextHi: "अर्थशास्त्र में आचार्य कौटिल्य शासक को सीख देते हैं—",
+    contextEn: "In the Arthashastra, Kautilya advises the ruler—",
     referenceHi: "अर्थशास्त्र 1.19",
     titleHi: "जो सुन सके, वही अगुआ",
     titleEn: "Do not leave people waiting",
@@ -218,6 +238,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "nachiketa-first-boon",
+    contextHi: "यमराज के सामने नचिकेता ने अपना पहला वर माँगा।",
+    contextEn: "Before Yama, Nachiketa asks for his first boon.",
     referenceHi: "कठोपनिषद् 1.1.10–11",
     titleHi: "नचिकेता ने पहले क्या माँगा?",
     titleEn: "Nachiketa’s first wish",
@@ -239,6 +261,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "nachiketa-shreyas",
+    contextHi: "यमराज ने नचिकेता को आत्मज्ञान की राह समझाई—",
+    contextEn: "Yama guides Nachiketa toward self-knowledge—",
     referenceHi: "कठोपनिषद् 1.2.1–2",
     titleHi: "अच्छा लगना और अच्छा होना",
     titleEn: "The good and the pleasant",
@@ -260,6 +284,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "katha-chariot",
+    contextHi: "यमराज ने नचिकेता को आत्मज्ञान की राह समझाई—",
+    contextEn: "Yama guides Nachiketa toward self-knowledge—",
     referenceHi: "कठोपनिषद् 1.3.3–9",
     titleHi: "मन की लगाम किसके हाथ?",
     titleEn: "Chariot, reins and driver",
@@ -282,6 +308,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "uddalaka-seed",
+    contextHi: "ऋषि उद्दालक ने अपने पुत्र श्वेतकेतु को एक उदाहरण से समझाया—",
+    contextEn: "Uddalaka teaches his son Shvetaketu through an example—",
     referenceHi: "छांदोग्योपनिषद् 6.12.1–3",
     titleHi: "नन्हे बीज में इतना बड़ा वृक्ष!",
     titleEn: "The banyan within a seed",
@@ -303,6 +331,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "uddalaka-salt",
+    contextHi: "ऋषि उद्दालक ने अपने पुत्र श्वेतकेतु को एक उदाहरण से समझाया—",
+    contextEn: "Uddalaka teaches his son Shvetaketu through an example—",
     referenceHi: "छांदोग्योपनिषद् 6.13.1–3",
     titleHi: "नमक दिखता नहीं, फिर भी है",
     titleEn: "Salt dissolved in water",
@@ -324,6 +354,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "satyakama-honesty",
+    contextHi: "गुरु गौतम ने सत्यकाम से उनका परिचय पूछा।",
+    contextEn: "Teacher Gautama asks Satyakama about his background.",
     referenceHi: "छांदोग्योपनिषद् 4.4.5",
     titleHi: "सत्य बोलने का साहस",
     titleEn: "Satyakama’s honest answer",
@@ -345,6 +377,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "taittiriya-farewell",
+    contextHi: "गुरुकुल से विदा लेते शिष्य को आचार्य ने सीख दी—",
+    contextEn: "The teacher gives a departing student guidance for life—",
     referenceHi: "तैत्तिरीयोपनिषद् 1.11.1–3",
     titleHi: "गुरुकुल की विदाई की सीख",
     titleEn: "The student’s farewell lesson",
@@ -367,6 +401,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "bhrigu-inquiry",
+    contextHi: "भृगु ने अपने पिता वरुण से ब्रह्म का ज्ञान माँगा।",
+    contextEn: "Bhrigu asks his father Varuna about Brahman.",
     referenceHi: "तैत्तिरीयोपनिषद् 3.1–6",
     titleHi: "भृगु की खोज थमी नहीं",
     titleEn: "Why Bhrigu returned",
@@ -387,6 +423,9 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "maitreyi-question",
+    contextHi:
+        "मैत्रेयी के प्रश्न पर ऋषि याज्ञवल्क्य ने आत्मज्ञान की बात समझाई—",
+    contextEn: "Answering Maitreyi, Yajnavalkya teaches self-knowledge—",
     referenceHi: "बृहदारण्यकोपनिषद् 2.4.2–3",
     titleHi: "मैत्रेयी को धन से आगे क्या चाहिए था?",
     titleEn: "Maitreyi’s deeper question",
@@ -408,6 +447,9 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "maitreyi-three-steps",
+    contextHi:
+        "मैत्रेयी के प्रश्न पर ऋषि याज्ञवल्क्य ने आत्मज्ञान की बात समझाई—",
+    contextEn: "Answering Maitreyi, Yajnavalkya teaches self-knowledge—",
     referenceHi: "बृहदारण्यकोपनिषद् 2.4.5",
     titleHi: "सुनें, समझें, फिर भीतर उतारें",
     titleEn: "Hear, reflect, contemplate",
@@ -429,6 +471,9 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "three-da",
+    contextHi:
+        "प्रजापति ने देवों, मनुष्यों और असुरों को एक अक्षर का उपदेश दिया।",
+    contextEn: "Prajapati teaches three groups of pupils with one syllable.",
     referenceHi: "बृहदारण्यकोपनिषद् 5.2.1–3",
     titleHi: "एक अक्षर की तीन सीख",
     titleEn: "One syllable, three lessons",
@@ -450,6 +495,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "mundaka-two-birds",
+    contextHi: "मुंडकोपनिषद् साधक को आत्मचिंतन की राह दिखाता है—",
+    contextEn: "The Mundaka Upanishad guides the seeker toward contemplation—",
     referenceHi: "मुंडकोपनिषद् 3.1.1",
     titleHi: "एक ही वृक्ष पर दो पक्षी",
     titleEn: "Two birds on one tree",
@@ -471,6 +518,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vidura-listen",
+    contextHi: "विदुर ने धृतराष्ट्र को नीति की बात समझाई—",
+    contextEn: "Vidura offers Dhritarashtra counsel—",
     referenceHi: "महाभारत · उद्योगपर्व, अध्याय 33",
     titleHi: "बुद्धिमान पहले पूरा सुनता है",
     titleEn: "Wisdom listens patiently",
@@ -492,6 +541,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vidura-finish",
+    contextHi: "विदुर ने धृतराष्ट्र को नीति की बात समझाई—",
+    contextEn: "Vidura offers Dhritarashtra counsel—",
     referenceHi: "महाभारत · उद्योगपर्व, अध्याय 33",
     titleHi: "आरंभ किया है तो निभाएँ भी",
     titleEn: "Stay with the work",
@@ -513,6 +564,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vidura-word-arrows",
+    contextHi: "विदुर ने धृतराष्ट्र को नीति की बात समझाई—",
+    contextEn: "Vidura offers Dhritarashtra counsel—",
     referenceHi: "महाभारत · उद्योगपर्व, अध्याय 36",
     titleHi: "वाणी का तीर",
     titleEn: "Arrows made of words",
@@ -535,6 +588,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vidura-dyed-cloth",
+    contextHi: "विदुर ने धृतराष्ट्र को नीति की बात समझाई—",
+    contextEn: "Vidura offers Dhritarashtra counsel—",
     referenceHi: "महाभारत · उद्योगपर्व, अध्याय 36",
     titleHi: "जैसी संगत, वैसा रंग",
     titleEn: "The colour of company",
@@ -556,6 +611,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kural-unmeasured",
+    contextHi: "तिरुवल्लुवर तिरुक्कुरल में जीवन की यह सीख देते हैं—",
+    contextEn: "Tiruvalluvar offers this teaching in the Tirukkural—",
     referenceHi: "तिरुक्कुरल 103",
     titleHi: "उपकार का हिसाब नहीं होता",
     titleEn: "Help without a ledger",
@@ -576,6 +633,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kural-speech",
+    contextHi: "तिरुवल्लुवर तिरुक्कुरल में जीवन की यह सीख देते हैं—",
+    contextEn: "Tiruvalluvar offers this teaching in the Tirukkural—",
     referenceHi: "तिरुक्कुरल 129",
     titleHi: "बोलने से पहले सोचें",
     titleEn: "The lasting wound of speech",
@@ -596,6 +655,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kural-earth",
+    contextHi: "तिरुवल्लुवर तिरुक्कुरल में जीवन की यह सीख देते हैं—",
+    contextEn: "Tiruvalluvar offers this teaching in the Tirukkural—",
     referenceHi: "तिरुक्कुरल 151",
     titleHi: "धरती जैसा धैर्य",
     titleEn: "Forbearance pictured as earth",
@@ -617,6 +678,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kural-live-learning",
+    contextHi: "तिरुवल्लुवर तिरुक्कुरल में जीवन की यह सीख देते हैं—",
+    contextEn: "Tiruvalluvar offers this teaching in the Tirukkural—",
     referenceHi: "तिरुक्कुरल 391",
     titleHi: "सीख वही, जो आचरण बने",
     titleEn: "Live what you learn",
@@ -637,6 +700,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "yoga-practice-release",
+    contextHi: "महर्षि पतंजलि ने योगसूत्र में साधक को मार्ग बताया—",
+    contextEn: "Patanjali guides the practitioner in the Yoga Sutras—",
     referenceHi: "योगसूत्र 1.12",
     titleHi: "अभ्यास भी, आसक्ति से मुक्ति भी",
     titleEn: "Practice with non-attachment",
@@ -659,6 +724,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "yoga-four-attitudes",
+    contextHi: "महर्षि पतंजलि ने योगसूत्र में साधक को मार्ग बताया—",
+    contextEn: "Patanjali guides the practitioner in the Yoga Sutras—",
     referenceHi: "योगसूत्र 1.33",
     titleHi: "दूसरे के सुख में प्रसन्न होना",
     titleEn: "Four attitudes of mind",
@@ -680,6 +747,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "yoga-counterthought",
+    contextHi: "महर्षि पतंजलि ने योगसूत्र में साधक को मार्ग बताया—",
+    contextEn: "Patanjali guides the practitioner in the Yoga Sutras—",
     referenceHi: "योगसूत्र 2.33",
     titleHi: "क्रोध उठे तो दिशा बदलें",
     titleEn: "Meet harmful thoughts thoughtfully",
@@ -702,6 +771,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "yoga-svadhyaya",
+    contextHi: "महर्षि पतंजलि ने योगसूत्र में साधक को मार्ग बताया—",
+    contextEn: "Patanjali guides the practitioner in the Yoga Sutras—",
     referenceHi: "योगसूत्र 2.32",
     titleHi: "स्वाध्याय की छोटी शुरुआत",
     titleEn: "Svadhyaya as a discipline",
@@ -724,6 +795,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kabir-musk",
+    contextHi: "कबीर के इस पद में साधक के लिए एक सीख है—",
+    contextEn: "This poem of Kabir offers the seeker a lesson—",
     referenceHi: "टैगोर-संग्रह · पद 6",
     titleHi: "कस्तूरी भीतर, खोज बाहर",
     titleEn: "The search for musk",
@@ -745,6 +818,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kabir-mine",
+    contextHi: "कबीर के इस पद में साधक के लिए एक सीख है—",
+    contextEn: "This poem of Kabir offers the seeker a lesson—",
     referenceHi: "टैगोर-संग्रह · पद 6",
     titleHi: "मैं और मेरा थोड़ा कम हो",
     titleEn: "The veil of mine",
@@ -765,6 +840,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kabir-nearness",
+    contextHi: "कबीर के इस पद में साधक के लिए एक सीख है—",
+    contextEn: "This poem of Kabir offers the seeker a lesson—",
     referenceHi: "टैगोर-संग्रह · पद 1",
     titleHi: "प्रभु दूर कहाँ हैं?",
     titleEn: "Near the seeker",
@@ -786,6 +863,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "kabir-dignity",
+    contextHi: "कबीर के इस पद में साधक के लिए एक सीख है—",
+    contextEn: "This poem of Kabir offers the seeker a lesson—",
     referenceHi: "टैगोर-संग्रह · पद 2",
     titleHi: "भक्ति को जाति से क्यों तौलें?",
     titleEn: "What identifies a devotee?",
@@ -806,6 +885,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-self-trust",
+    contextHi: "स्वामी विवेकानंद ने कर्मयोग समझाते हुए कहा—",
+    contextEn: "In his teaching on Karma Yoga, Vivekananda explains—",
     referenceHi: "कर्मयोग · अपने-अपने कार्यक्षेत्र में कोई छोटा नहीं",
     titleHi: "अपने भीतर के बल को पहचानें",
     titleEn: "Begin with self-trust",
@@ -827,6 +908,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-different-paths",
+    contextHi: "स्वामी विवेकानंद ने कर्मयोग समझाते हुए कहा—",
+    contextEn: "In his teaching on Karma Yoga, Vivekananda explains—",
     referenceHi: "कर्मयोग · अपने-अपने कार्यक्षेत्र में कोई छोटा नहीं",
     titleHi: "अपनी राह, अपना कर्तव्य",
     titleEn: "Respect different paths",
@@ -849,6 +932,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-work-spirit",
+    contextHi: "स्वामी विवेकानंद ने कर्मयोग समझाते हुए कहा—",
+    contextEn: "In his teaching on Karma Yoga, Vivekananda explains—",
     referenceHi: "कर्मयोग · कर्तव्य क्या है",
     titleHi: "छोटा काम, बड़ी निष्ठा",
     titleEn: "What gives work dignity?",
@@ -870,6 +955,8 @@ const wisdomReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-cultural-humility",
+    contextHi: "स्वामी विवेकानंद ने कर्मयोग समझाते हुए कहा—",
+    contextEn: "In his teaching on Karma Yoga, Vivekananda explains—",
     referenceHi: "कर्मयोग · कर्तव्य क्या है",
     titleHi: "समझने से पहले ठहरें",
     titleEn: "See through another’s eyes",

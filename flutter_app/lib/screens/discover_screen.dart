@@ -429,6 +429,20 @@ class _DiscoveryCard extends StatelessWidget {
                   style: theme.textTheme.bodySmall?.copyWith(height: 1.5)),
             ],
             const SizedBox(height: 12),
+            if (entry.contextHi.isNotEmpty) ...[
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Icon(Icons.forum_outlined,
+                    size: 19, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: Text(l.pick(entry.contextHi, entry.contextEn),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            height: 1.5,
+                            fontWeight: FontWeight.w600))),
+              ]),
+              const SizedBox(height: 12),
+            ],
             if (entry.quote.isNotEmpty) ...[
               Container(
                   width: double.infinity,
@@ -501,7 +515,7 @@ class _DiscoveryCard extends StatelessWidget {
                     await Clipboard.setData(
                       ClipboardData(
                         text:
-                            '$title\n${l.pick(entry.teacherHi, entry.teacherEn)}\n${l.isHindi && entry.referenceHi.isNotEmpty ? entry.referenceHi : entry.reference}\n\n${entry.quote.isEmpty ? '' : '${entry.quote}\n\n'}$body${prompt == null ? '' : '\n\n$promptTitle: $prompt'}\n\n${entry.source}: ${entry.url}',
+                            '$title\n${l.pick(entry.teacherHi, entry.teacherEn)}\n${l.isHindi && entry.referenceHi.isNotEmpty ? entry.referenceHi : entry.reference}\n\n${entry.quote.isEmpty ? '' : '${entry.quote}\n\n'}${entry.contextHi.isEmpty ? '' : '${l.pick(entry.contextHi, entry.contextEn)}\n'}$body${prompt == null ? '' : '\n\n$promptTitle: $prompt'}\n\n${entry.source}: ${entry.url}',
                       ),
                     );
                     if (!context.mounted) return;

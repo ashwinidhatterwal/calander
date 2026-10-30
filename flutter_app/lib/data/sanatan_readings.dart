@@ -5,6 +5,8 @@ part of 'daily_discoveries.dart';
 const sanatanReadings = <DailyDiscovery>[
   DailyDiscovery(
     id: "gita-duty-verse",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "philosophy",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -16,7 +18,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "कर्म अपना, फल प्रभु के हाथ",
     titleEn: "Give yourself to the work",
     bodyHi:
-        "श्रीकृष्ण कर्म करने की सीख देते हैं, फल पर अधिकार मानने की नहीं। फल की चाह में ही काम न करें, और न फल अपने हाथ में न होने के कारण कर्म छोड़ें।",
+        "तुम्हारा अधिकार कर्म करने पर है, फल को अपने वश में रखने पर नहीं। केवल फल की चाह में काम मत करो, और न कर्म से मुँह मोड़ो।",
     bodyEn:
         "Krishna directs Arjuna toward action without claiming control over its fruits. Do not make reward your sole motive or retreat into inaction.",
     promptHi: "आज अपना कर्तव्य पूरे मन से निभाएँ।",
@@ -27,6 +29,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-equanimity-verse",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "philosophy",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -38,7 +42,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "सफलता-असफलता में समभाव",
     titleEn: "Steadiness through outcomes",
     bodyHi:
-        "काम करते हुए आसक्ति छोड़ें और सफलता-असफलता में मन को सम रखें। श्रीकृष्ण इसी समत्व को योग कहते हैं। प्रयत्न में कमी नहीं, मन में संतुलन चाहिए।",
+        "आसक्ति छोड़कर अपना कर्म करो। सफलता मिले या असफलता, मन को सम रखो। इसी समत्व को योग कहते हैं।",
     bodyEn:
         "Act without clinging, remaining steady in success and failure. Krishna calls this evenness yoga; steadiness accompanies effort.",
     promptHi: "आज के परिणाम से पहले अपने प्रयत्न को देखिए।",
@@ -49,6 +53,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-steady-duty",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "philosophy",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -60,7 +66,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "कर्तव्य से मुँह न मोड़ें",
     titleEn: "Keep faith with duty",
     bodyHi:
-        "जो करना उचित है, उसे फल की आसक्ति छोड़कर निरंतर करें। गीता ऐसा कर्म परम लक्ष्य की ओर ले जाने वाला बताती है।",
+        "जो कर्म करना उचित है, उसे आसक्ति छोड़कर निरंतर करो। इस तरह कर्तव्य निभाते हुए मनुष्य परम लक्ष्य की ओर बढ़ता है।",
     bodyEn:
         "Perform the work that ought to be done, steadily and without attachment. The Gita connects such action with the highest goal.",
     promptHi: "जिस उचित काम को टाल रहे हैं, उसे शुरू करें।",
@@ -71,6 +77,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-example-service",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "philosophy",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -82,7 +90,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "आपके आचरण से राह बनती है",
     titleEn: "Conduct sets an example",
     bodyHi:
-        "श्रीकृष्ण लोककल्याण के लिए कर्म करने की बात कहते हैं। आदरणीय व्यक्ति जो करता है, दूसरे भी उसका अनुसरण करते हैं। इसलिए अच्छे विचार के साथ अच्छा आचरण भी जरूरी है।",
+        "लोककल्याण का ध्यान रखकर कर्म करो। श्रेष्ठ व्यक्ति जैसा आचरण करता है, दूसरे लोग भी उसी राह पर चलने लगते हैं।",
     bodyEn:
         "Krishna teaches action for the welfare of others. Those held in esteem set standards through their conduct.",
     promptHi: "आज ऐसा काम करें जिसे देखकर किसी को अच्छी प्रेरणा मिले।",
@@ -93,6 +101,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-offering-verse",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "spiritual",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -104,7 +114,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "कर्म करते हुए प्रभु का स्मरण",
     titleEn: "Offer your work to Krishna",
     bodyHi:
-        "श्रीकृष्ण अर्जुन से कहते हैं कि सारे कर्म मुझे अर्पित करो। मन को परमात्मा में रखकर, ममता और फल की लालसा छोड़कर, अपना कर्तव्य निभाओ।",
+        "अपने सभी कर्म मुझे अर्पित करो। मन को परमात्मा में रखकर, फल की लालसा और ममता छोड़कर, चिंता से मुक्त होकर अपना कर्तव्य निभाओ।",
     bodyEn:
         "Krishna asks Arjuna to dedicate his actions to Him, with spiritual attention and without possessiveness or craving for reward.",
     promptHi: "काम शुरू करते समय मन में उसे प्रभु को अर्पित करें।",
@@ -115,6 +125,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-simple-offering",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "spiritual",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -126,7 +138,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "प्रभु को भाव प्यारा है",
     titleEn: "The love in an offering",
     bodyHi:
-        "एक पत्ता, एक फूल, फल या जल—प्रेम से चढ़ाई छोटी भेंट भी भगवान स्वीकार करते हैं। इस श्लोक में भक्ति का सच्चा भाव सामने आता है।",
+        "जो भक्त प्रेम से मुझे पत्ता, फूल, फल या जल अर्पित करता है, उसकी वह भक्ति-भरी भेंट मैं स्वीकार करता हूँ।",
     bodyEn:
         "Krishna accepts a leaf, flower, fruit or water offered with devotion. The verse honours the love within a simple offering.",
     promptHi: "आज जो अर्पित करें, पूरे मन से करें।",
@@ -137,6 +149,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-refuge",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "spiritual",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -148,7 +162,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "प्रभु की शरण में भरोसा",
     titleEn: "Trust in divine refuge",
     bodyHi:
-        "श्रीकृष्ण अर्जुन को अपनी शरण में आने का आश्वासन देते हैं—मैं तुम्हें समस्त पापों से मुक्त करूँगा, शोक मत करो। भक्त इस वचन में समर्पण और प्रभु पर भरोसे का सहारा पाते हैं।",
+        "मेरी शरण में आओ। मैं तुम्हें समस्त पापों से मुक्त करूँगा; शोक मत करो। इस वचन में भक्त को समर्पण और भरोसे का सहारा मिलता है।",
     bodyEn:
         "Krishna offers Arjuna refuge and release from sin. Devotees find in this verse a promise supporting surrender and trust.",
     promptHi: "कुछ क्षण शांत मन से प्रभु का नाम लें।",
@@ -159,6 +173,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-humble-inquiry",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "spiritual",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -170,7 +186,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "श्रद्धा के साथ प्रश्न भी",
     titleEn: "Reverence with inquiry",
     bodyHi:
-        "ज्ञान के लिए तत्त्वदर्शी गुरु के पास जाएँ—विनय से, प्रश्न लेकर और सेवा के भाव से। गीता में श्रद्धा के साथ समझने की जिज्ञासा भी है।",
+        "तत्त्वदर्शी गुरु के पास विनय से जाओ, जिज्ञासा से प्रश्न करो और सेवा का भाव रखो। वे तुम्हें सत्य का ज्ञान देंगे।",
     bodyEn:
         "Approach a teacher who has seen truth with reverence, inquiry and service. The Gita joins humility with a sincere wish to understand.",
     promptHi: "किसी शास्त्र को पढ़ते समय अपना एक सच्चा प्रश्न लिखें।",
@@ -181,6 +197,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "gita-divine-presence",
+    contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+    contextEn: "Shri Krishna explains to Arjuna—",
     section: "spiritual",
     group: "gita",
     teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -192,7 +210,7 @@ const sanatanReadings = <DailyDiscovery>[
     titleHi: "सबमें प्रभु का दर्शन",
     titleEn: "Seeing the divine everywhere",
     bodyHi:
-        "जो मुझे सबमें और सबको मुझमें देखता है, वह मुझसे दूर नहीं होता—श्रीकृष्ण का यह वचन भक्ति की दृष्टि को व्यापक करता है।",
+        "जो मुझे सबमें और सबको मुझमें देखता है, वह मुझसे दूर नहीं होता, न मैं उससे दूर होता हूँ। भक्ति की यह दृष्टि जीवन में व्यापक अपनापन जगाती है।",
     bodyEn:
         "Krishna describes a devotee who sees Him everywhere and everything in Him, remaining close to the divine.",
     promptHi:
@@ -204,6 +222,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "katha-awaken",
+    contextHi: "यमराज ने नचिकेता को आत्मज्ञान की राह समझाई—",
+    contextEn: "Yama guides Nachiketa toward self-knowledge—",
     section: "spiritual",
     group: "upanishads",
     teacherHi: "उपनिषद्-वाणी",
@@ -226,6 +246,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "mundaka-truth",
+    contextHi: "मुंडकोपनिषद् साधक को आत्मचिंतन की राह दिखाता है—",
+    contextEn: "The Mundaka Upanishad guides the seeker toward contemplation—",
     section: "spiritual",
     group: "upanishads",
     teacherHi: "उपनिषद्-वाणी",
@@ -248,6 +270,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "isha-without-greed",
+    contextHi: "ईशावास्योपनिषद् जगत के प्रति हमारी दृष्टि समझाता है—",
+    contextEn: "The Isha Upanishad teaches a way of seeing the world—",
     section: "spiritual",
     group: "upanishads",
     teacherHi: "उपनिषद्-वाणी",
@@ -271,6 +295,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "taittiriya-satya",
+    contextHi: "गुरुकुल से विदा लेते शिष्य को आचार्य ने सीख दी—",
+    contextEn: "The teacher gives a departing student guidance for life—",
     section: "philosophy",
     group: "upanishads",
     teacherHi: "उपनिषद्-वाणी",
@@ -293,6 +319,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "veda-earth-mother",
+    contextHi: "भूमि सूक्त में ऋषि ने धरती को माता कहकर पुकारा—",
+    contextEn: "In the Hymn to Earth, the seer addresses Earth as mother—",
     section: "philosophy",
     group: "vedic",
     teacherHi: "अथर्ववेद · भूमि सूक्त",
@@ -314,6 +342,8 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "veda-unity",
+    contextHi: "ऋग्वेद का यह मंत्र मिलकर चलने की प्रेरणा देता है—",
+    contextEn: "This Rig Vedic hymn calls people to act in concord—",
     section: "philosophy",
     group: "vedic",
     teacherHi: "ऋग्वेद · संगठन सूक्त",
@@ -336,6 +366,9 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-patriot-heart",
+    contextHi:
+        "भारतवासियों को संबोधित करते हुए स्वामी विवेकानंद ने सेवा की प्रेरणा दी—",
+    contextEn: "Addressing the people of India, Vivekananda calls for service—",
     section: "philosophy",
     group: "vivekananda",
     teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",
@@ -358,6 +391,9 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-patriot-action",
+    contextHi:
+        "भारतवासियों को संबोधित करते हुए स्वामी विवेकानंद ने सेवा की प्रेरणा दी—",
+    contextEn: "Addressing the people of India, Vivekananda calls for service—",
     section: "philosophy",
     group: "vivekananda",
     teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",
@@ -380,6 +416,9 @@ const sanatanReadings = <DailyDiscovery>[
   ),
   DailyDiscovery(
     id: "vivekananda-motherland",
+    contextHi:
+        "भारतवासियों को संबोधित करते हुए स्वामी विवेकानंद ने सेवा की प्रेरणा दी—",
+    contextEn: "Addressing the people of India, Vivekananda calls for service—",
     section: "philosophy",
     group: "vivekananda",
     teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",

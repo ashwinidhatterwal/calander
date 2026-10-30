@@ -132,6 +132,15 @@ class DiscoveryShareService {
       }
       p.text(l.pick(entry.titleHi, entry.titleEn),
           x: 98, width: 884, size: 47, bold: true);
+      if (entry.contextHi.isNotEmpty) {
+        p.gap(16);
+        p.text(l.pick(entry.contextHi, entry.contextEn),
+            x: 98,
+            width: 884,
+            size: 29,
+            bold: true,
+            color: _PosterLayout.saffron);
+      }
       if (entry.quote.isNotEmpty) {
         p.gap(22);
         p.text(entry.quote,

@@ -28,12 +28,14 @@ class DailyDiscovery {
     this.promptEn = '',
     this.quote = '',
     this.referenceHi = '',
+    this.contextHi = '',
+    this.contextEn = '',
   });
   final String id, titleHi, titleEn, bodyHi, bodyEn, source, url;
   final int? month, day, year;
   final List<int> hinduMonths, tithis;
   final List<String> festivalIds;
-  final String quote, referenceHi;
+  final String quote, referenceHi, contextHi, contextEn;
   final String kind;
   final String teacherHi,
       teacherEn,
@@ -804,6 +806,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-compassion",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 12.13–14",
@@ -812,7 +816,7 @@ class DailyDiscoveries {
       titleHi: "भक्त के मन में करुणा",
       titleEn: "Devotion and compassion",
       bodyHi:
-          "श्रीकृष्ण प्रिय भक्त के गुण बताते हैं—किसी से द्वेष न हो, सबके प्रति मैत्री और दया हो, मन में क्षमा हो। भक्ति का रंग हमारे व्यवहार में भी दिखाई देना चाहिए।",
+          "जो किसी से द्वेष नहीं रखता, सबके प्रति मैत्री और करुणा रखता है, अहंकार से दूर और क्षमाशील है—ऐसा भक्त मुझे प्रिय है।",
       bodyEn:
           "Gita 12.13–14 connects devotion with compassion, friendship and forgiveness.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
@@ -821,6 +825,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-practice",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       promptHi: "मन भटके तो फिर प्रेम से प्रभु का स्मरण करें।",
       promptEn: "Return gently to remembrance when your mind wanders.",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -832,7 +838,7 @@ class DailyDiscoveries {
       titleHi: "मन भटके तो फिर अभ्यास करें",
       titleEn: "Practising devotion",
       bodyHi:
-          "मन एक बार में प्रभु पर न टिके तो निराश न हों। श्रीकृष्ण अभ्यास का मार्ग बताते हैं। बार-बार मन को लौटाना भी भक्ति की राह पर बढ़ना है।",
+          "यदि मन मुझमें स्थिर नहीं हो पाता, तो अभ्यास के सहारे मुझे पाने का प्रयत्न करो। बार-बार मन को लौटाना भी भक्ति की राह है।",
       bodyEn:
           "Gita 12.9 offers steady practice when concentration is difficult.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
@@ -841,6 +847,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-offering-work",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       promptHi: "आज कोई काम प्रभु को अर्पित करने के भाव से करें।",
       promptEn: "Offer one duty to God today.",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -852,7 +860,7 @@ class DailyDiscoveries {
       titleHi: "अपना कर्म प्रभु को अर्पित करें",
       titleEn: "Offering one’s work",
       bodyHi:
-          "मन को स्थिर करना कठिन लगे तो अपने कर्म भगवान को अर्पित करने का भाव रखें। श्रीकृष्ण गीता में कर्म के माध्यम से भी भक्ति का मार्ग बताते हैं।",
+          "यदि अभ्यास भी कठिन लगे, तो अपने कर्म मेरे लिए करने का भाव रखो। मुझे अर्पित करके कर्म करते हुए भी तुम सिद्धि पा सकते हो।",
       bodyEn: "Gita 12.10 presents work as an offering to the divine.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/12/",
@@ -860,6 +868,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-peace",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 12.12",
@@ -868,7 +878,7 @@ class DailyDiscoveries {
       titleHi: "फल की चिंता से थोड़ी मुक्ति",
       titleEn: "Letting go and peace",
       bodyHi:
-          "गीता कर्मफल के त्याग के साथ शांति का संबंध बताती है। अपना कर्तव्य निभाते हुए फल पर मन की पकड़ ढीली करें; हर परिणाम को अपनी इच्छा में बाँधना हमारे हाथ में नहीं।",
+          "कर्मफल का त्याग करने से शांति मिलती है। अपना कर्तव्य निभाओ, लेकिन हर परिणाम को अपनी इच्छा से बाँध लेने की आसक्ति छोड़ो।",
       bodyEn:
           "Gita 12.12 links inner peace with releasing attachment to results.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
@@ -877,6 +887,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-speech",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 17.15",
@@ -885,7 +897,7 @@ class DailyDiscoveries {
       titleHi: "वाणी भी तप बन सकती है",
       titleEn: "Discipline of speech",
       bodyHi:
-          "जो बात सत्य हो, हितकारी हो और किसी को व्यर्थ उद्विग्न न करे—गीता ऐसी वाणी को तप कहती है। बोलना रोज का काम है, उसे सँवारना रोज की साधना हो सकती है।",
+          "वाणी ऐसी हो जो सत्य हो, प्रिय और हितकारी हो तथा किसी को व्यर्थ उद्विग्न न करे। शास्त्रों का स्वाध्याय भी वाणी के तप का अंग है।",
       bodyEn:
           "Gita 17.15 values truthful, beneficial speech that does not cause distress.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
@@ -894,6 +906,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-charity",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 17.20",
@@ -902,7 +916,7 @@ class DailyDiscoveries {
       titleHi: "दान में बदले की आशा कैसी?",
       titleEn: "Giving without repayment",
       bodyHi:
-          "गीता उस दान को सात्त्विक कहती है जो कर्तव्य समझकर, उचित समय और स्थान पर, योग्य व्यक्ति को दिया जाए। उसमें लौटकर कुछ पाने की अपेक्षा नहीं होती।",
+          "दान कर्तव्य समझकर दो—उचित समय और स्थान पर, योग्य व्यक्ति को, बिना किसी प्रतिफल की आशा के। ऐसा दान सात्त्विक कहलाता है।",
       bodyEn:
           "Gita 17.20 values appropriate giving without expecting repayment.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
@@ -911,6 +925,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-mind",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 17.16",
@@ -919,7 +935,7 @@ class DailyDiscoveries {
       titleHi: "मन को भी निर्मल रखें",
       titleEn: "Discipline of mind",
       bodyHi:
-          "मन की प्रसन्नता, सौम्यता, मौन, संयम और भावों की शुद्धि—गीता इन्हें मन का तप कहती है। साधना केवल बाहर के आचरण तक सीमित नहीं है।",
+          "मन की प्रसन्नता, सौम्यता, मौन, आत्मसंयम और भावों की शुद्धि—ये मन के तप हैं। अपने भीतर के भावों को भी सँवारो।",
       bodyEn:
           "Gita 17.16 describes serenity, gentleness and self-restraint as mental discipline.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
@@ -928,6 +944,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-respect",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 17.14",
@@ -936,7 +954,7 @@ class DailyDiscoveries {
       titleHi: "सरलता और आदर का आचरण",
       titleEn: "Respect and simplicity",
       bodyHi:
-          "देव, गुरु और ज्ञानीजन का आदर, शुद्धता, सरलता तथा अहिंसा—गीता इन्हें शारीरिक तप में स्थान देती है। श्रद्धा अपने आचरण में उतरकर सार्थक होती है।",
+          "देव, गुरु और ज्ञानीजन का आदर, शुद्धता, सरलता, ब्रह्मचर्य और अहिंसा—ये शरीर के तप हैं। श्रद्धा अपने आचरण में भी दिखाई दे।",
       bodyEn:
           "Gita 17.14 honours respect, cleanliness, simplicity and nonviolence.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
@@ -945,6 +963,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-balance",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 6.16–17",
@@ -953,7 +973,7 @@ class DailyDiscoveries {
       titleHi: "साधना में संतुलन रखें",
       titleEn: "Balance in practice",
       bodyHi:
-          "श्रीकृष्ण भोजन, विश्राम और काम में संतुलन की बात कहते हैं। बहुत अधिक या बहुत कम सोना-खाना साधना में बाधा बन सकता है। संयमित दिनचर्या भी योग का सहारा है।",
+          "योग के लिए भोजन, विश्राम और काम में संतुलन रखो। न अति करो, न शरीर की जरूरतों की उपेक्षा। संयमित दिनचर्या साधना में सहायक है।",
       bodyEn: "Gita 6.16–17 encourages balance in food, sleep and activity.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/6/",
@@ -961,6 +981,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-return",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       promptHi: "आज कुछ क्षण ध्यान करें; मन भटके तो उसे वापस लाएँ।",
       promptEn: "Practise bringing attention back during a quiet moment.",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -972,7 +994,7 @@ class DailyDiscoveries {
       titleHi: "भटके मन को प्रेम से लौटाएँ",
       titleEn: "Returning the wandering mind",
       bodyHi:
-          "मन बार-बार भटकता है। श्रीकृष्ण उसे फिर सँभालकर आत्मा में स्थिर करने का अभ्यास बताते हैं। एकाग्रता टूट जाए तो साधना छोड़ने के बजाय फिर लौटें।",
+          "मन जहाँ-जहाँ भटककर जाए, वहाँ से उसे सँभालकर फिर आत्मा में स्थिर करो। ध्यान टूटे तो हार मत मानो; फिर लौट आओ।",
       bodyEn:
           "Gita 6.26 teaches repeatedly returning attention when the mind wanders.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",
@@ -981,6 +1003,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-lamp",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       promptHi: "शांत जगह बैठकर कुछ समय ध्यान करें।",
       promptEn: "Sit in a quiet place for a short meditation.",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
@@ -992,7 +1016,7 @@ class DailyDiscoveries {
       titleHi: "हवा से बची दीपशिखा",
       titleEn: "The steady lamp",
       bodyHi:
-          "हवा न हो तो दीपक की लौ स्थिर रहती है। गीता इसी सुंदर उपमा से योगी के संयमित, ध्यान में स्थिर मन को समझाती है।",
+          "हवा से बची दीपशिखा जैसे स्थिर रहती है, वैसे ही योगी का संयमित मन आत्मचिंतन में स्थिर होता है।",
       bodyEn:
           "Gita 6.19 compares steady meditation to a lamp sheltered from wind.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",
@@ -1001,6 +1025,8 @@ class DailyDiscoveries {
     ),
     DailyDiscovery(
       id: "gita-friend",
+      contextHi: "श्रीकृष्ण ने अर्जुन को समझाया—",
+      contextEn: "Shri Krishna explains to Arjuna—",
       teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
       teacherEn: "Bhagavad Gita · Shri Krishna",
       reference: "Bhagavad Gita 6.5–6",
@@ -1009,7 +1035,7 @@ class DailyDiscoveries {
       titleHi: "मन अपना साथी भी है",
       titleEn: "Making the mind a friend",
       bodyHi:
-          "श्रीकृष्ण कहते हैं कि मन हमारे उत्थान में साथी बन सकता है और असंयम में बाधा भी। उसे साधना अपने ही जीवन को सही दिशा देने का प्रयत्न है।",
+          "अपने मन के सहारे अपना उत्थान करो, स्वयं को गिरने मत दो। संयमित मन मित्र बनता है और असंयमित मन अपने ही मार्ग में बाधा।",
       bodyEn:
           "Gita 6.5–6 connects training the mind with one’s own spiritual growth.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",

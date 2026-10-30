@@ -1,6 +1,6 @@
-# Build 34: Android sharing test isolation fix
+# Build 35: reading context, gentle ratings and developer details
 
-Version 1.0.0+34. See [release and validation notes](docs/CHECKPOINT_34.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
+Version 1.0.0+35. See [release and validation notes](docs/CHECKPOINT_35.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
 
 Local Flutter analysis is clean and all 84 Flutter tests passed. Previous feature checkpoints remain below as history.
 

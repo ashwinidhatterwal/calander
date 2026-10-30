@@ -5,6 +5,8 @@ import '../core/app_theme.dart';
 import '../core/localization.dart';
 import '../core/release_config.dart';
 import 'privacy_screen.dart';
+import 'developer_details_card.dart';
+import '../data/rating_prompt_store.dart';
 
 class AboutSupportScreen extends StatefulWidget {
   const AboutSupportScreen({
@@ -72,7 +74,9 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _hi ? 'तिथि • पर्व • आपके दिन' : 'Tithi • Festivals • Your days',
+                  _hi
+                      ? 'तिथि • पर्व • आपके दिन'
+                      : 'Tithi • Festivals • Your days',
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -82,6 +86,22 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
             ),
           ),
           const SizedBox(height: 24),
+          DeveloperDetailsCard(
+              language: widget.language,
+              name: ReleaseConfig.developerName,
+              email: ReleaseConfig.developerEmail),
+          const SizedBox(height: 12),
+          Card(
+              child: ListTile(
+                  leading: const Icon(Icons.rate_review_outlined),
+                  title: Text(
+                      _hi ? 'Play Store पर रेटिंग दें' : 'Rate on Google Play'),
+                  subtitle: Text(_hi
+                      ? 'ऐप के साथ अपना अनुभव साझा करें'
+                      : 'Share your experience with the app'),
+                  trailing: const Icon(Icons.open_in_new, size: 20),
+                  onTap: _rateApp)),
+          const SizedBox(height: 12),
           Card(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
@@ -143,7 +163,9 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          _hi ? 'अगर ऐप आपके काम आता है' : 'If the app is useful to you',
+                          _hi
+                              ? 'अगर ऐप आपके काम आता है'
+                              : 'If the app is useful to you',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -175,9 +197,7 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
                       onPressed: () => _openUpi(context),
                       icon: const Icon(Icons.volunteer_activism_outlined),
                       label: Text(
-                        _hi
-                            ? 'डेवलपर को सहयोग भेजें'
-                            : 'Support the developer',
+                        _hi ? 'डेवलपर को सहयोग भेजें' : 'Support the developer',
                       ),
                     ),
                   ],
@@ -245,8 +265,7 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => showLicensePage(
                     context: context,
-                    applicationName:
-                        _hi ? 'हिन्दू कैलेंडर' : 'Hindu Calendar',
+                    applicationName: _hi ? 'हिन्दू कैलेंडर' : 'Hindu Calendar',
                     applicationVersion: ReleaseConfig.appVersion,
                     applicationIcon: Padding(
                       padding: const EdgeInsets.all(8),
@@ -264,6 +283,23 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _rateApp() async {
+    final opened = await RatingPromptStore.openPlayStore();
+    if (opened) {
+      try {
+        final store = RatingPromptStore();
+        await store.stop(await store.initialize());
+      } catch (_) {
+        /* Optional preference storage must not affect opening Play. */
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(_hi
+              ? 'Play Store नहीं खुल सका। कृपया फिर कोशिश करें।'
+              : 'Could not open Google Play. Please try again.')));
+    }
   }
 
   Future<void> _openUpi(BuildContext context) async {
@@ -286,9 +322,7 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _hi
-                  ? 'UPI ऐप नहीं खुल सका।'
-                  : 'No UPI app could be opened.',
+              _hi ? 'UPI ऐप नहीं खुल सका।' : 'No UPI app could be opened.',
             ),
           ),
         );

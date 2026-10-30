@@ -80,6 +80,13 @@ class MainActivity : FlutterActivity() {
         }
         MethodChannel(engine.dartExecutor.binaryMessenger, CalendarAlerts.CHANNEL).setMethodCallHandler { call, reply ->
             when (call.method) {
+                "firstInstallTime" -> try {
+                    @Suppress("DEPRECATION")
+                    val info = packageManager.getPackageInfo(packageName, 0)
+                    reply.success(info.firstInstallTime)
+                } catch (error: Exception) {
+                    reply.error("install_time_unavailable", error.message, null)
+                }
                 "currentPosition" -> deviceLocation.request(reply)
                 "locationStatus" -> reply.success(deviceLocation.status())
                 "district" -> {

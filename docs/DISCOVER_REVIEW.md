@@ -1,3 +1,7 @@
+# Build 35 update
+
+72 readings now introduce the correct speaker, listener or teaching context in Hindi and English. All 21 Gita readings include Krishna/Arjuna context, with natural Hindi bhavarth written in the voice of the teaching. Context also appears in copied readings and shared Panchang posters; original Sanskrit and paraphrase labels remain separate. The inventory remains 155 records.
+
 # Discover content and sharing
 
 Build 33 keeps three focused sections: अध्यात्म और अच्छी आदतें, नैतिकता और जीवन-दर्शन, and आज की जानकारी. Actual festival/tithi matches retain priority in the spiritual section; otherwise specific readings rotate. Philosophy now emphasizes Sanatan scriptures and related Indian spiritual/ethical teachings. Matching historical anniversaries or labelled heritage facts fill the third card.

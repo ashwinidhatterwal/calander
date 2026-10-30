@@ -14,6 +14,8 @@ void main() => stdout.writeln(jsonEncode(DailyDiscoveries.entries
           'reference': e.reference,
           'referenceHi': e.referenceHi,
           'quote': e.quote,
+          'contextHi': e.contextHi,
+          'contextEn': e.contextEn,
           'section': e.section,
           'group': e.group,
           'bodyHi': e.bodyHi,
