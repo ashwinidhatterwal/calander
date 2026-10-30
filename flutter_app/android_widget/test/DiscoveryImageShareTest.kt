@@ -3,6 +3,7 @@ package `in`.hinducalendar.hindu_calendar
 import android.app.Activity
 import android.content.Intent
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -14,6 +15,10 @@ import java.util.Base64
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28, 35])
 class DiscoveryImageShareTest {
+    @Before fun attachProviderForCurrentSandbox() {
+        CalendarShareTestSetup.attachProviderForCurrentSandbox()
+    }
+
     private fun png(): ByteArray = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==")
     @Test fun sharesPngWithReadableContentUriAndStoreLink() {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()

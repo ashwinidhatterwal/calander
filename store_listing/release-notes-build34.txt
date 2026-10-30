@@ -1,0 +1,1 @@
+Retains build 33's natural Hindi, Sanatan shastra readings and Panchang image sharing. Fixes Android sharing regression-test isolation so cached FileProvider paths cannot leak between test sandboxes. Production sharing behaviour remains unchanged.

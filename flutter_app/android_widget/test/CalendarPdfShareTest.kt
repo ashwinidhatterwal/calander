@@ -3,6 +3,7 @@ package `in`.hinducalendar.hindu_calendar
 import android.app.Activity
 import android.content.Intent
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -13,6 +14,10 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class CalendarPdfShareTest {
+    @Before fun attachProviderForCurrentSandbox() {
+        CalendarShareTestSetup.attachProviderForCurrentSandbox()
+    }
+
     @Test fun android9SharesPdfWithTemporaryReadAccess() {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         val bytes = "%PDF-1.4\ncalendar\n%%EOF".toByteArray()
