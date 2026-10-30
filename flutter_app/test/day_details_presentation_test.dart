@@ -20,7 +20,8 @@ class _FastFestival extends FestivalEngine {
   Future<List<FestivalObservance>> majorFestivalsAsync(
     int year,
     GeoLocation location,
-  ) async => [];
+  ) async =>
+      [];
 }
 
 void main() {
@@ -36,32 +37,37 @@ void main() {
           final font = FontLoader('CalendarHindi')
             ..addFont(rootBundle.load('assets/fonts/NotoSansDevanagari.ttf'));
           await font.load();
-        final icons = FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
-        await icons.load();
+          final icons = FontLoader('MaterialIcons')
+            ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+          await icons.load();
           final boundary = GlobalKey();
           final festival = _FastFestival();
           Widget app(Widget child) => MaterialApp(
-            locale: Locale(language == AppLanguage.hi ? 'hi' : 'en'),
-            supportedLocales: const [Locale('hi'), Locale('en')],
-            localizationsDelegates: GlobalMaterialLocalizations.delegates,
-            theme: ThemeData(
-              useMaterial3: true,
-              fontFamily: 'CalendarHindi',
-              scaffoldBackgroundColor: const Color(0xfffffbf7),
-              cardTheme: CardThemeData(elevation: 0, color: const Color(0xfffff4ed),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18),
-                  side: const BorderSide(color: Color(0xffe8d3c7), width: .8))),
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xff9a4e2d),
-              ),
-            ),
-            builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(context)
-                  .copyWith(textScaler: TextScaler.linear(scale)),
-              child: child!,
-            ),
-            home: RepaintBoundary(key: boundary, child: child),
-          );
+                locale: Locale(language == AppLanguage.hi ? 'hi' : 'en'),
+                supportedLocales: const [Locale('hi'), Locale('en')],
+                localizationsDelegates: GlobalMaterialLocalizations.delegates,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  fontFamily: 'CalendarHindi',
+                  scaffoldBackgroundColor: const Color(0xfffffbf7),
+                  cardTheme: CardThemeData(
+                      elevation: 0,
+                      color: const Color(0xfffff4ed),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          side: const BorderSide(
+                              color: Color(0xffe8d3c7), width: .8))),
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: const Color(0xff9a4e2d),
+                  ),
+                ),
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(textScaler: TextScaler.linear(scale)),
+                  child: child!,
+                ),
+                home: RepaintBoundary(key: boundary, child: child),
+              );
           await tester.pumpWidget(
             app(
               DayDetailsScreen(
@@ -108,10 +114,30 @@ void main() {
           if (scale == 1) {
             await _capture(tester, boundary, 'discover-${language.name}');
           }
-          for (var i = 0; i < 5; i++) {
-            await tester.drag(find.byType(ListView), const Offset(0, -280));
+          for (final title in language == AppLanguage.hi
+              ? [
+                  'अध्यात्म और अच्छी आदतें',
+                  'नैतिकता और जीवन-दर्शन',
+                  'आज की जानकारी'
+                ]
+              : [
+                  'Spirituality & good practices',
+                  'Morality & philosophy',
+                  'Today’s facts'
+                ]) {
+            await tester.scrollUntilVisible(find.text(title), 250,
+                scrollable: find.byType(Scrollable).first);
             await tester.pumpAndSettle();
+            expect(find.text(title), findsOneWidget);
             expect(tester.takeException(), isNull);
+            if (scale == 1 &&
+                title ==
+                    (language == AppLanguage.hi
+                        ? 'नैतिकता और जीवन-दर्शन'
+                        : 'Morality & philosophy')) {
+              await _capture(
+                  tester, boundary, 'discover-${language.name}-reflection');
+            }
           }
           await tester.pumpWidget(const SizedBox());
         },
@@ -122,12 +148,14 @@ void main() {
 
 Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
   if (!const bool.fromEnvironment('CAPTURE_PREVIEWS')) return;
-  final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  final boundary =
+      key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
   await tester.runAsync(() async {
     final image = await boundary.toImage();
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     final directory = Directory('build/ui-review')..createSync(recursive: true);
-    File('${directory.path}/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+    File('${directory.path}/$name.png')
+        .writeAsBytesSync(bytes!.buffer.asUint8List());
     image.dispose();
   });
 }

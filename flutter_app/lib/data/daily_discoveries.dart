@@ -1,3 +1,5 @@
+part 'wisdom_readings.dart';
+
 /// Editorial content checked against the linked primary sources on 2026-10-29.
 /// Cultural cards rotate; only entries with a date are anniversaries.
 class DailyDiscovery {
@@ -16,12 +18,26 @@ class DailyDiscovery {
     this.tithis = const [],
     this.festivalIds = const [],
     this.kind = 'tradition',
+    this.teacherHi = '',
+    this.teacherEn = '',
+    this.reference = '',
+    this.section = '',
+    this.group = '',
+    this.promptHi = '',
+    this.promptEn = '',
   });
   final String id, titleHi, titleEn, bodyHi, bodyEn, source, url;
   final int? month, day, year;
   final List<int> hinduMonths, tithis;
   final List<String> festivalIds;
   final String kind;
+  final String teacherHi,
+      teacherEn,
+      reference,
+      section,
+      group,
+      promptHi,
+      promptEn;
   bool get isDated => month != null;
 }
 
@@ -95,15 +111,129 @@ class DailyDiscoveries {
     return ranked;
   }
 
+  static const philosophyIds = {
+    'gita-compassion',
+    'gita-peace',
+    'gita-speech',
+    'gita-charity',
+    'gita-respect',
+    'gita-friend',
+    'gita-mind',
+    'gita-balance',
+  };
+  static const factIds = {
+    'vedic',
+    'kumbh',
+    'garba',
+    'durga',
+    'ramlila',
+    'ramman',
+    'kutiyattam',
+    'chhau',
+    'kalbelia',
+    'mudiyettu',
+    'jantar',
+    'konark',
+    'chola',
+    'hampi',
+    'nalanda',
+    'stepwell',
+    'deepavali',
+  };
+
+  /// Spread each teacher's readings across the cycle instead of showing them
+  /// in one consecutive block. Every reading occurs exactly once per cycle.
+  static List<DailyDiscovery> _interleave(Iterable<DailyDiscovery> pool) {
+    final groups = <String, List<DailyDiscovery>>{};
+    for (final entry in pool) {
+      groups
+          .putIfAbsent(entry.group.isEmpty ? 'gita' : entry.group, () => [])
+          .add(entry);
+    }
+    final result = <DailyDiscovery>[];
+    final used = <String, int>{};
+    String? previous;
+    while (result.length < groups.values.fold<int>(0, (n, g) => n + g.length)) {
+      String? next;
+      var mostRemaining = 0;
+      for (final group in groups.entries) {
+        final remaining = group.value.length - (used[group.key] ?? 0);
+        if (group.key != previous && remaining > mostRemaining) {
+          next = group.key;
+          mostRemaining = remaining;
+        }
+      }
+      // A majority group can remain alone in the spiritual pool.
+      next ??= groups.keys
+          .firstWhere((key) => (used[key] ?? 0) < groups[key]!.length);
+      final index = used[next] ?? 0;
+      result.add(groups[next]![index]);
+      used[next] = index + 1;
+      previous = next;
+    }
+    return result;
+  }
+
+  /// Exactly three distinct daily readings. Actual festival/tithi matches
+  /// keep priority; otherwise the spiritual reading explores the wisdom pool.
+  static ({
+    DailyDiscovery spiritual,
+    DailyDiscovery philosophy,
+    DailyDiscovery fact,
+    bool anniversary
+  }) dailySections({
+    required DateTime date,
+    required int hinduMonth,
+    required int rawTithi,
+    Set<String> festivals = const {},
+    bool adhik = false,
+  }) {
+    final day = DateTime.utc(date.year, date.month, date.day)
+        .difference(DateTime.utc(2026))
+        .inDays;
+    final ranked = select(
+        date: date,
+        hinduMonth: hinduMonth,
+        rawTithi: rawTithi,
+        festivals: festivals,
+        adhik: adhik);
+    final relevant = ranked.where((item) =>
+        (item.reason == 'festival' || item.reason == 'tithi') &&
+        !philosophyIds.contains(item.entry.id) &&
+        !factIds.contains(item.entry.id) &&
+        item.entry.section != 'philosophy');
+    final spiritualPool =
+        _interleave(entries.where((entry) => entry.section == 'spiritual'));
+    final spiritual = relevant.isNotEmpty
+        ? relevant.first.entry
+        : spiritualPool[day % spiritualPool.length];
+    final philosophyPool = _interleave(entries.where(
+        (e) => philosophyIds.contains(e.id) || e.section == 'philosophy'));
+    final dated = onThisDay(date);
+    final facts = dated.isNotEmpty
+        ? dated
+        : entries.where((e) => factIds.contains(e.id)).toList();
+    return (
+      spiritual: spiritual,
+      philosophy: philosophyPool[day % philosophyPool.length],
+      fact: facts[day % facts.length],
+      anniversary: dated.isNotEmpty
+    );
+  }
+
   static const entries = <DailyDiscovery>[
+    ...wisdomReadings,
     DailyDiscovery(
       id: "prahlad-story",
       titleHi: "प्रह्लाद की अडिग भक्ति",
       titleEn: "Prahlad’s steadfast devotion",
-      bodyHi: "होलिका की धार्मिक कथा में प्रह्लाद अपने पिता के विरोध के बावजूद विष्णु भक्ति नहीं छोड़ते। अग्नि में भी उनकी रक्षा होती है। भक्त इसे भय और अहंकार पर श्रद्धा की विजय का संदेश मानते हैं। यह आस्था की कथा है।",
-      bodyEn: "In the sacred Holika story, Prahlad remains devoted to Vishnu despite his father’s opposition and survives the fire. Devotees understand it as faith overcoming fear and arrogance. This is a religious narrative.",
+      bodyHi:
+          "होलिका की धार्मिक कथा में प्रह्लाद अपने पिता के विरोध के बावजूद विष्णु भक्ति नहीं छोड़ते। अग्नि में भी उनकी रक्षा होती है। भक्त इसे भय और अहंकार पर श्रद्धा की विजय का संदेश मानते हैं। यह आस्था की कथा है।",
+      bodyEn:
+          "In the sacred Holika story, Prahlad remains devoted to Vishnu despite his father’s opposition and survives the fire. Devotees understand it as faith overcoming fear and arrogance. This is a religious narrative.",
       source: "BAPS",
-      url: "https://www.baps.org/cultureandheritage/Traditions/AnnualCelebrationsandFestivals/Holi.aspx",
+      url:
+          "https://www.baps.org/cultureandheritage/Traditions/AnnualCelebrationsandFestivals/Holi.aspx",
       hinduMonths: [12],
       tithis: [],
       festivalIds: ["holika_dahan", "holi"],
@@ -113,8 +243,10 @@ class DailyDiscoveries {
       id: "pradosh-reading",
       titleHi: "प्रदोष में शिव स्मरण",
       titleEn: "Shiva remembrance at Pradosh",
-      bodyHi: "दोनों पक्षों की त्रयोदशी से प्रदोष व्रत जुड़ा है। शिव आराधना का यह अवसर संध्या के प्रदोष काल पर निर्भर करता है; केवल सूर्योदय की तिथि से पूजा का दिन तय नहीं होता।",
-      bodyEn: "Pradosh connects Shiva devotion with Trayodashi in both fortnights. Its evening worship window matters; sunrise tithi alone does not determine the observance date.",
+      bodyHi:
+          "दोनों पक्षों की त्रयोदशी से प्रदोष व्रत जुड़ा है। शिव आराधना का यह अवसर संध्या के प्रदोष काल पर निर्भर करता है; केवल सूर्योदय की तिथि से पूजा का दिन तय नहीं होता।",
+      bodyEn:
+          "Pradosh connects Shiva devotion with Trayodashi in both fortnights. Its evening worship window matters; sunrise tithi alone does not determine the observance date.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/vrats/pradoshdates.html",
       hinduMonths: [],
@@ -126,8 +258,10 @@ class DailyDiscoveries {
       id: "satya-reading",
       titleHi: "पूर्णिमा और सत्यनारायण",
       titleEn: "Purnima and Satyanarayana",
-      bodyHi: "सत्यनारायण पूजा पूर्णिमा से जुड़ी लोकप्रिय गृहस्थ परंपरा है। पूजा का समय चुनते समय पूर्णिमा की वास्तविक अवधि देखना उपयोगी है, क्योंकि वह पूरे नागरिक दिन तक आवश्यक नहीं रहती।",
-      bodyEn: "Satyanarayana worship is a household tradition associated with Purnima. Its actual lunar interval matters because Purnima need not occupy an entire civil day.",
+      bodyHi:
+          "सत्यनारायण पूजा पूर्णिमा से जुड़ी लोकप्रिय गृहस्थ परंपरा है। पूजा का समय चुनते समय पूर्णिमा की वास्तविक अवधि देखना उपयोगी है, क्योंकि वह पूरे नागरिक दिन तक आवश्यक नहीं रहती।",
+      bodyEn:
+          "Satyanarayana worship is a household tradition associated with Purnima. Its actual lunar interval matters because Purnima need not occupy an entire civil day.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/vrats/satyanarayandates.html",
       hinduMonths: [],
@@ -139,22 +273,26 @@ class DailyDiscoveries {
       id: "ekadashi-reading",
       titleHi: "एकादशी और पारण",
       titleEn: "Ekadashi and Parana",
-      bodyHi: "एकादशी विष्णु भक्ति का अवसर है। पारण का अर्थ व्रत खोलना है; उसका समय एकादशी शुरू होने के समय से अलग होता है। परिवार की परंपरा और स्थानीय पंचांग के अनुसार विधि बदल सकती है।",
-      bodyEn: "Ekadashi is associated with Vishnu devotion. Parana means concluding the fast and has its own timing, distinct from the start of Ekadashi. Local calendars and family traditions can differ.",
+      bodyHi:
+          "एकादशी विष्णु भक्ति का अवसर है। पारण का अर्थ व्रत खोलना है; उसका समय एकादशी शुरू होने के समय से अलग होता है। परिवार की परंपरा और स्थानीय पंचांग के अनुसार विधि बदल सकती है।",
+      bodyEn:
+          "Ekadashi is associated with Vishnu devotion. Parana means concluding the fast and has its own timing, distinct from the start of Ekadashi. Local calendars and family traditions can differ.",
       source: "Drik Panchang",
-      url: "https://www.drikpanchang.com/faq/ekadashi/about-ekadashi-timings.html",
+      url:
+          "https://www.drikpanchang.com/faq/ekadashi/about-ekadashi-timings.html",
       hinduMonths: [],
       tithis: [11, 26],
       festivalIds: [],
       kind: "tradition",
     ),
-
     DailyDiscovery(
       id: "gangaur",
       titleHi: "गणगौर में गौरी",
       titleEn: "Gauri at Gangaur",
-      bodyHi: "गणगौर में गौरी की पूजा होती है। राजस्थान की इस प्रिय परंपरा में विवाहित और अविवाहित महिलाएँ भाग लेती हैं।",
-      bodyEn: "Gangaur honours Gauri and brings married and unmarried women together in a cherished regional tradition.",
+      bodyHi:
+          "गणगौर में गौरी की पूजा होती है। राजस्थान की इस प्रिय परंपरा में विवाहित और अविवाहित महिलाएँ भाग लेती हैं।",
+      bodyEn:
+          "Gangaur honours Gauri and brings married and unmarried women together in a cherished regional tradition.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-chaitra.html",
       hinduMonths: [1],
@@ -165,8 +303,10 @@ class DailyDiscoveries {
       id: "ugadi",
       titleHi: "नववर्ष के अनेक नाम",
       titleEn: "Many names for a new year",
-      bodyHi: "चैत्र शुक्ल प्रतिपदा को उगादी और गुड़ी पड़वा जैसे नववर्ष उत्सव मनाए जाते हैं। अलग नामों में नई शुरुआत का साझा भाव है।",
-      bodyEn: "Ugadi and Gudi Padwa mark a new year at Chaitra’s bright-fortnight beginning, expressing renewal through regional customs.",
+      bodyHi:
+          "चैत्र शुक्ल प्रतिपदा को उगादी और गुड़ी पड़वा जैसे नववर्ष उत्सव मनाए जाते हैं। अलग नामों में नई शुरुआत का साझा भाव है।",
+      bodyEn:
+          "Ugadi and Gudi Padwa mark a new year at Chaitra’s bright-fortnight beginning, expressing renewal through regional customs.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-chaitra.html",
       hinduMonths: [1],
@@ -177,8 +317,10 @@ class DailyDiscoveries {
       id: "rama-reading",
       titleHi: "रामनवमी का स्मरण",
       titleEn: "Remembering Rama Navami",
-      bodyHi: "रामनवमी पर भक्त अयोध्या में राम के जन्म की धार्मिक कथा का स्मरण करते हैं। यह रामभक्ति का प्रमुख उत्सव है।",
-      bodyEn: "Rama Navami recalls the sacred account of Rama’s birth in Ayodhya and is a major occasion for devotion.",
+      bodyHi:
+          "रामनवमी पर भक्त अयोध्या में राम के जन्म की धार्मिक कथा का स्मरण करते हैं। यह रामभक्ति का प्रमुख उत्सव है।",
+      bodyEn:
+          "Rama Navami recalls the sacred account of Rama’s birth in Ayodhya and is a major occasion for devotion.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-chaitra.html",
       hinduMonths: [1],
@@ -189,8 +331,10 @@ class DailyDiscoveries {
       id: "akshaya",
       titleHi: "अक्षय तृतीया में दान",
       titleEn: "Giving on Akshaya Tritiya",
-      bodyHi: "अक्षय तृतीया विष्णु आराधना और दान से जुड़ी है। परंपरा में शुभ कर्मों के अक्षय पुण्य की मान्यता है।",
-      bodyEn: "Akshaya Tritiya joins Vishnu worship with generosity and the traditional belief in enduring spiritual merit.",
+      bodyHi:
+          "अक्षय तृतीया विष्णु आराधना और दान से जुड़ी है। परंपरा में शुभ कर्मों के अक्षय पुण्य की मान्यता है।",
+      bodyEn:
+          "Akshaya Tritiya joins Vishnu worship with generosity and the traditional belief in enduring spiritual merit.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-vaishakha.html",
       hinduMonths: [2],
@@ -201,8 +345,10 @@ class DailyDiscoveries {
       id: "jahnavi",
       titleHi: "गंगा का जाह्नवी नाम",
       titleEn: "Why Ganga is called Jahnavi",
-      bodyHi: "गंगा सप्तमी की कथा में ऋषि जह्नु गंगा को फिर प्रवाहित करते हैं। इसी धार्मिक कथा से जाह्नवी नाम जुड़ता है।",
-      bodyEn: "A sacred Ganga Saptami narrative tells of sage Jahnu releasing the river again, explaining the name Jahnavi.",
+      bodyHi:
+          "गंगा सप्तमी की कथा में ऋषि जह्नु गंगा को फिर प्रवाहित करते हैं। इसी धार्मिक कथा से जाह्नवी नाम जुड़ता है।",
+      bodyEn:
+          "A sacred Ganga Saptami narrative tells of sage Jahnu releasing the river again, explaining the name Jahnavi.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-vaishakha.html",
       hinduMonths: [2],
@@ -213,8 +359,10 @@ class DailyDiscoveries {
       id: "parashurama",
       titleHi: "परशुराम का स्मरण",
       titleEn: "Remembering Parashurama",
-      bodyHi: "परशुराम जयंती विष्णु के परशुराम अवतार का स्मरण है। इसे वैष्णव अवतार परंपरा के एक उत्सव के रूप में समझें।",
-      bodyEn: "Parashurama Jayanti honours Parashurama within the Vaishnava tradition of Vishnu’s incarnations.",
+      bodyHi:
+          "परशुराम जयंती विष्णु के परशुराम अवतार का स्मरण है। इसे वैष्णव अवतार परंपरा के एक उत्सव के रूप में समझें।",
+      bodyEn:
+          "Parashurama Jayanti honours Parashurama within the Vaishnava tradition of Vishnu’s incarnations.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-vaishakha.html",
       hinduMonths: [2],
@@ -225,8 +373,10 @@ class DailyDiscoveries {
       id: "narada",
       titleHi: "नारद और नामस्मरण",
       titleEn: "Narada and remembrance",
-      bodyHi: "धार्मिक कथाओं में नारद को नारायण का भक्त बताया गया है। उनका चरित्र निरंतर ईश्वर-स्मरण की प्रेरणा देता है।",
-      bodyEn: "Sacred narratives portray Narada as a devotee of Narayana, exemplifying continual remembrance of the divine.",
+      bodyHi:
+          "धार्मिक कथाओं में नारद को नारायण का भक्त बताया गया है। उनका चरित्र निरंतर ईश्वर-स्मरण की प्रेरणा देता है।",
+      bodyEn:
+          "Sacred narratives portray Narada as a devotee of Narayana, exemplifying continual remembrance of the divine.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-jyeshtha.html",
       hinduMonths: [3],
@@ -237,8 +387,10 @@ class DailyDiscoveries {
       id: "vat",
       titleHi: "वट सावित्री की परंपरा",
       titleEn: "The Vat Savitri tradition",
-      bodyHi: "वट सावित्री व्रत दांपत्य मंगल की कामना से जुड़ा है। पूर्णिमा और अमावस्या वाली क्षेत्रीय परंपराएँ अलग हो सकती हैं।",
-      bodyEn: "Vat Savitri expresses prayers for marital well-being; regional traditions differ between full-moon and new-moon observances.",
+      bodyHi:
+          "वट सावित्री व्रत दांपत्य मंगल की कामना से जुड़ा है। पूर्णिमा और अमावस्या वाली क्षेत्रीय परंपराएँ अलग हो सकती हैं।",
+      bodyEn:
+          "Vat Savitri expresses prayers for marital well-being; regional traditions differ between full-moon and new-moon observances.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-jyeshtha.html",
       hinduMonths: [3],
@@ -249,8 +401,10 @@ class DailyDiscoveries {
       id: "shani",
       titleHi: "शनि और कर्म की धारणा",
       titleEn: "Shani and responsibility",
-      bodyHi: "शनि जयंती नवग्रहों में शनि की आराधना का अवसर है। धार्मिक मान्यता में शनि कर्मफल से जुड़े हैं।",
-      bodyEn: "Shani Jayanti honours Shani among the Navagrahas; tradition associates Shani with the consequences of actions.",
+      bodyHi:
+          "शनि जयंती नवग्रहों में शनि की आराधना का अवसर है। धार्मिक मान्यता में शनि कर्मफल से जुड़े हैं।",
+      bodyEn:
+          "Shani Jayanti honours Shani among the Navagrahas; tradition associates Shani with the consequences of actions.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-jyeshtha.html",
       hinduMonths: [3],
@@ -261,8 +415,10 @@ class DailyDiscoveries {
       id: "ratha",
       titleHi: "जगन्नाथ की रथयात्रा",
       titleEn: "Jagannath’s chariot journey",
-      bodyHi: "रथयात्रा में जगन्नाथ गुंडिचा मंदिर की यात्रा करते हैं। यह मंदिर से बाहर निकलकर भक्तों से मिलने की जीवित उत्सव परंपरा है।",
-      bodyEn: "Jagannath’s Ratha Yatra travels to Gundicha temple, bringing a living temple tradition into public space.",
+      bodyHi:
+          "रथयात्रा में जगन्नाथ गुंडिचा मंदिर की यात्रा करते हैं। यह मंदिर से बाहर निकलकर भक्तों से मिलने की जीवित उत्सव परंपरा है।",
+      bodyEn:
+          "Jagannath’s Ratha Yatra travels to Gundicha temple, bringing a living temple tradition into public space.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashadha.html",
       hinduMonths: [4],
@@ -273,8 +429,10 @@ class DailyDiscoveries {
       id: "sleep",
       titleHi: "देवशयनी का भाव",
       titleEn: "The meaning of Devshayani",
-      bodyHi: "देवशयनी एकादशी से विष्णु के योगनिद्रा काल के आरंभ की मान्यता है। यह धार्मिक भाव है, सामान्य ऐतिहासिक घटना नहीं।",
-      bodyEn: "Devshayani Ekadashi traditionally marks the beginning of Vishnu’s sacred repose, a devotional belief rather than a dated historical event.",
+      bodyHi:
+          "देवशयनी एकादशी से विष्णु के योगनिद्रा काल के आरंभ की मान्यता है। यह धार्मिक भाव है, सामान्य ऐतिहासिक घटना नहीं।",
+      bodyEn:
+          "Devshayani Ekadashi traditionally marks the beginning of Vishnu’s sacred repose, a devotional belief rather than a dated historical event.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashadha.html",
       hinduMonths: [4],
@@ -285,8 +443,10 @@ class DailyDiscoveries {
       id: "vyasa",
       titleHi: "व्यास पूजा",
       titleEn: "Honouring Vyasa",
-      bodyHi: "आषाढ़ में गुरु पूर्णिमा और व्यास पूजा के उत्सव आते हैं। ज्ञान देने वाले गुरु के प्रति कृतज्ञता इनके केंद्र में है।",
-      bodyEn: "Ashadha brings Guru Purnima and Vyasa Puja, occasions for gratitude to those who transmit spiritual knowledge.",
+      bodyHi:
+          "आषाढ़ में गुरु पूर्णिमा और व्यास पूजा के उत्सव आते हैं। ज्ञान देने वाले गुरु के प्रति कृतज्ञता इनके केंद्र में है।",
+      bodyEn:
+          "Ashadha brings Guru Purnima and Vyasa Puja, occasions for gratitude to those who transmit spiritual knowledge.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashadha.html",
       hinduMonths: [4],
@@ -297,8 +457,10 @@ class DailyDiscoveries {
       id: "sawan",
       titleHi: "श्रावण के सोमवार",
       titleEn: "Mondays of Shravana",
-      bodyHi: "श्रावण के सोमवार शिवभक्ति के लिए विशेष माने जाते हैं। अमांत और पूर्णिमांत पद्धतियों के कारण क्षेत्रीय अवधि अलग हो सकती है।",
-      bodyEn: "Shravana Mondays are associated with Shiva devotion; regional month systems can shift the observance period.",
+      bodyHi:
+          "श्रावण के सोमवार शिवभक्ति के लिए विशेष माने जाते हैं। अमांत और पूर्णिमांत पद्धतियों के कारण क्षेत्रीय अवधि अलग हो सकती है।",
+      bodyEn:
+          "Shravana Mondays are associated with Shiva devotion; regional month systems can shift the observance period.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-shravana.html",
       hinduMonths: [5],
@@ -309,8 +471,10 @@ class DailyDiscoveries {
       id: "mangala",
       titleHi: "मंगला गौरी",
       titleEn: "Mangala Gauri",
-      bodyHi: "श्रावण के मंगलवार मंगला गौरी व्रत की परंपरा है। कई विवाहित महिलाएँ गृहस्थ जीवन के मंगल की प्रार्थना करती हैं।",
-      bodyEn: "Mangala Gauri observances on Shravana Tuesdays include prayers for well-being in married life.",
+      bodyHi:
+          "श्रावण के मंगलवार मंगला गौरी व्रत की परंपरा है। कई विवाहित महिलाएँ गृहस्थ जीवन के मंगल की प्रार्थना करती हैं।",
+      bodyEn:
+          "Mangala Gauri observances on Shravana Tuesdays include prayers for well-being in married life.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-shravana.html",
       hinduMonths: [5],
@@ -321,8 +485,10 @@ class DailyDiscoveries {
       id: "rakhi",
       titleHi: "राखी और पारिवारिक स्नेह",
       titleEn: "Rakhi and family affection",
-      bodyHi: "श्रावण में रक्षाबंधन आता है। राखी का उत्सव भाई-बहन के स्नेह और परस्पर देखभाल का स्मरण कराता है।",
-      bodyEn: "Raksha Bandhan in Shravana celebrates sibling affection and mutual care.",
+      bodyHi:
+          "श्रावण में रक्षाबंधन आता है। राखी का उत्सव भाई-बहन के स्नेह और परस्पर देखभाल का स्मरण कराता है।",
+      bodyEn:
+          "Raksha Bandhan in Shravana celebrates sibling affection and mutual care.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-shravana.html",
       hinduMonths: [5],
@@ -333,8 +499,10 @@ class DailyDiscoveries {
       id: "krishna-birth",
       titleHi: "कृष्ण जन्म का उत्सव",
       titleEn: "Celebrating Krishna’s birth",
-      bodyHi: "जन्माष्टमी कृष्ण जन्म की धार्मिक स्मृति है। भाद्रपद की परंपराओं में कृष्णभक्ति को विशेष स्थान मिलता है।",
-      bodyEn: "Janmashtami recalls Krishna’s birth in sacred tradition and gives Krishna devotion a special place in Bhadrapada.",
+      bodyHi:
+          "जन्माष्टमी कृष्ण जन्म की धार्मिक स्मृति है। भाद्रपद की परंपराओं में कृष्णभक्ति को विशेष स्थान मिलता है।",
+      bodyEn:
+          "Janmashtami recalls Krishna’s birth in sacred tradition and gives Krishna devotion a special place in Bhadrapada.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-bhadrapada.html",
       hinduMonths: [6],
@@ -345,8 +513,10 @@ class DailyDiscoveries {
       id: "aja",
       titleHi: "हरिश्चंद्र और एकादशी",
       titleEn: "Harishchandra and Ekadashi",
-      bodyHi: "अजा एकादशी की कथा में हरिश्चंद्र और गौतम ऋषि का प्रसंग आता है। भक्त इसे कठिनाई में धर्म और आशा की कथा मानते हैं।",
-      bodyEn: "The Aja Ekadashi narrative connects Harishchandra with sage Gautama; devotees read it as a story of faith amid hardship.",
+      bodyHi:
+          "अजा एकादशी की कथा में हरिश्चंद्र और गौतम ऋषि का प्रसंग आता है। भक्त इसे कठिनाई में धर्म और आशा की कथा मानते हैं।",
+      bodyEn:
+          "The Aja Ekadashi narrative connects Harishchandra with sage Gautama; devotees read it as a story of faith amid hardship.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-bhadrapada.html",
       hinduMonths: [6],
@@ -357,8 +527,10 @@ class DailyDiscoveries {
       id: "bhadra-festivals",
       titleHi: "भाद्रपद की विविध आराधना",
       titleEn: "Bhadrapada’s varied devotion",
-      bodyHi: "गणेश चतुर्थी, राधाष्टमी और अनंत चतुर्दशी इस मास के उत्सवों में हैं। एक मास में भक्ति के अनेक स्वरूप दिखाई देते हैं।",
-      bodyEn: "Ganesh Chaturthi, Radha Ashtami and Anant Chaturdashi illustrate the month’s variety of devotional traditions.",
+      bodyHi:
+          "गणेश चतुर्थी, राधाष्टमी और अनंत चतुर्दशी इस मास के उत्सवों में हैं। एक मास में भक्ति के अनेक स्वरूप दिखाई देते हैं।",
+      bodyEn:
+          "Ganesh Chaturthi, Radha Ashtami and Anant Chaturdashi illustrate the month’s variety of devotional traditions.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-bhadrapada.html",
       hinduMonths: [6],
@@ -369,8 +541,10 @@ class DailyDiscoveries {
       id: "ancestors",
       titleHi: "पितृपक्ष में कृतज्ञता",
       titleEn: "Gratitude during Pitru Paksha",
-      bodyHi: "पितृपक्ष में पूर्वजों का स्मरण और तर्पण की परंपरा है। परिवार अपनी विरासत और पूर्वजों के योगदान को याद करते हैं।",
-      bodyEn: "Pitru Paksha includes remembrance and offerings for ancestors, expressing gratitude for family heritage.",
+      bodyHi:
+          "पितृपक्ष में पूर्वजों का स्मरण और तर्पण की परंपरा है। परिवार अपनी विरासत और पूर्वजों के योगदान को याद करते हैं।",
+      bodyEn:
+          "Pitru Paksha includes remembrance and offerings for ancestors, expressing gratitude for family heritage.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashwin.html",
       hinduMonths: [7],
@@ -381,8 +555,10 @@ class DailyDiscoveries {
       id: "mahalaya",
       titleHi: "सर्वपितृ अमावस्या",
       titleEn: "Sarva Pitru Amavasya",
-      bodyHi: "सर्वपितृ अमावस्या पितृपक्ष का अंतिम दिन है। परंपरा में इसे सामूहिक पूर्वज-स्मरण का विशेष अवसर माना जाता है।",
-      bodyEn: "Sarva Pitru Amavasya closes Pitru Paksha and serves as a special occasion for remembrance of ancestors.",
+      bodyHi:
+          "सर्वपितृ अमावस्या पितृपक्ष का अंतिम दिन है। परंपरा में इसे सामूहिक पूर्वज-स्मरण का विशेष अवसर माना जाता है।",
+      bodyEn:
+          "Sarva Pitru Amavasya closes Pitru Paksha and serves as a special occasion for remembrance of ancestors.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashwin.html",
       hinduMonths: [7],
@@ -393,8 +569,10 @@ class DailyDiscoveries {
       id: "ashwin-devotion",
       titleHi: "आश्विन की देवी उपासना",
       titleEn: "Devi worship in Ashwin",
-      bodyHi: "आश्विन में शारदीय नवरात्रि, दुर्गाष्टमी और महानवमी आते हैं। देवी उपासना की क्षेत्रीय विधियाँ विविध हैं।",
-      bodyEn: "Shardiya Navratri, Durga Ashtami and Maha Navami bring varied regional expressions of Devi worship to Ashwin.",
+      bodyHi:
+          "आश्विन में शारदीय नवरात्रि, दुर्गाष्टमी और महानवमी आते हैं। देवी उपासना की क्षेत्रीय विधियाँ विविध हैं।",
+      bodyEn:
+          "Shardiya Navratri, Durga Ashtami and Maha Navami bring varied regional expressions of Devi worship to Ashwin.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-ashwin.html",
       hinduMonths: [7],
@@ -405,8 +583,10 @@ class DailyDiscoveries {
       id: "karwa",
       titleHi: "करवा चौथ का भाव",
       titleEn: "The meaning of Karwa Chauth",
-      bodyHi: "करवा चौथ की परंपरा में दांपत्य मंगल की प्रार्थना और चंद्र दर्शन का स्थान है। परिवारों की विधियाँ अलग हो सकती हैं।",
-      bodyEn: "Karwa Chauth traditions combine prayers for marital well-being with moon viewing; family customs vary.",
+      bodyHi:
+          "करवा चौथ की परंपरा में दांपत्य मंगल की प्रार्थना और चंद्र दर्शन का स्थान है। परिवारों की विधियाँ अलग हो सकती हैं।",
+      bodyEn:
+          "Karwa Chauth traditions combine prayers for marital well-being with moon viewing; family customs vary.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-kartik.html",
       hinduMonths: [8],
@@ -417,8 +597,10 @@ class DailyDiscoveries {
       id: "ahoi",
       titleHi: "अहोई अष्टमी",
       titleEn: "Ahoi Ashtami",
-      bodyHi: "उत्तर भारत में अहोई अष्टमी संतान के मंगल की प्रार्थना से जुड़ी है। तारे या चंद्रमा देखने की स्थानीय परंपराएँ मिलती हैं।",
-      bodyEn: "Ahoi Ashtami in northern India centres on children’s well-being, with local customs involving stars or moonrise.",
+      bodyHi:
+          "उत्तर भारत में अहोई अष्टमी संतान के मंगल की प्रार्थना से जुड़ी है। तारे या चंद्रमा देखने की स्थानीय परंपराएँ मिलती हैं।",
+      bodyEn:
+          "Ahoi Ashtami in northern India centres on children’s well-being, with local customs involving stars or moonrise.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-kartik.html",
       hinduMonths: [8],
@@ -429,8 +611,10 @@ class DailyDiscoveries {
       id: "kartik-lights",
       titleHi: "कार्तिक के उत्सव",
       titleEn: "Kartik’s celebrations",
-      bodyHi: "कार्तिक में दीपावली, गोवर्धन पूजा, छठ और तुलसी विवाह जैसे उत्सव आते हैं। दीप, प्रकृति और गृहस्थ भक्ति साथ दिखाई देते हैं।",
-      bodyEn: "Diwali, Govardhan Puja, Chhath and Tulsi Vivah express Kartik’s connections with lamps, nature and household devotion.",
+      bodyHi:
+          "कार्तिक में दीपावली, गोवर्धन पूजा, छठ और तुलसी विवाह जैसे उत्सव आते हैं। दीप, प्रकृति और गृहस्थ भक्ति साथ दिखाई देते हैं।",
+      bodyEn:
+          "Diwali, Govardhan Puja, Chhath and Tulsi Vivah express Kartik’s connections with lamps, nature and household devotion.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-kartik.html",
       hinduMonths: [8],
@@ -446,8 +630,10 @@ class DailyDiscoveries {
       id: "gita-birth",
       titleHi: "गीता जयंती",
       titleEn: "Gita Jayanti",
-      bodyHi: "मार्गशीर्ष शुक्ल एकादशी पर कृष्ण द्वारा अर्जुन को गीता का उपदेश देने की धार्मिक स्मृति मनाई जाती है।",
-      bodyEn: "Gita Jayanti on Margashirsha’s bright Ekadashi commemorates Krishna’s teaching to Arjuna in sacred tradition.",
+      bodyHi:
+          "मार्गशीर्ष शुक्ल एकादशी पर कृष्ण द्वारा अर्जुन को गीता का उपदेश देने की धार्मिक स्मृति मनाई जाती है।",
+      bodyEn:
+          "Gita Jayanti on Margashirsha’s bright Ekadashi commemorates Krishna’s teaching to Arjuna in sacred tradition.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-margashirsha.html",
       hinduMonths: [9],
@@ -458,8 +644,10 @@ class DailyDiscoveries {
       id: "vivah",
       titleHi: "राम-सीता विवाह का स्मरण",
       titleEn: "Remembering Rama and Sita’s marriage",
-      bodyHi: "विवाह पंचमी पर राम और सीता के विवाह की कथा का स्मरण होता है। कई स्थानों पर विवाहोत्सव की पूजा होती है।",
-      bodyEn: "Vivah Panchami recalls the sacred marriage of Rama and Sita through ceremonial celebrations.",
+      bodyHi:
+          "विवाह पंचमी पर राम और सीता के विवाह की कथा का स्मरण होता है। कई स्थानों पर विवाहोत्सव की पूजा होती है।",
+      bodyEn:
+          "Vivah Panchami recalls the sacred marriage of Rama and Sita through ceremonial celebrations.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-margashirsha.html",
       hinduMonths: [9],
@@ -470,8 +658,10 @@ class DailyDiscoveries {
       id: "utpanna",
       titleHi: "उत्पन्ना एकादशी",
       titleEn: "Utpanna Ekadashi",
-      bodyHi: "मार्गशीर्ष कृष्ण एकादशी उत्पन्ना एकादशी कहलाती है। कुछ परंपराओं में एकादशी व्रत आरंभ करने का यह विशेष अवसर है।",
-      bodyEn: "Utpanna Ekadashi falls in the dark fortnight of Margashirsha and is traditionally associated with beginning Ekadashi observance.",
+      bodyHi:
+          "मार्गशीर्ष कृष्ण एकादशी उत्पन्ना एकादशी कहलाती है। कुछ परंपराओं में एकादशी व्रत आरंभ करने का यह विशेष अवसर है।",
+      bodyEn:
+          "Utpanna Ekadashi falls in the dark fortnight of Margashirsha and is traditionally associated with beginning Ekadashi observance.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-margashirsha.html",
       hinduMonths: [9],
@@ -482,8 +672,10 @@ class DailyDiscoveries {
       id: "shakambhari",
       titleHi: "शाकंभरी और अन्न",
       titleEn: "Shakambhari and nourishment",
-      bodyHi: "शाकंभरी माता का संबंध फल, सब्जियों और हरियाली से माना जाता है। यह उपासना पोषण के प्रति कृतज्ञता का अवसर है।",
-      bodyEn: "Shakambhari is traditionally associated with fruits, vegetables and greenery, linking worship with gratitude for nourishment.",
+      bodyHi:
+          "शाकंभरी माता का संबंध फल, सब्जियों और हरियाली से माना जाता है। यह उपासना पोषण के प्रति कृतज्ञता का अवसर है।",
+      bodyEn:
+          "Shakambhari is traditionally associated with fruits, vegetables and greenery, linking worship with gratitude for nourishment.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-paush.html",
       hinduMonths: [10],
@@ -494,8 +686,10 @@ class DailyDiscoveries {
       id: "banada",
       titleHi: "बनदा अष्टमी",
       titleEn: "Banada Ashtami",
-      bodyHi: "पौष शुक्ल अष्टमी से शाकंभरी नवरात्रि शुरू होकर पूर्णिमा तक चलती है। यह नौ दिनों की सभी नवरात्रियों जैसी अवधि नहीं है।",
-      bodyEn: "Shakambhari Navratri runs from Pausha’s bright Ashtami to Purnima, a different span from the familiar nine-night observance.",
+      bodyHi:
+          "पौष शुक्ल अष्टमी से शाकंभरी नवरात्रि शुरू होकर पूर्णिमा तक चलती है। यह नौ दिनों की सभी नवरात्रियों जैसी अवधि नहीं है।",
+      bodyEn:
+          "Shakambhari Navratri runs from Pausha’s bright Ashtami to Purnima, a different span from the familiar nine-night observance.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-paush.html",
       hinduMonths: [10],
@@ -506,8 +700,10 @@ class DailyDiscoveries {
       id: "putrada",
       titleHi: "पौष की एकादशी",
       titleEn: "Pausha’s Ekadashi",
-      bodyHi: "पौष और श्रावण की शुक्ल एकादशी दोनों को पुत्रदा कहा जाता है। क्षेत्र के अनुसार इनकी लोकप्रियता बदलती है।",
-      bodyEn: "The bright Ekadashis of Pausha and Shravana share the name Putrada, with regional differences in prominence.",
+      bodyHi:
+          "पौष और श्रावण की शुक्ल एकादशी दोनों को पुत्रदा कहा जाता है। क्षेत्र के अनुसार इनकी लोकप्रियता बदलती है।",
+      bodyEn:
+          "The bright Ekadashis of Pausha and Shravana share the name Putrada, with regional differences in prominence.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-paush.html",
       hinduMonths: [10],
@@ -518,8 +714,10 @@ class DailyDiscoveries {
       id: "saraswati",
       titleHi: "सरस्वती और विद्या",
       titleEn: "Saraswati and learning",
-      bodyHi: "वसंत पंचमी पर सरस्वती की पूजा ज्ञान, संगीत और कला के सम्मान में होती है। पीले फूल अर्पित करने की परंपरा भी है।",
-      bodyEn: "Vasant Panchami honours Saraswati through learning, music and art; yellow flowers are among traditional offerings.",
+      bodyHi:
+          "वसंत पंचमी पर सरस्वती की पूजा ज्ञान, संगीत और कला के सम्मान में होती है। पीले फूल अर्पित करने की परंपरा भी है।",
+      bodyEn:
+          "Vasant Panchami honours Saraswati through learning, music and art; yellow flowers are among traditional offerings.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-magha.html",
       hinduMonths: [11],
@@ -530,8 +728,10 @@ class DailyDiscoveries {
       id: "ratha-sun",
       titleHi: "रथ सप्तमी और सूर्य",
       titleEn: "Ratha Saptami and Surya",
-      bodyHi: "रथ सप्तमी सूर्य आराधना का उत्सव है। परंपरा में इसे सूर्य जयंती भी कहा जाता है।",
-      bodyEn: "Ratha Saptami is an occasion for Surya worship and is also known traditionally as Surya Jayanti.",
+      bodyHi:
+          "रथ सप्तमी सूर्य आराधना का उत्सव है। परंपरा में इसे सूर्य जयंती भी कहा जाता है।",
+      bodyEn:
+          "Ratha Saptami is an occasion for Surya worship and is also known traditionally as Surya Jayanti.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-magha.html",
       hinduMonths: [11],
@@ -542,8 +742,10 @@ class DailyDiscoveries {
       id: "sesame",
       titleHi: "षट्तिला का तिल",
       titleEn: "Sesame at Shattila",
-      bodyHi: "षट्तिला एकादशी में तिल के विविध धार्मिक उपयोगों का उल्लेख मिलता है। नाम ही तिल के छह प्रकार के प्रयोग की ओर संकेत करता है।",
-      bodyEn: "Shattila Ekadashi refers to six ritual uses of sesame, reflected in the observance’s name.",
+      bodyHi:
+          "षट्तिला एकादशी में तिल के विविध धार्मिक उपयोगों का उल्लेख मिलता है। नाम ही तिल के छह प्रकार के प्रयोग की ओर संकेत करता है।",
+      bodyEn:
+          "Shattila Ekadashi refers to six ritual uses of sesame, reflected in the observance’s name.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-magha.html",
       hinduMonths: [11],
@@ -554,8 +756,10 @@ class DailyDiscoveries {
       id: "shiva-night",
       titleHi: "शिव की रात्रि आराधना",
       titleEn: "A night of Shiva worship",
-      bodyHi: "महाशिवरात्रि में रात के चार प्रहरों में शिव पूजा की परंपरा है। भक्त जागरण और स्मरण से रात्रि बिताते हैं।",
-      bodyEn: "Maha Shivaratri traditionally includes Shiva worship across the night’s four watches, with vigil and remembrance.",
+      bodyHi:
+          "महाशिवरात्रि में रात के चार प्रहरों में शिव पूजा की परंपरा है। भक्त जागरण और स्मरण से रात्रि बिताते हैं।",
+      bodyEn:
+          "Maha Shivaratri traditionally includes Shiva worship across the night’s four watches, with vigil and remembrance.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-phalguna.html",
       hinduMonths: [12],
@@ -566,8 +770,10 @@ class DailyDiscoveries {
       id: "phulera",
       titleHi: "ब्रज की फुलेरा दूज",
       titleEn: "Phulera Dooj in Braj",
-      bodyHi: "फाल्गुन शुक्ल द्वितीया की फुलेरा दूज ब्रज में मनाई जाती है। यह वसंत पंचमी और होली के बीच आती है।",
-      bodyEn: "Phulera Dooj, on Phalguna’s bright Dwitiya, belongs to Braj’s celebrations between Vasant Panchami and Holi.",
+      bodyHi:
+          "फाल्गुन शुक्ल द्वितीया की फुलेरा दूज ब्रज में मनाई जाती है। यह वसंत पंचमी और होली के बीच आती है।",
+      bodyEn:
+          "Phulera Dooj, on Phalguna’s bright Dwitiya, belongs to Braj’s celebrations between Vasant Panchami and Holi.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-phalguna.html",
       hinduMonths: [12],
@@ -578,8 +784,10 @@ class DailyDiscoveries {
       id: "amalaki",
       titleHi: "आँवला और विष्णु भक्ति",
       titleEn: "Amalaki and Vishnu devotion",
-      bodyHi: "आमलकी एकादशी पर विष्णु के साथ आँवले के वृक्ष की पूजा की परंपरा है। यह शिवरात्रि और होली के बीच आती है।",
-      bodyEn: "Amalaki Ekadashi joins Vishnu worship with reverence for the amla tree, between Shivaratri and Holi.",
+      bodyHi:
+          "आमलकी एकादशी पर विष्णु के साथ आँवले के वृक्ष की पूजा की परंपरा है। यह शिवरात्रि और होली के बीच आती है।",
+      bodyEn:
+          "Amalaki Ekadashi joins Vishnu worship with reverence for the amla tree, between Shivaratri and Holi.",
       source: "Drik Panchang",
       url: "https://www.drikpanchang.com/festivals/festivals-phalguna.html",
       hinduMonths: [12],
@@ -591,7 +799,8 @@ class DailyDiscoveries {
       titleHi: "भक्ति और करुणा",
       titleEn: "Devotion and compassion",
       bodyHi: "गीता 12.13–14 में दया, मैत्री और क्षमा भक्त के गुण हैं।",
-      bodyEn: "Gita 12.13–14 connects devotion with compassion, friendship and forgiveness.",
+      bodyEn:
+          "Gita 12.13–14 connects devotion with compassion, friendship and forgiveness.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/12/",
       kind: "teaching",
@@ -622,7 +831,8 @@ class DailyDiscoveries {
       id: "gita-peace",
       titleHi: "त्याग और शांति",
       titleEn: "Letting go and peace",
-      bodyHi: "गीता 12.12 में कर्मफल की आसक्ति छोड़ने से शांति का संबंध बताया गया है।",
+      bodyHi:
+          "गीता 12.12 में कर्मफल की आसक्ति छोड़ने से शांति का संबंध बताया गया है।",
       bodyEn:
           "Gita 12.12 links inner peace with releasing attachment to results.",
       source: "Bhagavad Gita 12 · Swami Mukundananda",
@@ -633,8 +843,10 @@ class DailyDiscoveries {
       id: "gita-speech",
       titleHi: "वाणी का तप",
       titleEn: "Discipline of speech",
-      bodyHi: "गीता 17.15 सत्य, हितकारी और उद्वेग न पैदा करने वाली वाणी को तप कहती है।",
-      bodyEn: "Gita 17.15 values truthful, beneficial speech that does not cause distress.",
+      bodyHi:
+          "गीता 17.15 सत्य, हितकारी और उद्वेग न पैदा करने वाली वाणी को तप कहती है।",
+      bodyEn:
+          "Gita 17.15 values truthful, beneficial speech that does not cause distress.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/17/",
       kind: "teaching",
@@ -656,7 +868,8 @@ class DailyDiscoveries {
       titleEn: "Discipline of mind",
       bodyHi:
           "गीता 17.16 में मन की प्रसन्नता, सौम्यता और आत्मसंयम का वर्णन है।",
-      bodyEn: "Gita 17.16 describes serenity, gentleness and self-restraint as mental discipline.",
+      bodyEn:
+          "Gita 17.16 describes serenity, gentleness and self-restraint as mental discipline.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/17/",
       kind: "teaching",
@@ -667,7 +880,8 @@ class DailyDiscoveries {
       titleEn: "Respect and simplicity",
       bodyHi:
           "गीता 17.14 में आदर, शुद्धता, सरलता और अहिंसा को महत्व दिया गया है।",
-      bodyEn: "Gita 17.14 honours respect, cleanliness, simplicity and nonviolence.",
+      bodyEn:
+          "Gita 17.14 honours respect, cleanliness, simplicity and nonviolence.",
       source: "Bhagavad Gita 17 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/17/",
       kind: "teaching",
@@ -687,7 +901,8 @@ class DailyDiscoveries {
       titleHi: "भटकते मन को लौटाना",
       titleEn: "Returning the wandering mind",
       bodyHi: "गीता 6.26 में भटके मन को बार-बार वापस लाने का अभ्यास है।",
-      bodyEn: "Gita 6.26 teaches repeatedly returning attention when the mind wanders.",
+      bodyEn:
+          "Gita 6.26 teaches repeatedly returning attention when the mind wanders.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/6/",
       kind: "teaching",
@@ -709,7 +924,8 @@ class DailyDiscoveries {
       titleHi: "मन को मित्र बनाना",
       titleEn: "Making the mind a friend",
       bodyHi: "गीता 6.5–6 मन के अनुशासन को अपने उत्थान से जोड़ती है।",
-      bodyEn: "Gita 6.5–6 connects training the mind with one’s own spiritual growth.",
+      bodyEn:
+          "Gita 6.5–6 connects training the mind with one’s own spiritual growth.",
       source: "Bhagavad Gita 6 · Swami Mukundananda",
       url: "https://www.holy-bhagavad-gita.org/chapter/6/",
       kind: "teaching",
@@ -719,8 +935,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "नवरात्रि की नौ रातें",
       titleEn: "Nine nights of Navratri",
-      bodyHi: "नवरात्रि में देवी दुर्गा के नौ स्वरूपों की आराधना की जाती है। भक्त पूजा, पाठ और भजन से शक्ति का स्मरण करते हैं।",
-      bodyEn: "Navratri honours nine forms of Durga through worship, devotional reading and singing.",
+      bodyHi:
+          "नवरात्रि में देवी दुर्गा के नौ स्वरूपों की आराधना की जाती है। भक्त पूजा, पाठ और भजन से शक्ति का स्मरण करते हैं।",
+      bodyEn:
+          "Navratri honours nine forms of Durga through worship, devotional reading and singing.",
       url: "https://www.drikpanchang.com/navratri/info/navratri.html",
       source: "Drik Panchang",
     ),
@@ -729,8 +947,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "घटस्थापना का आरंभ",
       titleEn: "Beginning with Ghatasthapana",
-      bodyHi: "नवरात्रि के प्रथम दिन कलश स्थापना की परंपरा है। यह घर और समुदाय में देवी उपासना के आरंभ का संकेत है।",
-      bodyEn: "Installing a ceremonial pot marks the beginning of Navratri worship in homes and communities.",
+      bodyHi:
+          "नवरात्रि के प्रथम दिन कलश स्थापना की परंपरा है। यह घर और समुदाय में देवी उपासना के आरंभ का संकेत है।",
+      bodyEn:
+          "Installing a ceremonial pot marks the beginning of Navratri worship in homes and communities.",
       url: "https://www.drikpanchang.com/navratri/info/navratri.html",
       source: "Drik Panchang",
     ),
@@ -739,8 +959,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "दक्षिण भारत का गोलु",
       titleEn: "Golu in southern India",
-      bodyHi: "दक्षिण भारत में नवरात्रि पर सीढ़ीनुमा मंच पर गुड़ियों का प्रदर्शन होता है। इसे गोलु और बोम्मला कोलुवु जैसे नामों से जाना जाता है।",
-      bodyEn: "Navratri doll displays arranged on stepped platforms are known by names including Golu and Bommala Koluvu.",
+      bodyHi:
+          "दक्षिण भारत में नवरात्रि पर सीढ़ीनुमा मंच पर गुड़ियों का प्रदर्शन होता है। इसे गोलु और बोम्मला कोलुवु जैसे नामों से जाना जाता है।",
+      bodyEn:
+          "Navratri doll displays arranged on stepped platforms are known by names including Golu and Bommala Koluvu.",
       url: "https://www.drikpanchang.com/navratri/info/navratri.html",
       source: "Drik Panchang",
     ),
@@ -749,8 +971,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "विद्या की आराधना",
       titleEn: "Honouring learning",
-      bodyHi: "दक्षिण भारत की कई नवरात्रि परंपराओं में अंतिम तीन दिन सरस्वती को समर्पित होते हैं। विद्या को देवी के स्वरूप में सम्मान दिया जाता है।",
-      bodyEn: "In several southern Navratri traditions, the final three days honour Saraswati and the sacred value of learning.",
+      bodyHi:
+          "दक्षिण भारत की कई नवरात्रि परंपराओं में अंतिम तीन दिन सरस्वती को समर्पित होते हैं। विद्या को देवी के स्वरूप में सम्मान दिया जाता है।",
+      bodyEn:
+          "In several southern Navratri traditions, the final three days honour Saraswati and the sacred value of learning.",
       url: "https://www.drikpanchang.com/navratri/info/navratri.html",
       source: "Drik Panchang",
     ),
@@ -759,8 +983,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "एक पर्व, अनेक परंपराएँ",
       titleEn: "One festival, many traditions",
-      bodyHi: "नवरात्रि में गुजरात का गरबा, बंगाल की दुर्गा पूजा और दक्षिण भारत का गोलु अलग-अलग सांस्कृतिक अभिव्यक्तियाँ हैं।",
-      bodyEn: "Garba, Bengali Durga Puja and southern Golu express the regional diversity of Navratri.",
+      bodyHi:
+          "नवरात्रि में गुजरात का गरबा, बंगाल की दुर्गा पूजा और दक्षिण भारत का गोलु अलग-अलग सांस्कृतिक अभिव्यक्तियाँ हैं।",
+      bodyEn:
+          "Garba, Bengali Durga Puja and southern Golu express the regional diversity of Navratri.",
       url: "https://www.drikpanchang.com/navratri/info/navratri.html",
       source: "Drik Panchang",
     ),
@@ -769,8 +995,10 @@ class DailyDiscoveries {
       hinduMonths: [7],
       titleHi: "चंडी पाठ की परंपरा",
       titleEn: "The tradition of Chandi reading",
-      bodyHi: "बेलूर मठ में नवरात्रि के दौरान चंडी पाठ किया जाता है। देवी के प्रति भक्ति में पाठ और पूजा साथ आते हैं।",
-      bodyEn: "At Belur Math, Chandi recitation accompanies worship during Navratri.",
+      bodyHi:
+          "बेलूर मठ में नवरात्रि के दौरान चंडी पाठ किया जाता है। देवी के प्रति भक्ति में पाठ और पूजा साथ आते हैं।",
+      bodyEn:
+          "At Belur Math, Chandi recitation accompanies worship during Navratri.",
       url: "https://belurmath.org/durga-puja-at-belur-math/",
       source: "Belur Math",
     ),
@@ -779,8 +1007,10 @@ class DailyDiscoveries {
       hinduMonths: [7],
       titleHi: "संधि पूजा का अर्थ",
       titleEn: "The meaning of Sandhi Puja",
-      bodyHi: "दुर्गा पूजा में अष्टमी के अंतिम 24 मिनट और नवमी के प्रथम 24 मिनट संधि का समय माने जाते हैं। यह दो तिथियों के मिलन का विशेष पूजन है।",
-      bodyEn: "Sandhi Puja honours the junction formed by the final 24 minutes of Ashtami and first 24 minutes of Navami.",
+      bodyHi:
+          "दुर्गा पूजा में अष्टमी के अंतिम 24 मिनट और नवमी के प्रथम 24 मिनट संधि का समय माने जाते हैं। यह दो तिथियों के मिलन का विशेष पूजन है।",
+      bodyEn:
+          "Sandhi Puja honours the junction formed by the final 24 minutes of Ashtami and first 24 minutes of Navami.",
       url: "https://belurmath.org/durga-puja-at-belur-math/",
       source: "Belur Math",
     ),
@@ -789,8 +1019,10 @@ class DailyDiscoveries {
       hinduMonths: [7],
       titleHi: "बेलूर मठ की करुणा परंपरा",
       titleEn: "Compassion at Belur Math",
-      bodyHi: "बेलूर मठ की दुर्गा पूजा में शारदा देवी के निर्देश पर पशुबलि नहीं दी जाती। प्रतीकात्मक अर्पण इस परंपरा का हिस्सा है।",
-      bodyEn: "Following Sarada Devi’s instruction, Belur Math’s Durga Puja uses symbolic offerings instead of animal sacrifice.",
+      bodyHi:
+          "बेलूर मठ की दुर्गा पूजा में शारदा देवी के निर्देश पर पशुबलि नहीं दी जाती। प्रतीकात्मक अर्पण इस परंपरा का हिस्सा है।",
+      bodyEn:
+          "Following Sarada Devi’s instruction, Belur Math’s Durga Puja uses symbolic offerings instead of animal sacrifice.",
       url: "https://belurmath.org/durga-puja-at-belur-math/",
       source: "Belur Math",
     ),
@@ -798,18 +1030,21 @@ class DailyDiscoveries {
       id: "prayer",
       titleHi: "सरल हृदय की प्रार्थना",
       titleEn: "Prayer from a simple heart",
-      bodyHi: "श्रीरामकृष्ण की शिक्षा में सच्चे और सरल हृदय से प्रार्थना का महत्व है। भक्ति में मन की ईमानदारी को स्थान दिया गया है।",
-      bodyEn: "Sri Ramakrishna’s teaching values sincere prayer from a simple heart, placing honesty at the centre of devotion.",
+      bodyHi:
+          "श्रीरामकृष्ण की शिक्षा में सच्चे और सरल हृदय से प्रार्थना का महत्व है। भक्ति में मन की ईमानदारी को स्थान दिया गया है।",
+      bodyEn:
+          "Sri Ramakrishna’s teaching values sincere prayer from a simple heart, placing honesty at the centre of devotion.",
       url: "https://media.belurmath.org/inspiration-sri-ramakrishna-2-1560",
       source: "Belur Math",
     ),
-
     DailyDiscovery(
       id: "yoga",
       titleHi: "योग की जीवित परंपरा",
       titleEn: "Yoga as living heritage",
-      bodyHi: "योग में आसन के साथ ध्यान और श्वास के अभ्यास भी शामिल हैं। यूनेस्को ने 2016 में इसे मानवता की अमूर्त सांस्कृतिक विरासत की सूची में शामिल किया।",
-      bodyEn: "Yoga brings together postures, meditation and breathing practices. It joined UNESCO’s list of humanity’s intangible cultural heritage in 2016.",
+      bodyHi:
+          "योग में आसन के साथ ध्यान और श्वास के अभ्यास भी शामिल हैं। यूनेस्को ने 2016 में इसे मानवता की अमूर्त सांस्कृतिक विरासत की सूची में शामिल किया।",
+      bodyEn:
+          "Yoga brings together postures, meditation and breathing practices. It joined UNESCO’s list of humanity’s intangible cultural heritage in 2016.",
       url: "https://ich.unesco.org/en/RL/yoga-01163",
       source: "UNESCO",
     ),
@@ -817,8 +1052,10 @@ class DailyDiscoveries {
       id: "vedic",
       titleHi: "वेदपाठ की मौखिक परंपरा",
       titleEn: "The oral tradition of Vedic chanting",
-      bodyHi: "वेदपाठ पीढ़ियों से मौखिक रूप में सहेजा गया है। इसकी परंपरा को यूनेस्को की प्रतिनिधि सूची में 2008 में स्थान मिला।",
-      bodyEn: "Vedic chanting has been preserved through oral transmission across generations. The tradition entered UNESCO’s Representative List in 2008.",
+      bodyHi:
+          "वेदपाठ पीढ़ियों से मौखिक रूप में सहेजा गया है। इसकी परंपरा को यूनेस्को की प्रतिनिधि सूची में 2008 में स्थान मिला।",
+      bodyEn:
+          "Vedic chanting has been preserved through oral transmission across generations. The tradition entered UNESCO’s Representative List in 2008.",
       url: "https://ich.unesco.org/en/RL/tradition-of-vedic-chanting-00062",
       source: "UNESCO",
     ),
@@ -826,8 +1063,10 @@ class DailyDiscoveries {
       id: "kumbh",
       titleHi: "कुंभ के चार नगर",
       titleEn: "Four cities of the Kumbh",
-      bodyHi: "कुंभ की परंपरा प्रयागराज, हरिद्वार, उज्जैन और नासिक से जुड़ी है। यह तीर्थयात्रा, धार्मिक ज्ञान और सामुदायिक परंपराओं का संगम है।",
-      bodyEn: "The Kumbh tradition is associated with Prayagraj, Haridwar, Ujjain and Nashik, bringing together pilgrimage, religious learning and community customs.",
+      bodyHi:
+          "कुंभ की परंपरा प्रयागराज, हरिद्वार, उज्जैन और नासिक से जुड़ी है। यह तीर्थयात्रा, धार्मिक ज्ञान और सामुदायिक परंपराओं का संगम है।",
+      bodyEn:
+          "The Kumbh tradition is associated with Prayagraj, Haridwar, Ujjain and Nashik, bringing together pilgrimage, religious learning and community customs.",
       url: "https://ich.unesco.org/en/RL/kumbh-mela-01258",
       source: "UNESCO",
     ),
@@ -836,8 +1075,10 @@ class DailyDiscoveries {
       hinduMonths: [1, 7],
       titleHi: "गरबा और शक्ति उपासना",
       titleEn: "Garba and devotion to Shakti",
-      bodyHi: "गुजरात का गरबा नवरात्रि में शक्ति की उपासना से जुड़ा नृत्य है। इसमें दीपयुक्त मिट्टी के पात्र या देवी अंबा की छवि के चारों ओर नृत्य किया जाता है।",
-      bodyEn: "Gujarat’s Garba is a devotional dance associated with Navaratri and Shakti. Dancers circle a lamp-lit earthen pot or an image of goddess Amba.",
+      bodyHi:
+          "गुजरात का गरबा नवरात्रि में शक्ति की उपासना से जुड़ा नृत्य है। इसमें दीपयुक्त मिट्टी के पात्र या देवी अंबा की छवि के चारों ओर नृत्य किया जाता है।",
+      bodyEn:
+          "Gujarat’s Garba is a devotional dance associated with Navaratri and Shakti. Dancers circle a lamp-lit earthen pot or an image of goddess Amba.",
       url: "https://ich.unesco.org/en/RL/garba-of-gujarat-01962",
       source: "UNESCO",
     ),
@@ -846,8 +1087,10 @@ class DailyDiscoveries {
       hinduMonths: [7],
       titleHi: "कोलकाता की दुर्गा पूजा",
       titleEn: "Durga Puja in Kolkata",
-      bodyHi: "कोलकाता की दुर्गा पूजा को 2021 में यूनेस्को की अमूर्त सांस्कृतिक विरासत सूची में शामिल किया गया। यह देवी दुर्गा की आराधना से जुड़ी जीवित सांस्कृतिक परंपरा है।",
-      bodyEn: "Durga Puja in Kolkata entered UNESCO’s intangible cultural heritage list in 2021. It is a living cultural tradition centred on the worship of goddess Durga.",
+      bodyHi:
+          "कोलकाता की दुर्गा पूजा को 2021 में यूनेस्को की अमूर्त सांस्कृतिक विरासत सूची में शामिल किया गया। यह देवी दुर्गा की आराधना से जुड़ी जीवित सांस्कृतिक परंपरा है।",
+      bodyEn:
+          "Durga Puja in Kolkata entered UNESCO’s intangible cultural heritage list in 2021. It is a living cultural tradition centred on the worship of goddess Durga.",
       url: "https://ich.unesco.org/en/RL/durga-puja-in-kolkata-00703",
       source: "UNESCO",
     ),
@@ -856,17 +1099,22 @@ class DailyDiscoveries {
       hinduMonths: [7],
       titleHi: "रामकथा का रंगमंच",
       titleEn: "The Ramayana on stage",
-      bodyHi: "रामलीला में रामायण की कथा गीत, कथावाचन और संवाद के साथ प्रस्तुत की जाती है। यह सामुदायिक सहभागिता से जीवित रहने वाली परंपरा है।",
-      bodyEn: "Ramlila presents the Ramayana through song, narration and dialogue. Community participation helps keep this performance tradition alive.",
-      url: "https://ich.unesco.org/en/RL/ramlila-the-traditional-performance-of-the-ramayana-00110",
+      bodyHi:
+          "रामलीला में रामायण की कथा गीत, कथावाचन और संवाद के साथ प्रस्तुत की जाती है। यह सामुदायिक सहभागिता से जीवित रहने वाली परंपरा है।",
+      bodyEn:
+          "Ramlila presents the Ramayana through song, narration and dialogue. Community participation helps keep this performance tradition alive.",
+      url:
+          "https://ich.unesco.org/en/RL/ramlila-the-traditional-performance-of-the-ramayana-00110",
       source: "UNESCO",
     ),
     DailyDiscovery(
       id: "ramman",
       titleHi: "गढ़वाल की रममाण परंपरा",
       titleEn: "Garhwal’s Ramman tradition",
-      bodyHi: "रममाण गढ़वाल हिमालय की धार्मिक उत्सव और अनुष्ठानिक रंगमंच की परंपरा है। इसे 2009 में यूनेस्को की प्रतिनिधि सूची में शामिल किया गया।",
-      bodyEn: "Ramman is a religious festival and ritual theatre tradition of the Garhwal Himalayas. It entered UNESCO’s Representative List in 2009.",
+      bodyHi:
+          "रममाण गढ़वाल हिमालय की धार्मिक उत्सव और अनुष्ठानिक रंगमंच की परंपरा है। इसे 2009 में यूनेस्को की प्रतिनिधि सूची में शामिल किया गया।",
+      bodyEn:
+          "Ramman is a religious festival and ritual theatre tradition of the Garhwal Himalayas. It entered UNESCO’s Representative List in 2009.",
       url: "https://ich.unesco.org/en/state/india-IN",
       source: "UNESCO",
     ),
@@ -874,8 +1122,10 @@ class DailyDiscoveries {
       id: "kutiyattam",
       titleHi: "संस्कृत रंगमंच की विरासत",
       titleEn: "A Sanskrit theatre heritage",
-      bodyHi: "कुटियाट्टम संस्कृत रंगमंच की परंपरा है। यह यूनेस्को की मानवता की अमूर्त सांस्कृतिक विरासत की प्रतिनिधि सूची में शामिल है।",
-      bodyEn: "Kutiyattam is a tradition of Sanskrit theatre recognised on UNESCO’s Representative List of the Intangible Cultural Heritage of Humanity.",
+      bodyHi:
+          "कुटियाट्टम संस्कृत रंगमंच की परंपरा है। यह यूनेस्को की मानवता की अमूर्त सांस्कृतिक विरासत की प्रतिनिधि सूची में शामिल है।",
+      bodyEn:
+          "Kutiyattam is a tradition of Sanskrit theatre recognised on UNESCO’s Representative List of the Intangible Cultural Heritage of Humanity.",
       url: "https://ich.unesco.org/en/state/india-IN",
       source: "UNESCO",
     ),
@@ -883,8 +1133,10 @@ class DailyDiscoveries {
       id: "chhau",
       titleHi: "छऊ नृत्य की पहचान",
       titleEn: "The heritage of Chhau dance",
-      bodyHi: "छऊ नृत्य भारत की अमूर्त सांस्कृतिक विरासत का हिस्सा है। इसे 2010 में यूनेस्को की प्रतिनिधि सूची में स्थान मिला।",
-      bodyEn: "Chhau dance is part of India’s intangible cultural heritage. It entered UNESCO’s Representative List in 2010.",
+      bodyHi:
+          "छऊ नृत्य भारत की अमूर्त सांस्कृतिक विरासत का हिस्सा है। इसे 2010 में यूनेस्को की प्रतिनिधि सूची में स्थान मिला।",
+      bodyEn:
+          "Chhau dance is part of India’s intangible cultural heritage. It entered UNESCO’s Representative List in 2010.",
       url: "https://ich.unesco.org/en/state/india-IN",
       source: "UNESCO",
     ),
@@ -892,8 +1144,10 @@ class DailyDiscoveries {
       id: "kalbelia",
       titleHi: "राजस्थान की कालबेलिया कला",
       titleEn: "Rajasthan’s Kalbelia heritage",
-      bodyHi: "कालबेलिया लोकगीत और नृत्य राजस्थान की सांस्कृतिक विरासत का हिस्सा हैं। इस परंपरा को यूनेस्को की अमूर्त सांस्कृतिक विरासत सूची में मान्यता मिली है।",
-      bodyEn: "Kalbelia folk songs and dances belong to Rajasthan’s cultural heritage. The tradition is recognised on UNESCO’s intangible cultural heritage list.",
+      bodyHi:
+          "कालबेलिया लोकगीत और नृत्य राजस्थान की सांस्कृतिक विरासत का हिस्सा हैं। इस परंपरा को यूनेस्को की अमूर्त सांस्कृतिक विरासत सूची में मान्यता मिली है।",
+      bodyEn:
+          "Kalbelia folk songs and dances belong to Rajasthan’s cultural heritage. The tradition is recognised on UNESCO’s intangible cultural heritage list.",
       url: "https://sangeetnatak.gov.in/sections/ICH",
       source: "Sangeet Natak Akademi",
     ),
@@ -901,8 +1155,10 @@ class DailyDiscoveries {
       id: "mudiyettu",
       titleHi: "केरल का अनुष्ठानिक रंगमंच",
       titleEn: "Kerala’s ritual theatre",
-      bodyHi: "मुडियेट्टु केरल की अनुष्ठानिक रंगमंच और नृत्य-नाट्य परंपरा है। यह भारत की यूनेस्को-मान्य अमूर्त सांस्कृतिक विरासत में शामिल है।",
-      bodyEn: "Mudiyettu is a ritual theatre and dance-drama tradition of Kerala, recognised among India’s UNESCO-listed intangible cultural heritage.",
+      bodyHi:
+          "मुडियेट्टु केरल की अनुष्ठानिक रंगमंच और नृत्य-नाट्य परंपरा है। यह भारत की यूनेस्को-मान्य अमूर्त सांस्कृतिक विरासत में शामिल है।",
+      bodyEn:
+          "Mudiyettu is a ritual theatre and dance-drama tradition of Kerala, recognised among India’s UNESCO-listed intangible cultural heritage.",
       url: "https://sangeetnatak.gov.in/sections/ICH",
       source: "Sangeet Natak Akademi",
     ),
@@ -910,8 +1166,10 @@ class DailyDiscoveries {
       id: "jantar",
       titleHi: "जयपुर का खगोलीय धरोहर स्थल",
       titleEn: "Jaipur’s astronomical heritage",
-      bodyHi: "जयपुर का जंतर मंतर अठारहवीं शताब्दी के आरंभ का खगोलीय अवलोकन स्थल है। इसके विशाल उपकरण भारत के ऐतिहासिक खगोल अध्ययन की झलक देते हैं।",
-      bodyEn: "Jaipur’s Jantar Mantar is an astronomical observation site from the early eighteenth century. Its monumental instruments offer a window into India’s history of astronomy.",
+      bodyHi:
+          "जयपुर का जंतर मंतर अठारहवीं शताब्दी के आरंभ का खगोलीय अवलोकन स्थल है। इसके विशाल उपकरण भारत के ऐतिहासिक खगोल अध्ययन की झलक देते हैं।",
+      bodyEn:
+          "Jaipur’s Jantar Mantar is an astronomical observation site from the early eighteenth century. Its monumental instruments offer a window into India’s history of astronomy.",
       url: "https://whc.unesco.org/en/list/1338/",
       source: "UNESCO",
     ),
@@ -919,8 +1177,10 @@ class DailyDiscoveries {
       id: "konark",
       titleHi: "पत्थर में सूर्य का रथ",
       titleEn: "The Sun’s chariot in stone",
-      bodyHi: "ओडिशा का कोणार्क सूर्य मंदिर सूर्य देव के रथ की कल्पना पर बना है। इसके 24 अलंकृत पहिए मंदिर की विशिष्ट पहचान हैं।",
-      bodyEn: "Odisha’s Konark Sun Temple represents the chariot of Surya. Its 24 decorated wheels are a defining feature of the monument.",
+      bodyHi:
+          "ओडिशा का कोणार्क सूर्य मंदिर सूर्य देव के रथ की कल्पना पर बना है। इसके 24 अलंकृत पहिए मंदिर की विशिष्ट पहचान हैं।",
+      bodyEn:
+          "Odisha’s Konark Sun Temple represents the chariot of Surya. Its 24 decorated wheels are a defining feature of the monument.",
       url: "https://whc.unesco.org/en/list/246/",
       source: "UNESCO",
     ),
@@ -928,8 +1188,10 @@ class DailyDiscoveries {
       id: "chola",
       titleHi: "तीन महान चोल मंदिर",
       titleEn: "Three great Chola temples",
-      bodyHi: "महान जीवित चोल मंदिरों में तंजावुर का बृहदीश्वर, गंगैकोंडचोलपुरम का बृहदीश्वर और दारासुरम का ऐरावतेश्वर मंदिर शामिल हैं। ये ग्यारहवीं और बारहवीं शताब्दी की धरोहर हैं।",
-      bodyEn: "The Great Living Chola Temples include Brihadisvara at Thanjavur, Brihadisvara at Gangaikondacholapuram and Airavatesvara at Darasuram, dating to the eleventh and twelfth centuries.",
+      bodyHi:
+          "महान जीवित चोल मंदिरों में तंजावुर का बृहदीश्वर, गंगैकोंडचोलपुरम का बृहदीश्वर और दारासुरम का ऐरावतेश्वर मंदिर शामिल हैं। ये ग्यारहवीं और बारहवीं शताब्दी की धरोहर हैं।",
+      bodyEn:
+          "The Great Living Chola Temples include Brihadisvara at Thanjavur, Brihadisvara at Gangaikondacholapuram and Airavatesvara at Darasuram, dating to the eleventh and twelfth centuries.",
       url: "https://whc.unesco.org/en/list/250/",
       source: "UNESCO",
     ),
@@ -937,8 +1199,10 @@ class DailyDiscoveries {
       id: "hampi",
       titleHi: "हम्पी की रथयात्रा वाली सड़कें",
       titleEn: "Hampi’s chariot streets",
-      bodyHi: "हम्पी के मंदिरों के पास स्तंभयुक्त मंडपों से घिरी चौड़ी रथयात्रा वाली सड़कें मिलती हैं। ये मंदिर उत्सवों और नगर की बनावट के संबंध को दिखाती हैं।",
-      bodyEn: "Hampi’s temples feature broad chariot streets lined with pillared mandapas, showing how temple festivals shaped the city’s architecture.",
+      bodyHi:
+          "हम्पी के मंदिरों के पास स्तंभयुक्त मंडपों से घिरी चौड़ी रथयात्रा वाली सड़कें मिलती हैं। ये मंदिर उत्सवों और नगर की बनावट के संबंध को दिखाती हैं।",
+      bodyEn:
+          "Hampi’s temples feature broad chariot streets lined with pillared mandapas, showing how temple festivals shaped the city’s architecture.",
       url: "https://whc.unesco.org/en/list/241/",
       source: "UNESCO",
     ),
@@ -946,8 +1210,10 @@ class DailyDiscoveries {
       id: "nalanda",
       titleHi: "नालंदा की ज्ञान परंपरा",
       titleEn: "Nalanda’s tradition of learning",
-      bodyHi: "बिहार के नालंदा महाविहार के अवशेष बौद्ध शिक्षा और मठीय जीवन की विरासत को सहेजते हैं। यहां स्तूप, पूजा स्थल और आवासीय-शैक्षिक भवनों के अवशेष हैं।",
-      bodyEn: "The ruins of Nalanda Mahavihara in Bihar preserve a heritage of Buddhist learning and monastic life, including stupas, shrines and residential and educational buildings.",
+      bodyHi:
+          "बिहार के नालंदा महाविहार के अवशेष बौद्ध शिक्षा और मठीय जीवन की विरासत को सहेजते हैं। यहां स्तूप, पूजा स्थल और आवासीय-शैक्षिक भवनों के अवशेष हैं।",
+      bodyEn:
+          "The ruins of Nalanda Mahavihara in Bihar preserve a heritage of Buddhist learning and monastic life, including stupas, shrines and residential and educational buildings.",
       url: "https://whc.unesco.org/en/list/1502/",
       source: "UNESCO",
     ),
@@ -955,8 +1221,10 @@ class DailyDiscoveries {
       id: "stepwell",
       titleHi: "जल और आस्था की बावड़ी",
       titleEn: "A stepwell of water and faith",
-      bodyHi: "गुजरात के पाटण की रानी की वाव को जल की पवित्रता दर्शाने वाले उल्टे मंदिर की तरह बनाया गया है। इसमें सीढ़ियों के सात स्तर हैं।",
-      bodyEn: "Rani-ki-Vav at Patan in Gujarat was designed like an inverted temple honouring the sacredness of water. It has seven levels of stairs.",
+      bodyHi:
+          "गुजरात के पाटण की रानी की वाव को जल की पवित्रता दर्शाने वाले उल्टे मंदिर की तरह बनाया गया है। इसमें सीढ़ियों के सात स्तर हैं।",
+      bodyEn:
+          "Rani-ki-Vav at Patan in Gujarat was designed like an inverted temple honouring the sacredness of water. It has seven levels of stairs.",
       url: "https://whc.unesco.org/en/list/922/",
       source: "UNESCO",
     ),
@@ -965,9 +1233,12 @@ class DailyDiscoveries {
       hinduMonths: [8],
       titleHi: "दीपावली की वैश्विक पहचान",
       titleEn: "Deepavali’s global recognition",
-      bodyHi: "दीपावली को 2025 में यूनेस्को की मानवता की अमूर्त सांस्कृतिक विरासत की प्रतिनिधि सूची में शामिल किया गया।",
-      bodyEn: "Deepavali was inscribed on UNESCO’s Representative List of the Intangible Cultural Heritage of Humanity in 2025.",
-      url: "https://india.un.org/en/306851-deepavali-gets-unesco-intangible-cultural-heritage-tag",
+      bodyHi:
+          "दीपावली को 2025 में यूनेस्को की मानवता की अमूर्त सांस्कृतिक विरासत की प्रतिनिधि सूची में शामिल किया गया।",
+      bodyEn:
+          "Deepavali was inscribed on UNESCO’s Representative List of the Intangible Cultural Heritage of Humanity in 2025.",
+      url:
+          "https://india.un.org/en/306851-deepavali-gets-unesco-intangible-cultural-heritage-tag",
       source: "United Nations in India",
     ),
     DailyDiscovery(
@@ -975,7 +1246,8 @@ class DailyDiscoveries {
       titleHi: "भारत गणराज्य बना",
       titleEn: "India became a republic",
       bodyHi: "26 जनवरी 1950 को भारत का संविधान लागू हुआ और भारत गणराज्य बना।",
-      bodyEn: "On 26 January 1950, India’s Constitution came into effect and India became a republic.",
+      bodyEn:
+          "On 26 January 1950, India’s Constitution came into effect and India became a republic.",
       url: "https://www.mygov.in/campaigns/read-preamble",
       source: "MyGov",
       month: 1,
@@ -988,7 +1260,8 @@ class DailyDiscoveries {
       titleEn: "India’s independence",
       bodyHi: "15 अगस्त 1947 को भारत औपनिवेशिक शासन से स्वतंत्र हुआ।",
       bodyEn: "India gained independence from colonial rule on 15 August 1947.",
-      url: "https://www.pib.gov.in/FeaturesDeatils.aspx?ModuleId=2&NoteId=157078&lang=1&reg=3",
+      url:
+          "https://www.pib.gov.in/FeaturesDeatils.aspx?ModuleId=2&NoteId=157078&lang=1&reg=3",
       source: "Press Information Bureau",
       month: 8,
       day: 15,
@@ -998,8 +1271,10 @@ class DailyDiscoveries {
       id: "constitution",
       titleHi: "संविधान अंगीकृत हुआ",
       titleEn: "The Constitution was adopted",
-      bodyHi: "26 नवंबर 1949 को संविधान सभा ने भारत का संविधान अंगीकृत किया। यह 26 जनवरी 1950 से लागू हुआ।",
-      bodyEn: "India’s Constituent Assembly adopted the Constitution on 26 November 1949. It came into effect on 26 January 1950.",
+      bodyHi:
+          "26 नवंबर 1949 को संविधान सभा ने भारत का संविधान अंगीकृत किया। यह 26 जनवरी 1950 से लागू हुआ।",
+      bodyEn:
+          "India’s Constituent Assembly adopted the Constitution on 26 November 1949. It came into effect on 26 January 1950.",
       url: "https://www.mygov.in/campaigns/read-preamble",
       source: "MyGov",
       month: 11,
@@ -1010,8 +1285,10 @@ class DailyDiscoveries {
       id: "aryabhata",
       titleHi: "पहला भारतीय उपग्रह",
       titleEn: "India’s first satellite",
-      bodyHi: "19 अप्रैल 1975 को भारत का पहला उपग्रह आर्यभट प्रक्षेपित हुआ। इसका डिजाइन और निर्माण भारत में किया गया था।",
-      bodyEn: "Aryabhata, India’s first satellite, was launched on 19 April 1975. It was designed and built in India.",
+      bodyHi:
+          "19 अप्रैल 1975 को भारत का पहला उपग्रह आर्यभट प्रक्षेपित हुआ। इसका डिजाइन और निर्माण भारत में किया गया था।",
+      bodyEn:
+          "Aryabhata, India’s first satellite, was launched on 19 April 1975. It was designed and built in India.",
       url: "https://www.isro.gov.in/aryabhata_1.html",
       source: "ISRO",
       month: 4,
@@ -1022,9 +1299,12 @@ class DailyDiscoveries {
       id: "moon",
       titleHi: "चंद्रयान-3 की चंद्रमा पर लैंडिंग",
       titleEn: "Chandrayaan-3 landed on the Moon",
-      bodyHi: "23 अगस्त 2023 को चंद्रयान-3 के विक्रम लैंडर ने चंद्रमा पर सफल सॉफ्ट लैंडिंग की।",
-      bodyEn: "On 23 August 2023, Chandrayaan-3’s Vikram lander successfully soft-landed on the Moon.",
-      url: "https://www.isro.gov.in/media_isro/pdf/Monthly_summary/MonthlySummary_August2023Eng.pdf",
+      bodyHi:
+          "23 अगस्त 2023 को चंद्रयान-3 के विक्रम लैंडर ने चंद्रमा पर सफल सॉफ्ट लैंडिंग की।",
+      bodyEn:
+          "On 23 August 2023, Chandrayaan-3’s Vikram lander successfully soft-landed on the Moon.",
+      url:
+          "https://www.isro.gov.in/media_isro/pdf/Monthly_summary/MonthlySummary_August2023Eng.pdf",
       source: "ISRO",
       month: 8,
       day: 23,
@@ -1034,8 +1314,10 @@ class DailyDiscoveries {
       id: "internet",
       titleHi: "इंटरनेट की ओर पहला संदेश",
       titleEn: "An early step towards the internet",
-      bodyHi: "29 अक्टूबर 1969 को UCLA से Stanford Research Institute तक ARPANET पर पहला संदेश भेजा गया। LOGIN भेजने का प्रयास हुआ, लेकिन शुरुआत में केवल LO पहुंचा।",
-      bodyEn: "On 29 October 1969, the first ARPANET message travelled from UCLA to Stanford Research Institute. The intended command was LOGIN, but only LO arrived before a crash.",
+      bodyHi:
+          "29 अक्टूबर 1969 को UCLA से Stanford Research Institute तक ARPANET पर पहला संदेश भेजा गया। LOGIN भेजने का प्रयास हुआ, लेकिन शुरुआत में केवल LO पहुंचा।",
+      bodyEn:
+          "On 29 October 1969, the first ARPANET message travelled from UCLA to Stanford Research Institute. The intended command was LOGIN, but only LO arrived before a crash.",
       url: "https://www.lk.cs.ucla.edu/internet_first_words.html",
       source: "UCLA",
       month: 10,
@@ -1046,8 +1328,10 @@ class DailyDiscoveries {
       id: "un",
       titleHi: "संयुक्त राष्ट्र की स्थापना",
       titleEn: "The United Nations began",
-      bodyHi: "24 अक्टूबर 1945 को संयुक्त राष्ट्र का चार्टर लागू हुआ और संगठन औपचारिक रूप से अस्तित्व में आया।",
-      bodyEn: "The United Nations formally came into existence on 24 October 1945 when its Charter entered into force.",
+      bodyHi:
+          "24 अक्टूबर 1945 को संयुक्त राष्ट्र का चार्टर लागू हुआ और संगठन औपचारिक रूप से अस्तित्व में आया।",
+      bodyEn:
+          "The United Nations formally came into existence on 24 October 1945 when its Charter entered into force.",
       url: "https://www.un.org/en/observances/un-day/",
       source: "United Nations",
       month: 10,
@@ -1058,9 +1342,12 @@ class DailyDiscoveries {
       id: "rights",
       titleHi: "मानव अधिकारों की सार्वभौम घोषणा",
       titleEn: "The Universal Declaration of Human Rights",
-      bodyHi: "10 दिसंबर 1948 को संयुक्त राष्ट्र महासभा ने मानव अधिकारों की सार्वभौम घोषणा अंगीकृत की।",
-      bodyEn: "The UN General Assembly adopted the Universal Declaration of Human Rights on 10 December 1948.",
-      url: "https://www.un.org/en/about-us/universal-declaration-of-human-rights",
+      bodyHi:
+          "10 दिसंबर 1948 को संयुक्त राष्ट्र महासभा ने मानव अधिकारों की सार्वभौम घोषणा अंगीकृत की।",
+      bodyEn:
+          "The UN General Assembly adopted the Universal Declaration of Human Rights on 10 December 1948.",
+      url:
+          "https://www.un.org/en/about-us/universal-declaration-of-human-rights",
       source: "United Nations",
       month: 12,
       day: 10,
@@ -1070,8 +1357,10 @@ class DailyDiscoveries {
       id: "yoga-day",
       titleHi: "अंतरराष्ट्रीय योग दिवस",
       titleEn: "International Day of Yoga",
-      bodyHi: "21 जून अंतरराष्ट्रीय योग दिवस है। संयुक्त राष्ट्र ने 2014 में इस दिन को घोषित किया था।",
-      bodyEn: "21 June is the International Day of Yoga, proclaimed by the United Nations in 2014.",
+      bodyHi:
+          "21 जून अंतरराष्ट्रीय योग दिवस है। संयुक्त राष्ट्र ने 2014 में इस दिन को घोषित किया था।",
+      bodyEn:
+          "21 June is the International Day of Yoga, proclaimed by the United Nations in 2014.",
       url: "https://www.un.org/en/observances/yoga-day",
       source: "United Nations",
       month: 6,
@@ -1082,8 +1371,10 @@ class DailyDiscoveries {
       id: "language",
       titleHi: "अंतरराष्ट्रीय मातृभाषा दिवस",
       titleEn: "International Mother Language Day",
-      bodyHi: "21 फरवरी मातृभाषाओं और भाषाई विविधता के महत्व को याद करने का दिन है।",
-      bodyEn: "21 February is International Mother Language Day, recognising the importance of mother languages and linguistic diversity.",
+      bodyHi:
+          "21 फरवरी मातृभाषाओं और भाषाई विविधता के महत्व को याद करने का दिन है।",
+      bodyEn:
+          "21 February is International Mother Language Day, recognising the importance of mother languages and linguistic diversity.",
       url: "https://www.unesco.org/en/days/mother-language",
       source: "UNESCO",
       month: 2,

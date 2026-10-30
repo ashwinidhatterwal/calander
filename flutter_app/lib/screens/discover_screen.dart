@@ -35,7 +35,6 @@ class _DiscoverScreenState extends State<DiscoverScreen>
   late DateTime _date;
   Timer? _midnight;
   bool _foreground = true;
-  int _more = 3;
   int _request = 0;
   String? _loadedKey;
   Set<String> _festivals = {};
@@ -56,25 +55,22 @@ class _DiscoverScreenState extends State<DiscoverScreen>
     final request = ++_request;
     final engine = widget.festival ?? _fallback;
     final date = _date;
-    engine
-        .majorFestivalsAsync(date.year, location)
-        .then((major) {
-          if (!mounted || request != _request) return;
-          setState(() {
-            _festivals = engine
-                .lightweightForDate(date, location, major: major)
-                .map((e) => e.id)
-                .toSet();
-            _loading = false;
-          });
-        })
-        .catchError((Object _) {
-          if (!mounted || request != _request) return;
-          setState(() {
-            _loading = false;
-            _failed = true;
-          });
-        });
+    engine.majorFestivalsAsync(date.year, location).then((major) {
+      if (!mounted || request != _request) return;
+      setState(() {
+        _festivals = engine
+            .lightweightForDate(date, location, major: major)
+            .map((e) => e.id)
+            .toSet();
+        _loading = false;
+      });
+    }).catchError((Object _) {
+      if (!mounted || request != _request) return;
+      setState(() {
+        _loading = false;
+        _failed = true;
+      });
+    });
   }
 
   @override
@@ -118,7 +114,6 @@ class _DiscoverScreenState extends State<DiscoverScreen>
         _date.day != now.day) {
       setState(() {
         _date = now;
-        _more = 3;
       });
     }
     _loadObservances();
@@ -141,7 +136,6 @@ class _DiscoverScreenState extends State<DiscoverScreen>
     final l = L10n(widget.language);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final events = DailyDiscoveries.onThisDay(_date);
     final location = widget.location;
     final cell = location == null
         ? null
@@ -149,25 +143,12 @@ class _DiscoverScreenState extends State<DiscoverScreen>
     final rawTithi = cell == null
         ? 0
         : cell.tithi.index + (cell.pakshaEn == 'Krishna Paksha' ? 15 : 0);
-    final selected = DailyDiscoveries.select(
-      date: _date,
-      hinduMonth: cell?.month.index ?? 0,
-      rawTithi: rawTithi,
-      adhik: cell?.adhik ?? false,
-      festivals: _festivals,
-    );
-    final general = selected.where((e) => e.reason == 'general').toList();
-    if (general.isNotEmpty && selected.length > 2) {
-      final item = general.first;
-      selected.remove(item);
-      selected.insert(2, item);
-    }
-    String reason(String value) => switch (value) {
-      'festival' => l.pick('आज का पर्व', 'Today’s observance'),
-      'tithi' => l.pick('आज की तिथि से जुड़ा पाठ', 'Reading for today’s tithi'),
-      'month' => l.pick('इस हिंदू मास की परंपरा', 'This Hindu month'),
-      _ => l.pick('भक्ति, संस्कृति और सीख', 'Faith, culture and wisdom'),
-    };
+    final sections = DailyDiscoveries.dailySections(
+        date: _date,
+        hinduMonth: cell?.month.index ?? 0,
+        rawTithi: rawTithi,
+        adhik: cell?.adhik ?? false,
+        festivals: _festivals);
 
     return ListView(
       key: const PageStorageKey('daily-discoveries'),
@@ -182,8 +163,8 @@ class _DiscoverScreenState extends State<DiscoverScreen>
         const SizedBox(height: 4),
         Text(
           l.pick(
-            'आस्था • परंपरा • जीवन की सीख',
-            'Faith • Tradition • Everyday wisdom',
+            'एक अभ्यास • एक विचार • एक नई जानकारी',
+            'One practice • One reflection • One discovery',
           ),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: scheme.onSurfaceVariant,
@@ -256,76 +237,124 @@ class _DiscoverScreenState extends State<DiscoverScreen>
               l.pick('पर्व जानकारी फिर लाएँ', 'Retry observance details'),
             ),
           ),
-        const SizedBox(height: 20),
-        _section(
-          context,
-          Icons.temple_hindu_outlined,
-          l.pick('आज का मनन', 'Today’s reading'),
-        ),
-        const SizedBox(height: 10),
-        for (final item in selected.take(_more)) ...[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              reason(item.reason),
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: scheme.primary,
-              ),
-            ),
-          ),
-          _DiscoveryCard(entry: item.entry, language: widget.language),
-          const SizedBox(height: 18),
-        ],
-        if (_more < selected.length)
-          OutlinedButton.icon(
-            onPressed: () => setState(() => _more += 5),
-            icon: const Icon(Icons.auto_stories_outlined),
-            label: Text(l.pick('और पढ़ें', 'Read more')),
-          ),
-        if (events.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          _section(
-            context,
-            Icons.history_edu,
-            l.pick('आज के दिन', 'On this day'),
-          ),
-          const SizedBox(height: 10),
-          for (final entry in events) ...[
-            _DiscoveryCard(entry: entry, language: widget.language),
-            const SizedBox(height: 12),
-          ],
-        ],
-        const SizedBox(height: 14),
+        const SizedBox(height: 24),
+        _section(context, Icons.self_improvement,
+            l.pick('अध्यात्म और अच्छी आदतें', 'Spirituality & good practices')),
+        const SizedBox(height: 4),
         Text(
-          l.pick(
-            'पहले पर्व और तिथि, फिर हिंदू मास, फिर अन्य प्रेरक पाठ। कथाएँ और मान्यताएँ संबंधित परंपरा के रूप में प्रस्तुत हैं; परिवार और क्षेत्र की विधियाँ भिन्न हो सकती हैं।',
-            'Readings prioritise observances and tithi, then Hindu month, then general inspiration. Sacred narratives and beliefs are presented as traditions; regional and family customs vary.',
-          ),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: scheme.onSurfaceVariant,
-          ),
-        ),
+            l.pick('मन को शांत करें, जीवन में अपनाएँ',
+                'A quiet moment. A meaningful practice.'),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: scheme.onSurfaceVariant)),
+        const SizedBox(height: 10),
+        _DiscoveryCard(
+            entry: sections.spiritual,
+            language: widget.language,
+            promptTitle:
+                l.pick('आज का छोटा अभ्यास', 'A small practice for today'),
+            prompt: sections.spiritual.promptHi.isNotEmpty
+                ? l.pick(
+                    sections.spiritual.promptHi, sections.spiritual.promptEn)
+                : _practice(sections.spiritual.id, l)),
+        const SizedBox(height: 26),
+        _section(context, Icons.psychology_outlined,
+            l.pick('नैतिकता और जीवन-दर्शन', 'Morality & philosophy')),
+        const SizedBox(height: 4),
+        Text(
+            l.pick('एक विचार, जो दिन को दिशा दे', 'A thought to guide the day'),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: scheme.onSurfaceVariant)),
+        const SizedBox(height: 10),
+        _DiscoveryCard(
+            entry: sections.philosophy,
+            language: widget.language,
+            promptTitle: l.pick('खुद से पूछें', 'Ask yourself'),
+            prompt: sections.philosophy.promptHi.isNotEmpty
+                ? l.pick(
+                    sections.philosophy.promptHi, sections.philosophy.promptEn)
+                : _reflection(sections.philosophy.id, l)),
+        const SizedBox(height: 26),
+        _section(context, Icons.history_edu_outlined,
+            l.pick('आज की जानकारी', 'Today’s facts')),
+        const SizedBox(height: 4),
+        Text(
+            sections.anniversary
+                ? l.pick('आज के दिन इतिहास में', 'On this date in history')
+                : l.pick('आज जानिए • संस्कृति और विरासत',
+                    'Discover today • Culture and heritage'),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: scheme.onSurfaceVariant)),
+        const SizedBox(height: 10),
+        _DiscoveryCard(entry: sections.fact, language: widget.language),
       ],
     );
   }
 
+  String _practice(String id, L10n l) => switch (id) {
+        'gita-return' => l.pick(
+            'दो मिनट शांत बैठें। मन भटके तो बिना झुंझलाए ध्यान वापस लाएँ।',
+            'Sit quietly for two minutes. When your mind wanders, gently bring your attention back.'),
+        'gita-offering-work' => l.pick(
+            'आज एक छोटा काम पूरे मन से करें और उसे ईश्वर को अर्पित करने का भाव रखें।',
+            'Do one small task wholeheartedly today, with the intention of offering it to the divine.'),
+        'yoga' => l.pick(
+            'कुछ क्षण आराम से बैठकर अपनी सामान्य साँस पर ध्यान दें।',
+            'Sit comfortably for a few moments and notice your natural breathing.'),
+        _ => l.pick(
+            'इस पाठ के भाव पर दो मिनट मनन करें। अपनी परंपरा के अनुसार प्रार्थना या ईश्वर-स्मरण के लिए एक शांत क्षण रखें।',
+            'Reflect on this reading for two minutes. Make a quiet moment for prayer or remembrance in your own tradition.'),
+      };
+
+  String _reflection(String id, L10n l) => switch (id) {
+        'gita-compassion' => l.pick(
+            'आज किसके साथ थोड़ा अधिक धैर्य और दया रख सकते हैं?',
+            'Who could you treat with a little more patience and kindness today?'),
+        'gita-speech' => l.pick(
+            'क्या मेरी बात सच्ची होने के साथ हितकारी भी है?',
+            'Are my words helpful as well as truthful?'),
+        'gita-charity' => l.pick(
+            'आज बिना बदले की अपेक्षा किसकी मदद कर सकते हैं?',
+            'Whom could you help today without expecting anything in return?'),
+        'gita-peace' => l.pick(
+            'किस परिणाम की चिंता छोड़कर अपने प्रयास पर ध्यान दे सकते हैं?',
+            'Which outcome could you stop worrying about and focus on your effort instead?'),
+        'gita-balance' => l.pick(
+            'आज काम और विश्राम में थोड़ा बेहतर संतुलन कैसे बनाएँ?',
+            'How could you balance work and rest a little better today?'),
+        'gita-respect' => l.pick(
+            'आज किसी से असहमति होने पर भी सम्मान कैसे बनाए रखें?',
+            'How could you show respect today, even when you disagree?'),
+        'gita-mind' => l.pick(
+            'मन को शांत करने के लिए आज कौन-सी छोटी आदत अपना सकते हैं?',
+            'What small habit could help you keep a calmer mind today?'),
+        _ => l.pick('आज अपने मन को मित्र बनाने वाला कौन-सा कदम उठा सकते हैं?',
+            'What step could you take today to make your mind a friend?'),
+      };
+
   Widget _section(BuildContext context, IconData icon, String title) => Row(
-    children: [
-      Icon(icon, size: 21, color: Theme.of(context).colorScheme.primary),
-      const SizedBox(width: 8),
-      Expanded(
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ),
-    ],
-  );
+        children: [
+          Icon(icon, size: 21, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      );
 }
 
 class _DiscoveryCard extends StatelessWidget {
-  const _DiscoveryCard({required this.entry, required this.language});
+  const _DiscoveryCard(
+      {required this.entry,
+      required this.language,
+      this.promptTitle,
+      this.prompt});
+  final String? promptTitle, prompt;
   final DailyDiscovery entry;
   final AppLanguage language;
 
@@ -342,28 +371,6 @@ class _DiscoveryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l.pick(
-                entry.isDated
-                    ? 'इतिहास'
-                    : entry.kind == 'teaching'
-                    ? 'शास्त्र से सीख'
-                    : entry.kind == 'story'
-                    ? 'धार्मिक कथा'
-                    : 'परंपरा और संस्कृति',
-                entry.isDated
-                    ? 'History'
-                    : entry.kind == 'teaching'
-                    ? 'Scriptural reflection'
-                    : entry.kind == 'story'
-                    ? 'Sacred narrative'
-                    : 'Tradition and culture',
-              ),
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 8),
             if (entry.year != null) ...[
               Text(
                 '${entry.year}',
@@ -374,12 +381,26 @@ class _DiscoveryCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
+            if (entry.teacherHi.isNotEmpty) ...[
+              Text(l.pick(entry.teacherHi, entry.teacherEn),
+                  style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                      height: 1.5)),
+              const SizedBox(height: 8),
+            ],
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
             ),
+            if (entry.reference.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                  '${entry.reference} · ${entry.kind == 'story' ? l.pick('कथा-सार', 'Story retelling') : l.pick('भावार्थ', 'Paraphrase')}',
+                  style: theme.textTheme.bodySmall?.copyWith(height: 1.5)),
+            ],
             const SizedBox(height: 12),
             Text(
               body,
@@ -389,6 +410,27 @@ class _DiscoveryCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+            if (prompt != null) ...[
+              const SizedBox(height: 14),
+              Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withAlpha(85),
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(promptTitle!,
+                            style: theme.textTheme.labelLarge
+                                ?.copyWith(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 5),
+                        Text(prompt!,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(height: 1.5)),
+                      ])),
+            ],
+            if (prompt != null) const SizedBox(height: 12),
             Text(entry.source, style: theme.textTheme.bodySmall),
             const Divider(),
             Wrap(
@@ -402,20 +444,20 @@ class _DiscoveryCard extends StatelessWidget {
                   label: Text(l.pick('स्रोत पढ़ें', 'Read source')),
                 ),
                 IconButton(
-                  tooltip: l.pick('जानकारी कॉपी करें', 'Copy this fact'),
+                  tooltip: l.pick('पाठ कॉपी करें', 'Copy reading'),
                   icon: const Icon(Icons.copy_outlined, size: 20),
                   onPressed: () async {
                     await Clipboard.setData(
                       ClipboardData(
                         text:
-                            '$title\n\n$body\n\n${entry.source}: ${entry.url}',
+                            '$title\n${l.pick(entry.teacherHi, entry.teacherEn)}\n${entry.reference}\n\n$body${prompt == null ? '' : '\n\n$promptTitle: $prompt'}\n\n${entry.source}: ${entry.url}',
                       ),
                     );
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          l.pick('जानकारी कॉपी हो गई', 'Fact copied'),
+                          l.pick('पाठ कॉपी हो गया', 'Reading copied'),
                         ),
                       ),
                     );

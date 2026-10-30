@@ -1,8 +1,8 @@
-# Build 30: Hindu discoveries and clear day details
+# Build 32: specific Indian teachings and stories
 
-Version 1.0.0+30. See [release and validation notes](docs/CHECKPOINT_30.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
+Version 1.0.0+32. See [release and validation notes](docs/CHECKPOINT_32.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
 
-Local Flutter analysis is clean and all 83 Flutter tests passed. Previous feature checkpoints remain below as history.
+Local Flutter analysis is clean and all 84 Flutter tests passed. Previous feature checkpoints remain below as history.
 
 # Hindu Calendar — Checkpoint 15 Notification Settings
 
