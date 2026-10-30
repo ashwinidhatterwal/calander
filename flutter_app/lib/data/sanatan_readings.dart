@@ -1,0 +1,403 @@
+part of 'daily_discoveries.dart';
+
+/// Verified Sanskrit excerpts; original Hindi bhavarth, not quoted translations.
+/// Patriotic reflections concern belonging, service, responsibility and unity.
+const sanatanReadings = <DailyDiscovery>[
+  DailyDiscovery(
+    id: "gita-duty-verse",
+    section: "philosophy",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 2.47",
+    referenceHi: "श्रीमद्भगवद्गीता 2.47",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/2/verse/47/",
+    titleHi: "कर्म अपना, फल प्रभु के हाथ",
+    titleEn: "Give yourself to the work",
+    bodyHi:
+        "श्रीकृष्ण कर्म करने की सीख देते हैं, फल पर अधिकार मानने की नहीं। फल की चाह में ही काम न करें, और न फल अपने हाथ में न होने के कारण कर्म छोड़ें।",
+    bodyEn:
+        "Krishna directs Arjuna toward action without claiming control over its fruits. Do not make reward your sole motive or retreat into inaction.",
+    promptHi: "आज अपना कर्तव्य पूरे मन से निभाएँ।",
+    promptEn: "Give your full attention to a duty today.",
+    quote:
+        "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-equanimity-verse",
+    section: "philosophy",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 2.48",
+    referenceHi: "श्रीमद्भगवद्गीता 2.48",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/2/verse/48/",
+    titleHi: "सफलता-असफलता में समभाव",
+    titleEn: "Steadiness through outcomes",
+    bodyHi:
+        "काम करते हुए आसक्ति छोड़ें और सफलता-असफलता में मन को सम रखें। श्रीकृष्ण इसी समत्व को योग कहते हैं। प्रयत्न में कमी नहीं, मन में संतुलन चाहिए।",
+    bodyEn:
+        "Act without clinging, remaining steady in success and failure. Krishna calls this evenness yoga; steadiness accompanies effort.",
+    promptHi: "आज के परिणाम से पहले अपने प्रयत्न को देखिए।",
+    promptEn: "Attend to your effort before judging its outcome.",
+    quote:
+        "योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय।\nसिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-steady-duty",
+    section: "philosophy",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 3.19",
+    referenceHi: "श्रीमद्भगवद्गीता 3.19",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/3/verse/19/",
+    titleHi: "कर्तव्य से मुँह न मोड़ें",
+    titleEn: "Keep faith with duty",
+    bodyHi:
+        "जो करना उचित है, उसे फल की आसक्ति छोड़कर निरंतर करें। गीता ऐसा कर्म परम लक्ष्य की ओर ले जाने वाला बताती है।",
+    bodyEn:
+        "Perform the work that ought to be done, steadily and without attachment. The Gita connects such action with the highest goal.",
+    promptHi: "जिस उचित काम को टाल रहे हैं, उसे शुरू करें।",
+    promptEn: "Begin a worthwhile duty you have been postponing.",
+    quote:
+        "तस्मादसक्तः सततं कार्यं कर्म समाचर।\nअसक्तो ह्याचरन्कर्म परमाप्नोति पूरुषः॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-example-service",
+    section: "philosophy",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 3.20-21",
+    referenceHi: "श्रीमद्भगवद्गीता 3.20-21",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/3/verse/20-21/",
+    titleHi: "आपके आचरण से राह बनती है",
+    titleEn: "Conduct sets an example",
+    bodyHi:
+        "श्रीकृष्ण लोककल्याण के लिए कर्म करने की बात कहते हैं। आदरणीय व्यक्ति जो करता है, दूसरे भी उसका अनुसरण करते हैं। इसलिए अच्छे विचार के साथ अच्छा आचरण भी जरूरी है।",
+    bodyEn:
+        "Krishna teaches action for the welfare of others. Those held in esteem set standards through their conduct.",
+    promptHi: "आज ऐसा काम करें जिसे देखकर किसी को अच्छी प्रेरणा मिले।",
+    promptEn: "Do something today that offers a good example.",
+    quote:
+        "यद्यदाचरति श्रेष्ठस्तत्तदेवेतरो जनः।\nस यत्प्रमाणं कुरुते लोकस्तदनुवर्तते॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-offering-verse",
+    section: "spiritual",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 3.30",
+    referenceHi: "श्रीमद्भगवद्गीता 3.30",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/3/verse/30/",
+    titleHi: "कर्म करते हुए प्रभु का स्मरण",
+    titleEn: "Offer your work to Krishna",
+    bodyHi:
+        "श्रीकृष्ण अर्जुन से कहते हैं कि सारे कर्म मुझे अर्पित करो। मन को परमात्मा में रखकर, ममता और फल की लालसा छोड़कर, अपना कर्तव्य निभाओ।",
+    bodyEn:
+        "Krishna asks Arjuna to dedicate his actions to Him, with spiritual attention and without possessiveness or craving for reward.",
+    promptHi: "काम शुरू करते समय मन में उसे प्रभु को अर्पित करें।",
+    promptEn: "Begin a duty with an inward dedication to God.",
+    quote:
+        "मयि सर्वाणि कर्माणि संन्यस्याध्यात्मचेतसा।\nनिराशीर्निर्ममो भूत्वा युध्यस्व विगतज्वरः॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-simple-offering",
+    section: "spiritual",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 9.26",
+    referenceHi: "श्रीमद्भगवद्गीता 9.26",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/9/verse/26/",
+    titleHi: "प्रभु को भाव प्यारा है",
+    titleEn: "The love in an offering",
+    bodyHi:
+        "एक पत्ता, एक फूल, फल या जल—प्रेम से चढ़ाई छोटी भेंट भी भगवान स्वीकार करते हैं। इस श्लोक में भक्ति का सच्चा भाव सामने आता है।",
+    bodyEn:
+        "Krishna accepts a leaf, flower, fruit or water offered with devotion. The verse honours the love within a simple offering.",
+    promptHi: "आज जो अर्पित करें, पूरे मन से करें।",
+    promptEn: "Bring wholehearted attention to a simple offering.",
+    quote:
+        "पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति।\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मनः॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-refuge",
+    section: "spiritual",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 18.66",
+    referenceHi: "श्रीमद्भगवद्गीता 18.66",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/18/verse/66/",
+    titleHi: "प्रभु की शरण में भरोसा",
+    titleEn: "Trust in divine refuge",
+    bodyHi:
+        "श्रीकृष्ण अर्जुन को अपनी शरण में आने का आश्वासन देते हैं—मैं तुम्हें समस्त पापों से मुक्त करूँगा, शोक मत करो। भक्त इस वचन में समर्पण और प्रभु पर भरोसे का सहारा पाते हैं।",
+    bodyEn:
+        "Krishna offers Arjuna refuge and release from sin. Devotees find in this verse a promise supporting surrender and trust.",
+    promptHi: "कुछ क्षण शांत मन से प्रभु का नाम लें।",
+    promptEn: "Spend a quiet moment remembering God.",
+    quote:
+        "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज।\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-humble-inquiry",
+    section: "spiritual",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 4.34",
+    referenceHi: "श्रीमद्भगवद्गीता 4.34",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/4/verse/34/",
+    titleHi: "श्रद्धा के साथ प्रश्न भी",
+    titleEn: "Reverence with inquiry",
+    bodyHi:
+        "ज्ञान के लिए तत्त्वदर्शी गुरु के पास जाएँ—विनय से, प्रश्न लेकर और सेवा के भाव से। गीता में श्रद्धा के साथ समझने की जिज्ञासा भी है।",
+    bodyEn:
+        "Approach a teacher who has seen truth with reverence, inquiry and service. The Gita joins humility with a sincere wish to understand.",
+    promptHi: "किसी शास्त्र को पढ़ते समय अपना एक सच्चा प्रश्न लिखें।",
+    promptEn: "Write a sincere question while studying a scripture.",
+    quote:
+        "तद्विद्धि प्रणिपातेन परिप्रश्नेन सेवया।\nउपदेक्ष्यन्ति ते ज्ञानं ज्ञानिनस्तत्त्वदर्शिनः॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "gita-divine-presence",
+    section: "spiritual",
+    group: "gita",
+    teacherHi: "श्रीमद्भगवद्गीता · श्रीकृष्ण",
+    teacherEn: "Bhagavad Gita · Shri Krishna",
+    reference: "Bhagavad Gita 6.30",
+    referenceHi: "श्रीमद्भगवद्गीता 6.30",
+    source: "Bhagavad Gita · Swami Mukundananda",
+    url: "https://www.holy-bhagavad-gita.org/chapter/6/verse/30/",
+    titleHi: "सबमें प्रभु का दर्शन",
+    titleEn: "Seeing the divine everywhere",
+    bodyHi:
+        "जो मुझे सबमें और सबको मुझमें देखता है, वह मुझसे दूर नहीं होता—श्रीकृष्ण का यह वचन भक्ति की दृष्टि को व्यापक करता है।",
+    bodyEn:
+        "Krishna describes a devotee who sees Him everywhere and everything in Him, remaining close to the divine.",
+    promptHi:
+        "आज किसी से व्यवहार करते समय उसके भीतर भी प्रभु की उपस्थिति याद करें।",
+    promptEn: "Remember the divine presence when meeting someone today.",
+    quote:
+        "यो मां पश्यति सर्वत्र सर्वं च मयि पश्यति।\nतस्याहं न प्रणश्यामि स च मे न प्रणश्यति॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "katha-awaken",
+    section: "spiritual",
+    group: "upanishads",
+    teacherHi: "उपनिषद्-वाणी",
+    teacherEn: "Upanishadic wisdom",
+    reference: "Katha Upanishad 1.3.14 · excerpt",
+    referenceHi: "कठोपनिषद् 1.3.14 · मंत्रांश",
+    source: "Katha Upanishad · S. Sitarama Sastri",
+    url:
+        "https://www.wisdomlib.org/hinduism/book/katha-upanishad-shankara-bhashya/d/doc145217.html",
+    titleHi: "उठो, जागो, ज्ञान की ओर बढ़ो",
+    titleEn: "Awaken to the search for truth",
+    bodyHi:
+        "कठोपनिषद् की पुकार है—उठो, जागो और श्रेष्ठ गुरुजनों के पास जाकर ज्ञान पाओ। यह आत्मज्ञान की राह पर सजग होकर चलने का आह्वान है।",
+    bodyEn:
+        "The Katha Upanishad calls seekers to awaken and learn from worthy teachers on the demanding path of self-knowledge.",
+    promptHi: "आज अपने आध्यात्मिक अध्ययन की एक छोटी शुरुआत करें।",
+    promptEn: "Take a small step in spiritual study today.",
+    quote: "उत्तिष्ठत जाग्रत प्राप्य वरान्निबोधत।",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "mundaka-truth",
+    section: "spiritual",
+    group: "upanishads",
+    teacherHi: "उपनिषद्-वाणी",
+    teacherEn: "Upanishadic wisdom",
+    reference: "Mundaka Upanishad 3.1.6 · excerpt",
+    referenceHi: "मुंडकोपनिषद् 3.1.6 · मंत्रांश",
+    source: "Mundaka Upanishad · S. Sitarama Sastri",
+    url:
+        "https://www.wisdomlib.org/hinduism/book/mundaka-upanishad-shankara-bhashya/d/doc145127.html",
+    titleHi: "सत्य की राह पर अडिग रहें",
+    titleEn: "Stand by truth",
+    bodyHi:
+        "मुंडकोपनिषद् सत्य की विजय और उसी से खुलने वाले देवयान मार्ग की बात कहता है। साधक के लिए सत्य केवल बोलने की बात नहीं, जीवन की दिशा है।",
+    bodyEn:
+        "The Mundaka Upanishad links truth with victory and the path followed by sages. Truth guides the seeker’s life.",
+    promptHi: "आज किसी छोटी सुविधा के लिए सत्य से समझौता न करें।",
+    promptEn: "Do not trade truth for a small convenience today.",
+    quote: "सत्यमेव जयते नानृतम्।",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "isha-without-greed",
+    section: "spiritual",
+    group: "upanishads",
+    teacherHi: "उपनिषद्-वाणी",
+    teacherEn: "Upanishadic wisdom",
+    reference: "Isha Upanishad 1",
+    referenceHi: "ईशावास्योपनिषद् 1",
+    source: "Isha Upanishad · S. Sitarama Sastri",
+    url:
+        "https://www.wisdomlib.org/hinduism/book/ishavasya-bhashya-by-sitarama/d/doc145018.html",
+    titleHi: "ईश्वर का जगत, लोभ से दूरी",
+    titleEn: "A world pervaded by the divine",
+    bodyHi:
+        "यह सारा जगत ईश्वर से व्याप्त है। ईशावास्योपनिषद् त्याग के भाव और दूसरे के धन पर लोभ न करने की सीख देता है। जो मिला है, उसके साथ अनासक्ति का भाव रखें।",
+    bodyEn:
+        "The Isha Upanishad sees the world as pervaded by the Lord and teaches renunciation and freedom from coveting another’s wealth.",
+    promptHi: "आज अपनी किसी अनावश्यक लालसा को पहचानें।",
+    promptEn: "Notice an unnecessary craving today.",
+    quote:
+        "ईशावास्यमिदं सर्वं यत्किञ्च जगत्यां जगत्।\nतेन त्यक्तेन भुञ्जीथा मा गृधः कस्य स्विद्धनम्॥",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "taittiriya-satya",
+    section: "philosophy",
+    group: "upanishads",
+    teacherHi: "उपनिषद्-वाणी",
+    teacherEn: "Upanishadic wisdom",
+    reference: "Taittiriya Upanishad 1.11.1",
+    referenceHi: "तैत्तिरीयोपनिषद् 1.11.1 · मंत्रांश",
+    source: "Taittiriya Upanishad · A. Mahadeva Sastri",
+    url:
+        "https://www.wisdomlib.org/hinduism/book/the-taittiriya-upanishad/d/doc79789.html",
+    titleHi: "सत्य बोलें, धर्म पर चलें",
+    titleEn: "Truth and dharma in daily life",
+    bodyHi:
+        "विदा होते विद्यार्थी को गुरु की सीख है—सत्य बोलो, धर्म का आचरण करो और स्वाध्याय में प्रमाद मत करो। पढ़ाई के बाद भी सीखना और सही आचरण बनाए रखना जीवन का दायित्व है।",
+    bodyEn:
+        "The departing student is instructed to speak truth, practise dharma and continue sacred study. Learning carries responsibilities into daily life.",
+    promptHi: "आज अपने किसी वचन को निभाने का ध्यान रखें।",
+    promptEn: "Take care to honour a commitment today.",
+    quote: "सत्यं वद। धर्मं चर। स्वाध्यायान्मा प्रमदः।",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "veda-earth-mother",
+    section: "philosophy",
+    group: "vedic",
+    teacherHi: "अथर्ववेद · भूमि सूक्त",
+    teacherEn: "Atharva Veda · Hymn to Earth",
+    reference: "Atharva Veda 12.1.12 · excerpt",
+    referenceHi: "अथर्ववेद 12.1.12 · मंत्रांश",
+    source: "Atharva Veda · Sanskrit text and translation",
+    url: "https://vedapath.app/en/atharvaveda/kanda-12/1/1/12",
+    titleHi: "धरती माता, हम उसकी संतान",
+    titleEn: "Earth as mother",
+    bodyHi:
+        "भूमि सूक्त में ऋषि धरती को माता और स्वयं को उसकी संतान कहते हैं। मातृभूमि के प्रति अपनापन और आदर का यह भाव सेवा की प्रेरणा भी बन सकता है।",
+    bodyEn:
+        "The hymn calls Earth mother and the speaker her child. This relationship of belonging can inspire care and service; that application is an editorial reflection.",
+    promptHi: "आज अपने आसपास की भूमि और सार्वजनिक स्थान का ध्यान रखें।",
+    promptEn: "Care for your surroundings and a shared public space today.",
+    quote: "माता भूमिः पुत्रो अहं पृथिव्याः।",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "veda-unity",
+    section: "philosophy",
+    group: "vedic",
+    teacherHi: "ऋग्वेद · संगठन सूक्त",
+    teacherEn: "Rig Veda · Hymn of concord",
+    reference: "Rig Veda 10.191.2 · excerpt",
+    referenceHi: "ऋग्वेद 10.191.2 · मंत्रांश",
+    source: "Rig Veda · H. H. Wilson",
+    url:
+        "https://www.wisdomlib.org/hinduism/book/rig-veda-english-translation/d/doc840451.html",
+    titleHi: "साथ चलें, साथ विचार करें",
+    titleEn: "Walk and speak together",
+    bodyHi:
+        "ऋग्वेद मिलकर चलने, मिलकर बोलने और मन में परस्पर समझ रखने का आह्वान करता है। साथ काम करने की नींव आपसी संवाद और एकता में है।",
+    bodyEn:
+        "The hymn calls people to move and speak together with shared understanding. Concord grows through conversation and common effort.",
+    promptHi: "आज किसी साझा अच्छे काम में अपना सहयोग दें।",
+    promptEn: "Contribute to a worthwhile shared effort today.",
+    quote: "सं गच्छध्वं सं वदध्वं सं वो मनांसि जानताम्।",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "vivekananda-patriot-heart",
+    section: "philosophy",
+    group: "vivekananda",
+    teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",
+    teacherEn: "Swami Vivekananda · Service to India",
+    reference: "My Plan of Campaign · Patriotism",
+    referenceHi: "मेरी समर-नीति · देशभक्ति का प्रसंग",
+    source: "Complete Works, volume 3",
+    url:
+        "https://www.ramakrishnavivekananda.info/vivekananda/volume_3/lectures_from_colombo_to_almora/my_plan_of_campaign.htm",
+    titleHi: "देशप्रेम हृदय से शुरू होता है",
+    titleEn: "Patriotism begins with feeling",
+    bodyHi:
+        "विवेकानंद देशभक्ति का पहला कदम लोगों के दुःख को अपने हृदय में अनुभव करना मानते हैं। भूख और अज्ञान देखकर मन बेचैन हो, तभी सेवा की सच्ची प्रेरणा उठती है।",
+    bodyEn:
+        "Vivekananda places heartfelt concern for people’s hunger and ignorance at the beginning of patriotism. Sympathy must stir us toward service.",
+    promptHi: "अपने आसपास किसी जरूरतमंद की व्यावहारिक सहायता करें।",
+    promptEn: "Offer practical help to someone in need nearby.",
+    quote: "",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "vivekananda-patriot-action",
+    section: "philosophy",
+    group: "vivekananda",
+    teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",
+    teacherEn: "Swami Vivekananda · Service to India",
+    reference: "My Plan of Campaign · Practical service",
+    referenceHi: "मेरी समर-नीति · सेवा का उपाय",
+    source: "Complete Works, volume 3",
+    url:
+        "https://www.ramakrishnavivekananda.info/vivekananda/volume_3/lectures_from_colombo_to_almora/my_plan_of_campaign.htm",
+    titleHi: "देशसेवा बातों से आगे",
+    titleEn: "Service needs a practical step",
+    bodyHi:
+        "लोगों की पीड़ा देखकर विवेकानंद पूछते हैं—क्या कोई उपाय भी खोजा है? केवल निंदा या बड़ी बातें नहीं, ऐसी सहायता चाहिए जो जीवन में कुछ सुधार ला सके।",
+    bodyEn:
+        "After heartfelt concern, Vivekananda asks for practical solutions and help rather than energy spent only on condemnation.",
+    promptHi: "किसी समस्या की शिकायत के साथ एक छोटा समाधान भी खोजें।",
+    promptEn: "Pair a complaint with one practical step toward a solution.",
+    quote: "",
+    kind: "teaching",
+  ),
+  DailyDiscovery(
+    id: "vivekananda-motherland",
+    section: "philosophy",
+    group: "vivekananda",
+    teacherHi: "स्वामी विवेकानंद · राष्ट्रसेवा",
+    teacherEn: "Swami Vivekananda · Service to India",
+    reference: "The Future of India · Service to the motherland",
+    referenceHi: "भारत का भविष्य · मातृभूमि की सेवा",
+    source: "Complete Works, volume 3",
+    url:
+        "https://www.ramakrishnavivekananda.info/vivekananda/volume_3/lectures_from_colombo_to_almora/the_future_of_india.htm",
+    titleHi: "मातृभूमि की सेवा का संकल्प",
+    titleEn: "A resolve to serve the motherland",
+    bodyHi:
+        "विवेकानंद अपने समय के भारतवासियों को मातृभूमि की सेवा के लिए एकजुट होने की पुकार देते हैं। छोटे मतभेद छोड़कर लोगों के कल्याण में लगना इस आह्वान का मूल भाव है।",
+    bodyEn:
+        "Addressing the India of his time, Vivekananda calls for unity beyond petty divisions and dedication to the welfare of the motherland’s people.",
+    promptHi: "आज देशहित का कोई छोटा काम निष्ठा से करें।",
+    promptEn: "Carry out one small act of service for your country today.",
+    quote: "",
+    kind: "teaching",
+  ),
+];

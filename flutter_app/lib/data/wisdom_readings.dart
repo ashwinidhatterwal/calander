@@ -5,10 +5,11 @@ part of 'daily_discoveries.dart';
 const wisdomReadings = <DailyDiscovery>[
   DailyDiscovery(
     id: "chanakya-inquiry",
-    titleHi: "निर्णय से पहले अन्वीक्षिकी",
+    referenceHi: "अर्थशास्त्र 1.2",
+    titleHi: "फैसले से पहले ठहरें",
     titleEn: "Inquiry before a decision",
     bodyHi:
-        "अर्थशास्त्र में अन्वीक्षिकी तर्क से विचार करने की विद्या है। कौटिल्य इसे सुख-दुःख में विवेक बनाए रखने और वाणी व कर्म को स्पष्ट करने में सहायक बताते हैं।",
+        "खुशी हो या कठिनाई, जल्दबाजी में लिया फैसला भटका सकता है। कौटिल्य इसलिए तर्क से बात परखने की विद्या को महत्त्व देते हैं। अर्थशास्त्र में इसका नाम है—अन्वीक्षिकी।",
     bodyEn:
         "Kautilya presents anvikshiki as reasoned inquiry: a way to keep judgment steady in changing fortune and bring clarity to speech and action.",
     source: "Arthashastra · R. Shamasastry",
@@ -19,16 +20,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.2",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "आज के किसी निर्णय के पक्ष और विपक्ष का एक-एक कारण लिखें।",
+    promptHi: "आज कोई फैसला लेने से पहले उसके दोनों पहलू सोचें।",
     promptEn: "Write one reason for and against a decision you face.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-many-disciplines",
-    titleHi: "एक ही विद्या पर्याप्त नहीं",
+    referenceHi: "अर्थशास्त्र 1.2",
+    titleHi: "ज्ञान की खिड़कियाँ खुली रखें",
     titleEn: "Learning across disciplines",
     bodyHi:
-        "कौटिल्य तर्क, वेद-अध्ययन, आजीविका और शासन की विद्याओं पर चर्चा करते हैं। उनके शासक की शिक्षा में चिंतन और व्यावहारिक व्यवस्था दोनों का स्थान है।",
+        "कौटिल्य राजकुमार को केवल शासन नहीं सिखाते। उसकी पढ़ाई में तर्क, वेद और आजीविका की समझ भी है। अच्छी समझ के लिए जीवन को कई ओर से देखना पड़ता है।",
     bodyEn:
         "The Arthashastra discusses inquiry, Vedic learning, livelihood and government. Its ruler’s education joins reflective thought with practical understanding.",
     source: "Arthashastra · R. Shamasastry",
@@ -39,17 +41,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.2",
     section: "philosophy",
     group: "kautilya",
-    promptHi:
-        "जिस विषय को जानते हैं, उसे किसी दूसरी विद्या की दृष्टि से देखें।",
+    promptHi: "अपने काम से अलग कोई नई बात सीखिए।",
     promptEn: "Look at a familiar problem through another discipline.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-learning-cycle",
-    titleHi: "सुनने से आगे की शिक्षा",
+    referenceHi: "अर्थशास्त्र 1.5",
+    titleHi: "सुन लिया, पर समझा भी?",
     titleEn: "Beyond simply hearing",
     bodyHi:
-        "कौटिल्य की शिक्षा-पद्धति में सुनना, समझना, याद रखना, भेद करना और विचार करना जुड़े हैं। कोई पाठ सुन लेना ही उसे अपना लेना नहीं है।",
+        "कौटिल्य के यहाँ सीखने का अर्थ केवल सुन लेना नहीं है। बात समझना, याद रखना और उस पर विचार करना भी जरूरी है। ज्ञान तभी अपना होता है, जब हम उसे परख सकें।",
     bodyEn:
         "Kautilya links listening with understanding, retention, discrimination and deliberation. Hearing a lesson is only one stage of learning.",
     source: "Arthashastra · R. Shamasastry",
@@ -60,17 +62,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.5",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "आज सीखी बात अपने शब्दों में समझाएँ; जहाँ अटकें, फिर पूछें।",
+    promptHi: "आज सीखी एक बात किसी को अपने शब्दों में समझाएँ।",
     promptEn:
         "Explain today’s learning in your own words; revisit what remains unclear.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-revisit",
-    titleHi: "अस्पष्ट पाठ पर फिर लौटें",
+    referenceHi: "अर्थशास्त्र 1.5",
+    titleHi: "दोबारा पूछने में संकोच कैसा?",
     titleEn: "Return to the unclear lesson",
     bodyHi:
-        "राजकुमार की दिनचर्या में पुराने पाठ दोहराना और अधूरी समझ को फिर सुनना शामिल है। पुनरावृत्ति यहाँ शिक्षा की कमी नहीं, उसका अंग है।",
+        "राजकुमार की पढ़ाई में पुराने पाठ दोहराने का भी समय रखा गया है। जो बात साफ न हुई हो, उसे फिर सुनना चाहिए। कौटिल्य की सीख है कि अधूरी समझ को पूरा करने में झिझक न रखें।",
     bodyEn:
         "The prince’s studies include revisiting old lessons and hearing unclear material again. Revision belongs inside education rather than after it.",
     source: "Arthashastra · R. Shamasastry",
@@ -81,16 +84,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.5",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "किस पुराने पाठ को दोबारा पढ़ने से आपकी समझ बदलेगी?",
+    promptHi: "जो बात समझ नहीं आई, उसे फिर पूछ लीजिए।",
     promptEn: "Which old lesson deserves a second reading?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-inner-enemies",
-    titleHi: "भीतर के छह शत्रु",
+    referenceHi: "अर्थशास्त्र 1.6",
+    titleHi: "पहले मन को जीतें",
     titleEn: "Six enemies within",
     bodyHi:
-        "कौटिल्य काम, क्रोध, लोभ, मान, मद और अति-हर्ष को आत्मसंयम के विरोधी बताते हैं। शासन की चर्चा पहले अपने आवेग पहचानने से शुरू होती है।",
+        "काम, क्रोध, लोभ, मान, मद और अति-हर्ष—कौटिल्य इन्हें मनुष्य के भीतर के शत्रु मानते हैं। दूसरों का संचालन करने से पहले अपने मन पर अंकुश होना चाहिए।",
     bodyEn:
         "Kautilya names desire, anger, greed, conceit, arrogance and excessive elation as obstacles to self-command. Governing others begins with examining one’s impulses.",
     source: "Arthashastra · R. Shamasastry",
@@ -101,16 +105,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.6",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "आज निर्णय पर असर डाल रहे किसी एक आवेग को पहचानें।",
+    promptHi: "आज देखें कि आपका कोई फैसला क्रोध या लालच में तो नहीं हो रहा।",
     promptEn: "Name one impulse influencing a decision today.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-power-restraint",
-    titleHi: "अधिकार के साथ आत्मसंयम",
+    referenceHi: "अर्थशास्त्र 1.6",
+    titleHi: "सामर्थ्य के साथ संयम",
     titleEn: "Power needs restraint",
     bodyHi:
-        "अर्थशास्त्र पुराने राजाओं के पतन का वर्णन करते हुए असंयम का जोखिम दिखाता है। पद या साधन अपने आप विवेक की गारंटी नहीं देते।",
+        "अर्थशास्त्र में ऐसे राजाओं के प्रसंग आते हैं जिनका असंयम ही उनके पतन का कारण बना। बड़ा पद और भरपूर साधन भी तभी काम आते हैं, जब मनुष्य स्वयं पर संयम रख सके।",
     bodyEn:
         "Through accounts of fallen rulers, the Arthashastra warns that resources and rank cannot protect a person whose impulses govern their choices.",
     source: "Arthashastra · R. Shamasastry",
@@ -121,16 +126,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.6",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "जहाँ आपके पास अधिकार है, वहाँ कौन-सी सीमा स्वयं अपनाएँगे?",
+    promptHi: "जहाँ आपकी बात चलती है, वहाँ संयम भी रखिए।",
     promptEn: "Where you hold authority, what limit will you set yourself?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-five-questions",
-    titleHi: "योजना के पाँच प्रश्न",
+    referenceHi: "अर्थशास्त्र 1.15",
+    titleHi: "अच्छी योजना की पहचान",
     titleEn: "Five questions for a plan",
     bodyHi:
-        "मंत्रणा में साधन, लोग और धन, समय और स्थान, संकट का उपाय तथा सफलता पर विचार होता है। कौटिल्य की योजना केवल इच्छा बताने तक सीमित नहीं रहती।",
+        "काम कैसे होगा, कौन साथ देगा, साधन कहाँ से आएँगे, सही समय क्या है और बाधा आए तो क्या करेंगे? कौटिल्य की मंत्रणा इन बातों पर विचार करती है। इच्छा को कार्य में बदलने के लिए तैयारी चाहिए।",
     bodyEn:
         "Council deliberation considers means, people and resources, timing and place, responses to danger, and successful completion. A wish alone is not a plan.",
     source: "Arthashastra · R. Shamasastry",
@@ -141,17 +147,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.15",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "अपने काम के लिए साधन, समय और एक संभावित बाधा लिखें।",
+    promptHi: "आज के जरूरी काम के साधन और पहली बाधा लिख लें।",
     promptEn:
         "List the resources, timing and one likely obstacle for your task.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-reasons",
-    titleHi: "सलाह के पीछे का कारण",
+    referenceHi: "अर्थशास्त्र 1.15",
+    titleHi: "सलाह लें, कारण भी समझें",
     titleEn: "Ask why advice makes sense",
     bodyHi:
-        "कौटिल्य सलाहकारों की योग्यता उनके मत के कारणों से परखने को कहते हैं। विचार-विमर्श में केवल सहमति नहीं, निर्णय का आधार भी महत्त्व रखता है।",
+        "कौटिल्य सलाहकार की बात के साथ उसका कारण भी परखने को कहते हैं। केवल किसी का सहमत हो जाना काफी नहीं। अच्छी सलाह वह है, जिसके पीछे सोच और समझ हो।",
     bodyEn:
         "Kautilya asks the ruler to judge advisers through the reasons behind their opinions. Deliberation needs grounds for a view, not merely agreement.",
     source: "Arthashastra · R. Shamasastry",
@@ -162,16 +169,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.15",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "सलाह लेते समय पूछें: आपको ऐसा क्यों लगता है?",
+    promptHi: "सलाह सुनकर पूछें—आपको ऐसा क्यों लगता है?",
     promptEn: "When seeking advice, ask what supports the recommendation.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-public-welfare",
-    titleHi: "नेतृत्व का माप: लोकहित",
+    referenceHi: "अर्थशास्त्र 1.19",
+    titleHi: "प्रजा के सुख में राजा का सुख",
     titleEn: "Leadership measured by welfare",
     bodyHi:
-        "कौटिल्य राजा का हित प्रजा के हित से जोड़ते हैं। इस राजनीतिक शिक्षा में निजी पसंद के बजाय लोगों की भलाई शासन की कसौटी बनती है।",
+        "कौटिल्य राजा का सुख प्रजा के सुख में देखते हैं। शासन की कसौटी शासक की निजी पसंद नहीं, लोगों का हित है। अधिकार के साथ लोककल्याण का दायित्व भी आता है।",
     bodyEn:
         "Kautilya connects the ruler’s welfare with the welfare of the people. Public benefit, rather than personal preference, becomes a measure of leadership.",
     source: "Arthashastra · R. Shamasastry",
@@ -182,16 +190,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.19",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "आज आपके निर्णय से प्रभावित लोगों को क्या लाभ होगा?",
+    promptHi: "आज कोई निर्णय लेते समय उससे जुड़े लोगों का हित भी सोचें।",
     promptEn: "How will the people affected benefit from your decision?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "chanakya-accessible",
-    titleHi: "द्वार पर प्रतीक्षा क्यों?",
+    referenceHi: "अर्थशास्त्र 1.19",
+    titleHi: "जो सुन सके, वही अगुआ",
     titleEn: "Do not leave people waiting",
     bodyHi:
-        "अर्थशास्त्र राजा को याचकों के लिए सुलभ रहने और जरूरी काम न टालने को कहता है। जिम्मेदारी का अर्थ समय देना और तत्काल समस्या सुनना भी है।",
+        "कौटिल्य राजा को लोगों के लिए सुलभ रहने और जरूरी काम न टालने की सीख देते हैं। द्वार पर खड़ा व्यक्ति केवल समय नहीं, सहायता भी माँग रहा हो सकता है।",
     bodyEn:
         "The ruler is told to remain accessible to petitioners and hear urgent matters promptly. Responsibility includes making time for people seeking help.",
     source: "Arthashastra · R. Shamasastry",
@@ -202,17 +211,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Arthashastra 1.19",
     section: "philosophy",
     group: "kautilya",
-    promptHi: "किस लंबित उत्तर या जरूरी बातचीत को आज समय दे सकते हैं?",
+    promptHi: "किसी की जरूरी बात सुनने के लिए आज समय निकालें।",
     promptEn:
         "Which overdue reply or urgent conversation can you make time for?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "nachiketa-first-boon",
-    titleHi: "नचिकेता का पहला वर",
+    referenceHi: "कठोपनिषद् 1.1.10–11",
+    titleHi: "नचिकेता ने पहले क्या माँगा?",
     titleEn: "Nachiketa’s first wish",
     bodyHi:
-        "यम से पहला वर पाकर नचिकेता पिता का क्रोध शांत होने और स्नेह लौटने की प्रार्थना करते हैं। आत्मविद्या की कथा में संबंध सुधारने का यह पड़ाव पहले आता है।",
+        "यमराज ने वर माँगने को कहा तो नचिकेता ने पहले पिता की प्रसन्नता माँगी। वे चाहते थे कि घर लौटने पर पिता का क्रोध मिट जाए और पहले जैसा स्नेह मिले। आत्मज्ञान की इस कथा में अपनापन भी है।",
     bodyEn:
         "Nachiketa’s first boon asks for his father’s anger to end and affection to return. The spiritual dialogue begins with a wish for reconciliation.",
     source: "Katha Upanishad · Max Müller",
@@ -223,16 +233,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Katha 1.1.10–11",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "किस रिश्ते में शांत बातचीत की पहल कर सकते हैं?",
+    promptHi: "जिस अपने से मनमुटाव है, उससे बात शुरू कर सकते हैं?",
     promptEn: "Where could you begin a calm conversation?",
     kind: "story",
   ),
   DailyDiscovery(
     id: "nachiketa-shreyas",
-    titleHi: "श्रेय और प्रेय का चुनाव",
+    referenceHi: "कठोपनिषद् 1.2.1–2",
+    titleHi: "अच्छा लगना और अच्छा होना",
     titleEn: "The good and the pleasant",
     bodyHi:
-        "यम श्रेय और प्रेय के बीच अंतर समझाते हैं। विवेकशील साधक तात्कालिक आकर्षण से आगे देखकर अपने कल्याण का मार्ग चुनता है।",
+        "यमराज नचिकेता को दो राहें बताते हैं—प्रेय और श्रेय। एक तुरंत अच्छी लगती है; दूसरी हमारे सच्चे हित में होती है। विवेक यही है कि आकर्षण के बीच भी अपना कल्याण पहचान सकें।",
     bodyEn:
         "Yama distinguishes the good from the merely pleasant. Discernment looks beyond an immediate attraction toward lasting well-being.",
     source: "Katha Upanishad · Max Müller",
@@ -243,16 +254,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Katha 1.2.1–2",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "आज की कौन-सी आसान पसंद कल के हित से टकराती है?",
+    promptHi: "आज वही चुनें जो आगे भी आपका भला करे।",
     promptEn: "Which easy choice today conflicts with tomorrow’s well-being?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "katha-chariot",
-    titleHi: "रथ, लगाम और सारथी",
+    referenceHi: "कठोपनिषद् 1.3.3–9",
+    titleHi: "मन की लगाम किसके हाथ?",
     titleEn: "Chariot, reins and driver",
     bodyHi:
-        "कठोपनिषद् शरीर को रथ, बुद्धि को सारथी, मन को लगाम और इंद्रियों को घोड़े कहता है। रूपक भीतर के समन्वय से आत्ममार्ग समझाता है।",
+        "कठोपनिषद् शरीर को रथ, इंद्रियों को घोड़े, मन को लगाम और बुद्धि को सारथी कहता है। सारथी सजग हो और लगाम सँभली रहे, तभी रथ सही दिशा में चलता है।",
     bodyEn:
         "The body is a chariot, intellect its driver, mind the reins and senses the horses. This metaphor explores guidance on the spiritual journey.",
     source: "Katha Upanishad · Max Müller",
@@ -263,17 +275,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Katha 1.3.3–9",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "ध्यान भटकने पर पहले दिशा स्पष्ट करें, फिर काम चुनें।",
+    promptHi: "ध्यान भटके तो अपने काम का उद्देश्य फिर याद करें।",
     promptEn:
         "When distracted, clarify your direction before choosing an action.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "uddalaka-seed",
-    titleHi: "बीज में छिपा वटवृक्ष",
+    referenceHi: "छांदोग्योपनिषद् 6.12.1–3",
+    titleHi: "नन्हे बीज में इतना बड़ा वृक्ष!",
     titleEn: "The banyan within a seed",
     bodyHi:
-        "उद्दालक श्वेतकेतु से वट का बीज तुड़वाते हैं; भीतर कुछ दिखाई नहीं देता। उसी सूक्ष्म तत्त्व से विशाल वृक्ष का उदाहरण देकर वे आत्मतत्त्व समझाते हैं।",
+        "उद्दालक ने श्वेतकेतु से वट का बीज तुड़वाया। भीतर कुछ दिखाई नहीं दिया। पिता ने समझाया कि इसी अनदेखे सूक्ष्म तत्त्व से विशाल वृक्ष खड़ा होता है। इस उदाहरण से वे आत्मतत्त्व की बात समझाते हैं।",
     bodyEn:
         "Uddalaka asks Shvetaketu to split a banyan seed. Nothing is visible inside; the great tree becomes a teaching image for subtle reality and the Self.",
     source: "Chandogya Upanishad · Ganganatha Jha",
@@ -284,16 +297,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Chandogya 6.12.1–3",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "किस छोटी शुरुआत को बढ़ने के लिए नियमित देखभाल चाहिए?",
+    promptHi: "किसी छोटी, अच्छी शुरुआत को आज थोड़ा समय दें।",
     promptEn: "Which small beginning needs steady care to grow?",
     kind: "story",
   ),
   DailyDiscovery(
     id: "uddalaka-salt",
-    titleHi: "पानी में घुला नमक",
+    referenceHi: "छांदोग्योपनिषद् 6.13.1–3",
+    titleHi: "नमक दिखता नहीं, फिर भी है",
     titleEn: "Salt dissolved in water",
     bodyHi:
-        "घुला नमक दिखता नहीं, पर पानी का स्वाद बताता है कि वह मौजूद है। उद्दालक इस उपमा से श्वेतकेतु को सर्वव्यापी आत्मतत्त्व का उपदेश देते हैं।",
+        "नमक पानी में घुल गया। श्वेतकेतु उसे देख नहीं सके, पर पानी चखा तो उसका स्वाद हर ओर था। उद्दालक ने इसी उदाहरण से समझाया कि आत्मतत्त्व दिखाई न देकर भी सर्वत्र है।",
     bodyEn:
         "Dissolved salt cannot be seen, yet it can be tasted throughout the water. Uddalaka uses this analogy to teach Shvetaketu about the pervasive Self.",
     source: "Chandogya Upanishad · Ganganatha Jha",
@@ -304,17 +318,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Chandogya 6.13.1–3",
     section: "spiritual",
     group: "upanishads",
-    promptHi:
-        "यह आध्यात्मिक उपमा है: जीवन में कौन-सा मूल्य अदृश्य होकर असर करता है?",
+    promptHi: "कुछ देर शांत बैठकर इस उपनिषद्-प्रसंग पर मनन करें।",
     promptEn: "As a spiritual analogy, which unseen value shapes your actions?",
     kind: "story",
   ),
   DailyDiscovery(
     id: "satyakama-honesty",
-    titleHi: "सत्यकाम की निर्भीक सच्चाई",
+    referenceHi: "छांदोग्योपनिषद् 4.4.5",
+    titleHi: "सत्य बोलने का साहस",
     titleEn: "Satyakama’s honest answer",
     bodyHi:
-        "अपने वंश के बारे में अनिश्चित सत्य बताने पर गौतम सत्यकाम की सत्यनिष्ठा पहचानते हैं और उन्हें शिष्य स्वीकारते हैं। कथा में ईमानदार उत्तर शिक्षा का द्वार खोलता है।",
+        "गुरु ने वंश पूछा तो सत्यकाम ने बिना कुछ छिपाए अपनी अनभिज्ञता बता दी। गौतम ने उनकी सत्यनिष्ठा पहचानी और शिष्य बना लिया। शिक्षा का द्वार एक सच्चे उत्तर से खुला।",
     bodyEn:
         "Satyakama honestly admits uncertainty about his parentage. Gautama recognizes his truthfulness and accepts him as a student: candour opens the way to learning.",
     source: "Chandogya Upanishad · Swami Lokeswarananda",
@@ -325,16 +339,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Chandogya 4.4.5",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "जहाँ सच पता न हो, वहाँ अनुमान को तथ्य बनाकर न कहें।",
+    promptHi: "जहाँ जानकारी नहीं है, वहाँ साफ कहें—मुझे नहीं मालूम।",
     promptEn: "Where you do not know, distinguish uncertainty from fact.",
     kind: "story",
   ),
   DailyDiscovery(
     id: "taittiriya-farewell",
-    titleHi: "पढ़ाई के बाद का उपदेश",
+    referenceHi: "तैत्तिरीयोपनिषद् 1.11.1–3",
+    titleHi: "गुरुकुल की विदाई की सीख",
     titleEn: "The student’s farewell lesson",
     bodyHi:
-        "विदाई के उपदेश में सत्य, धर्म, स्वाध्याय और सम्मानपूर्वक दान साथ आते हैं। शिक्षा का अर्थ घर लौटकर व्यवहार में इन मूल्यों को निभाना भी है।",
+        "पढ़ाई पूरी हुई तो गुरु ने जीवन की राह बताई—सत्य बोलो, धर्म का आचरण करो, स्वाध्याय मत छोड़ो और आदर से दान दो। सीख का असली काम गुरुकुल से लौटने के बाद शुरू होता है।",
     bodyEn:
         "The farewell instruction joins truth, dharma, continued study and respectful giving. Education carries obligations into life beyond the teacher’s home.",
     source: "Taittiriya Upanishad · A. Mahadeva Sastri",
@@ -345,17 +360,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Taittiriya 1.11.1–3",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "आज किसी सहायता को सामने वाले का सम्मान रखते हुए करें।",
+    promptHi: "आज किसी की सहायता करें तो उसका सम्मान भी बनाए रखें।",
     promptEn:
         "Offer help today in a way that preserves the other person’s dignity.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "bhrigu-inquiry",
-    titleHi: "भृगु बार-बार क्यों लौटे?",
+    referenceHi: "तैत्तिरीयोपनिषद् 3.1–6",
+    titleHi: "भृगु की खोज थमी नहीं",
     titleEn: "Why Bhrigu returned",
     bodyHi:
-        "वरुण भृगु को ब्रह्म की खोज में तप और मनन की ओर भेजते हैं। भृगु अन्न से आरंभ कर प्राण, मन और ज्ञान से आगे आनंद तक विचार करते हैं।",
+        "भृगु ने पिता वरुण से ब्रह्म का ज्ञान माँगा। पिता ने उन्हें तप और मनन की राह दिखाई। भृगु अन्न, प्राण, मन और ज्ञान पर विचार करते हुए आनंद तक पहुँचे। हर उत्तर उन्हें और गहरे ले गया।",
     bodyEn:
         "Varuna directs Bhrigu toward disciplined inquiry into Brahman. Bhrigu returns to contemplation, moving through food, life, mind and understanding toward bliss.",
     source: "Taittiriya Upanishad · A. K. Aruna / Gambhirananda",
@@ -365,16 +381,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Taittiriya 3.1–6",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "जिस उत्तर को अंतिम मान लिया है, उस पर एक और प्रश्न करें।",
+    promptHi: "किसी पुराने प्रश्न पर आज फिर मनन कीजिए।",
     promptEn: "Ask one further question about an answer you assumed was final.",
     kind: "story",
   ),
   DailyDiscovery(
     id: "maitreyi-question",
-    titleHi: "मैत्रेयी का कठिन प्रश्न",
+    referenceHi: "बृहदारण्यकोपनिषद् 2.4.2–3",
+    titleHi: "मैत्रेयी को धन से आगे क्या चाहिए था?",
     titleEn: "Maitreyi’s deeper question",
     bodyHi:
-        "मैत्रेयी पूछती हैं कि पूरी पृथ्वी का धन मिलने से क्या अमरत्व मिलेगा। याज्ञवल्क्य मना करते हैं; तब वे उस ज्ञान को सुनना चाहती हैं जो धन नहीं दे सकता।",
+        "मैत्रेयी ने पूछा—यदि सारी पृथ्वी का धन मेरा हो जाए, तो क्या उससे अमरत्व मिलेगा? याज्ञवल्क्य ने कहा, नहीं। तब उन्होंने वही ज्ञान माँगा, जो धन से नहीं मिलता।",
     bodyEn:
         "Maitreyi asks whether all the world’s wealth could bring immortality. When Yajnavalkya says no, she seeks the knowledge wealth cannot supply.",
     source: "Brihadaranyaka Upanishad · Swami Madhavananda",
@@ -385,16 +402,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Brihadaranyaka 2.4.2–3",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "सुविधा से आगे, आप वास्तव में क्या जानना चाहते हैं?",
+    promptHi: "मन से पूछें—सुविधाओं के आगे मुझे किस बात की तलाश है?",
     promptEn: "Beyond comfort, what do you most want to understand?",
     kind: "story",
   ),
   DailyDiscovery(
     id: "maitreyi-three-steps",
-    titleHi: "श्रवण, मनन, निदिध्यासन",
+    referenceHi: "बृहदारण्यकोपनिषद् 2.4.5",
+    titleHi: "सुनें, समझें, फिर भीतर उतारें",
     titleEn: "Hear, reflect, contemplate",
     bodyHi:
-        "याज्ञवल्क्य आत्मज्ञान के प्रसंग में सुनने, विचार करने और गहरे ध्यान की बात करते हैं। केवल सुनाई गई बात और स्वयं समझी गई बात में अंतर है।",
+        "याज्ञवल्क्य आत्मज्ञान के लिए सुनने, मनन करने और गहरे चिंतन की बात कहते हैं। सुनकर आगे बढ़ जाना एक बात है; सुनी हुई सीख को अपने भीतर उतारना दूसरी।",
     bodyEn:
         "In teaching self-knowledge, Yajnavalkya joins hearing with reflection and sustained contemplation. Receiving a teaching and understanding it are different stages.",
     source: "Brihadaranyaka Upanishad · Swami Madhavananda",
@@ -405,17 +423,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Brihadaranyaka 2.4.5",
     section: "spiritual",
     group: "upanishads",
-    promptHi:
-        "एक पाठ पढ़ें, अपना प्रश्न लिखें, फिर शांत होकर उस पर विचार करें।",
+    promptHi: "आज एक शास्त्र-वचन पढ़कर उसके अर्थ पर थोड़ी देर ठहरें।",
     promptEn: "Read a passage, write your question, then sit quietly with it.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "three-da",
-    titleHi: "एक अक्षर, तीन शिक्षाएँ",
+    referenceHi: "बृहदारण्यकोपनिषद् 5.2.1–3",
+    titleHi: "एक अक्षर की तीन सीख",
     titleEn: "One syllable, three lessons",
     bodyHi:
-        "प्रजापति के “द” को देव, मनुष्य और असुर क्रमशः संयम, दान और दया का संकेत समझते हैं। कथा अपनी कमी के अनुसार शिक्षा सुनने का रूपक है।",
+        "प्रजापति ने शिष्यों को केवल “द” कहा। देवों ने उससे संयम सीखा, मनुष्यों ने दान और असुरों ने दया। कथा याद दिलाती है कि हर साधक को अपने भीतर अलग कमी सँवारनी होती है।",
     bodyEn:
         "Prajapati’s syllable da is understood as restraint, giving and compassion by three groups of pupils. The story presents three complementary disciplines.",
     source: "Brihadaranyaka Upanishad · Max Müller",
@@ -425,17 +443,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Brihadaranyaka 5.2.1–3",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "आज किसकी जरूरत अधिक है: संयम, उदारता या करुणा?",
+    promptHi: "आज आपको किसकी जरूरत है—संयम, दान या दया?",
     promptEn:
         "Which do you most need today: restraint, generosity or compassion?",
     kind: "story",
   ),
   DailyDiscovery(
     id: "mundaka-two-birds",
-    titleHi: "एक वृक्ष पर दो पक्षी",
+    referenceHi: "मुंडकोपनिषद् 3.1.1",
+    titleHi: "एक ही वृक्ष पर दो पक्षी",
     titleEn: "Two birds on one tree",
     bodyHi:
-        "एक पक्षी फल खाता है, दूसरा बिना खाए देखता है। मुंडकोपनिषद् का यह आध्यात्मिक रूपक अनुभव करने वाले जीव और साक्षी के संबंध पर मनन कराता है।",
+        "मुंडकोपनिषद् में एक वृक्ष पर दो पक्षी बैठे हैं। एक फल खाता है, दूसरा शांत भाव से देखता है। जीव और साक्षी का यह बिंब हमें अनुभवों के बीच आत्मचिंतन की ओर बुलाता है।",
     bodyEn:
         "One bird eats the fruit while its companion watches. This spiritual metaphor invites reflection on the experiencing individual and the witnessing presence.",
     source: "Mundaka Upanishad · S. Sitarama Sastri",
@@ -446,16 +465,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Mundaka 3.1.1",
     section: "spiritual",
     group: "upanishads",
-    promptHi: "किसी प्रतिक्रिया से पहले अपने अनुभव को शांत होकर पहचानें।",
+    promptHi: "तुरंत प्रतिक्रिया देने से पहले मन की दशा पहचानें।",
     promptEn: "Pause to notice your experience before reacting.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vidura-listen",
-    titleHi: "धैर्य से सुनना भी बुद्धिमानी",
+    referenceHi: "महाभारत · उद्योगपर्व, अध्याय 33",
+    titleHi: "बुद्धिमान पहले पूरा सुनता है",
     titleEn: "Wisdom listens patiently",
     bodyHi:
-        "धृतराष्ट्र को विदुर समझाते हैं कि विवेकी व्यक्ति जल्दी समझता है, लेकिन धैर्य से सुनता है। उत्तर देने की गति से अधिक महत्त्व पूरी बात ग्रहण करने का है।",
+        "विदुर धृतराष्ट्र को बताते हैं कि बुद्धिमान बात जल्दी समझ सकता है, फिर भी धैर्य से सुनता है। पहले बोल देने की होड़ में कई बार सामने वाले की असली बात छूट जाती है।",
     bodyEn:
         "Vidura describes a wise person as quick to understand yet patient in listening. Understanding is not a race to deliver the first answer.",
     source: "Mahabharata · K. M. Ganguli",
@@ -466,16 +486,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Udyoga Parva, section 33",
     section: "philosophy",
     group: "vidura",
-    promptHi: "अगली बातचीत में बीच में टोके बिना पूरी बात सुनें।",
+    promptHi: "अगली बातचीत में किसी की बात बीच में न काटें।",
     promptEn: "In your next conversation, let the other person finish.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vidura-finish",
-    titleHi: "आरंभ से अंत तक स्थिरता",
+    referenceHi: "महाभारत · उद्योगपर्व, अध्याय 33",
+    titleHi: "आरंभ किया है तो निभाएँ भी",
     titleEn: "Stay with the work",
     bodyHi:
-        "विदुर के विवेकी व्यक्ति की पहचान है कि काम सोचकर शुरू करे और बीच में न छोड़े। यह शिक्षा उत्साह के साथ निरंतरता को भी स्थान देती है।",
+        "विदुर की दृष्टि में विवेकी व्यक्ति सोच-समझकर काम शुरू करता है और उसे अधूरा नहीं छोड़ता। शुरुआत का उत्साह अच्छा है; उसे निभाने का धैर्य भी चाहिए।",
     bodyEn:
         "Vidura’s account of wisdom includes thinking before beginning and staying with a task. Initial enthusiasm needs continuity.",
     source: "Mahabharata · K. M. Ganguli",
@@ -486,16 +507,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Udyoga Parva, section 33",
     section: "philosophy",
     group: "vidura",
-    promptHi: "किस छोटे अधूरे काम को आज पूरा कर सकते हैं?",
+    promptHi: "आज कोई छोटा अधूरा काम पूरा कर लें।",
     promptEn: "Which small unfinished task can you complete today?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vidura-word-arrows",
-    titleHi: "शब्दों के तीर",
+    referenceHi: "महाभारत · उद्योगपर्व, अध्याय 36",
+    titleHi: "वाणी का तीर",
     titleEn: "Arrows made of words",
     bodyHi:
-        "विदुर कटु वाणी को ऐसा तीर बताते हैं जो मन में अटक सकता है। महाभारत की यह उपमा बोलने से पहले उसके दूर तक रहने वाले असर पर ध्यान दिलाती है।",
+        "विदुर कटु शब्दों की तुलना मन में चुभे तीर से करते हैं। बात कहकर हम आगे बढ़ जाते हैं, पर उसका घाव सुनने वाले के मन में रह सकता है।",
     bodyEn:
         "Vidura likens cruel speech to an arrow lodged in the heart. The image asks us to consider how words can outlast the moment of speaking.",
     source: "Mahabharata · K. M. Ganguli",
@@ -506,17 +528,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Udyoga Parva, section 36",
     section: "philosophy",
     group: "vidura",
-    promptHi: "कठिन बात कहें, पर अपमान हटाकर वाक्य दोबारा बनाएँ।",
+    promptHi: "सच कहें, लेकिन किसी को नीचा दिखाए बिना।",
     promptEn:
         "Keep the difficult truth; rewrite the sentence without humiliation.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vidura-dyed-cloth",
-    titleHi: "संगति का रंग",
+    referenceHi: "महाभारत · उद्योगपर्व, अध्याय 36",
+    titleHi: "जैसी संगत, वैसा रंग",
     titleEn: "The colour of company",
     bodyHi:
-        "विदुर संगति का असर रंग में भीगे वस्त्र की उपमा से समझाते हैं। जिनके साथ समय बिताते हैं, उनकी आदतें हमारी सोच और व्यवहार को प्रभावित करती हैं।",
+        "कपड़ा जिस रंग में डूबता है, वैसा ही हो जाता है। विदुर संगति का असर इसी तरह समझाते हैं। साथ बैठने-उठने वालों की आदतें धीरे-धीरे हमारे स्वभाव में भी उतरती हैं।",
     bodyEn:
         "Vidura compares companionship to dye colouring cloth. The company we keep can shape habits and conduct.",
     source: "Mahabharata · K. M. Ganguli",
@@ -527,16 +550,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Udyoga Parva, section 36",
     section: "philosophy",
     group: "vidura",
-    promptHi: "कौन-सी संगति आपको अधिक सत्यनिष्ठ और उदार बनाती है?",
+    promptHi: "ऐसे किसी व्यक्ति से मिलें जिसकी संगत आपको बेहतर बनाती है।",
     promptEn: "Whose company helps you become more honest and generous?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kural-unmeasured",
-    titleHi: "प्रतिफल से परे उपकार",
+    referenceHi: "तिरुक्कुरल 103",
+    titleHi: "उपकार का हिसाब नहीं होता",
     titleEn: "Help without a ledger",
     bodyHi:
-        "तिरुवल्लुवर उस उपकार की महत्ता बताते हैं जिसमें बदले की गणना नहीं होती। कृतज्ञता का प्रसंग सहायता को सौदे से अलग रखता है।",
+        "तिरुवल्लुवर उस सहायता को बड़ा मानते हैं, जिसमें बदले की गिनती नहीं होती। बिना स्वार्थ किया गया छोटा उपकार भी बहुत गहरा असर छोड़ सकता है।",
     bodyEn:
         "Tiruvalluvar honours help offered without calculating a return. Generosity need not keep a ledger.",
     source: "Tirukkural · Project Madurai, historical translations",
@@ -546,16 +570,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tirukkural 103",
     section: "philosophy",
     group: "tiruvalluvar",
-    promptHi: "एक छोटी सहायता बिना प्रतिफल की अपेक्षा करें।",
+    promptHi: "आज कोई भलाई बिना बदले की आशा के करें।",
     promptEn: "Offer one small kindness without expecting repayment.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kural-speech",
-    titleHi: "वाणी का रह जाने वाला घाव",
+    referenceHi: "तिरुक्कुरल 129",
+    titleHi: "बोलने से पहले सोचें",
     titleEn: "The lasting wound of speech",
     bodyHi:
-        "कुरल आग के घाव और कटु वाणी के घाव की तुलना करता है। यह वाणी-संयम को गंभीर नैतिक अभ्यास बनाता है।",
+        "तिरुक्कुरल आग के घाव से कटु वाणी की तुलना करता है। शरीर का घाव भर सकता है, पर शब्दों की चोट मन में बनी रह सकती है। इसलिए वाणी पर संयम भी साधना है।",
     bodyEn:
         "A kural contrasts a burn with the enduring hurt of cruel speech. Careful language is an ethical discipline.",
     source: "Tirukkural · Project Madurai, historical translations",
@@ -565,16 +590,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tirukkural 129",
     section: "philosophy",
     group: "tiruvalluvar",
-    promptHi: "किसी पुराने कठोर वाक्य को सुधारने का अवसर है?",
+    promptHi: "पुरानी किसी कटु बात के लिए मन से क्षमा माँग सकते हैं?",
     promptEn: "Is there an old harsh remark you could repair?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kural-earth",
-    titleHi: "धरती से धैर्य की उपमा",
+    referenceHi: "तिरुक्कुरल 151",
+    titleHi: "धरती जैसा धैर्य",
     titleEn: "Forbearance pictured as earth",
     bodyHi:
-        "धरती उसे खोदने वालों को भी धारण करती है। तिरुवल्लुवर इस बिंब से अपमान के सामने धैर्य समझाते हैं।",
+        "धरती उसे खोदने वाले को भी सहारा देती है। तिरुवल्लुवर इस सहज उदाहरण से अपमान के सामने धैर्य रखने की सीख देते हैं।",
     bodyEn:
         "Earth supports even those who dig it. Tiruvalluvar uses this image for patience when insulted.",
     source: "Tirukkural · Project Madurai, historical translations",
@@ -584,17 +610,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tirukkural 151",
     section: "philosophy",
     group: "tiruvalluvar",
-    promptHi: "असहमति में प्रतिक्रिया धीमी करें और अपनी सीमा स्पष्ट रखें।",
+    promptHi: "असहमति हो तो शांत रहकर अपनी बात और अपनी सीमा बताएँ।",
     promptEn:
         "Slow your response to disagreement while keeping clear boundaries.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kural-live-learning",
-    titleHi: "सीख को जीना",
+    referenceHi: "तिरुक्कुरल 391",
+    titleHi: "सीख वही, जो आचरण बने",
     titleEn: "Live what you learn",
     bodyHi:
-        "तिरुवल्लुवर अच्छी तरह सीखने और फिर उसी के योग्य आचरण करने को जोड़ते हैं। ज्ञान की परीक्षा व्यवहार में होती है।",
+        "तिरुवल्लुवर कहते हैं कि जो सीखो, अच्छी तरह सीखो; फिर अपने आचरण को उसके योग्य बनाओ। पढ़ी हुई बात का मूल्य तब खुलता है, जब वह जीवन में उतरती है।",
     bodyEn:
         "Tiruvalluvar joins thorough learning with conduct worthy of it. Practice tests understanding.",
     source: "Tirukkural · Project Madurai, historical translations",
@@ -604,16 +631,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tirukkural 391",
     section: "philosophy",
     group: "tiruvalluvar",
-    promptHi: "किस सीखी बात को आज व्यवहार में उतारेंगे?",
+    promptHi: "आज अपनी किसी एक सीख पर अमल करें।",
     promptEn: "Which lesson will you put into practice today?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "yoga-practice-release",
-    titleHi: "अभ्यास और वैराग्य साथ",
+    referenceHi: "योगसूत्र 1.12",
+    titleHi: "अभ्यास भी, आसक्ति से मुक्ति भी",
     titleEn: "Practice with non-attachment",
     bodyHi:
-        "योगसूत्र चित्तवृत्तियों के निरोध में अभ्यास और वैराग्य दोनों बताता है। नियमित प्रयत्न और आसक्ति ढीली करना साधना के पूरक पक्ष हैं।",
+        "मन को साधने के लिए पतंजलि अभ्यास और वैराग्य दोनों बताते हैं। साधना रोज करें, लेकिन हर बार तुरंत फल मिलने की बेचैनी न पालें। नियमित प्रयत्न से ही मन धीरे-धीरे सँभलता है।",
     bodyEn:
         "The Yoga Sutras pair practice with non-attachment in stilling mental activity. Steady effort and loosening attachment belong together.",
     source: "Yoga Sutras · Rama Prasada",
@@ -624,17 +652,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Yoga Sutra 1.12",
     section: "spiritual",
     group: "patanjali",
-    promptHi: "एक छोटा नियमित अभ्यास चुनें; तुरंत परिणाम की मांग छोड़ें।",
+    promptHi: "आज थोड़ी देर साधना करें, परिणाम की जल्दी छोड़कर।",
     promptEn:
         "Choose a small regular practice without demanding immediate results.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "yoga-four-attitudes",
-    titleHi: "मैत्री, करुणा, मुदिता, उपेक्षा",
+    referenceHi: "योगसूत्र 1.33",
+    titleHi: "दूसरे के सुख में प्रसन्न होना",
     titleEn: "Four attitudes of mind",
     bodyHi:
-        "पतंजलि सुखी के प्रति मैत्री, दुःखी के प्रति करुणा, पुण्य के प्रति प्रसन्नता और अपुण्य के प्रति समता बताते हैं। यह चित्त की प्रसन्नता की साधना है।",
+        "पतंजलि सुखी से मैत्री, दुःखी पर करुणा, पुण्य देखकर प्रसन्नता और अपुण्य के सामने समता की सीख देते हैं। दूसरों को देखकर मन में उठने वाले भाव भी साधना का हिस्सा हैं।",
     bodyEn:
         "Patanjali presents friendliness toward happiness, compassion toward suffering, joy in virtue and equanimity toward wrongdoing as aids to mental clarity.",
     source: "Yoga Sutras · Rama Prasada",
@@ -645,16 +674,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Yoga Sutra 1.33",
     section: "spiritual",
     group: "patanjali",
-    promptHi: "किसी और की सफलता पर मन से प्रसन्न होने का अभ्यास करें।",
+    promptHi: "आज किसी की सफलता पर सच्चे मन से बधाई दें।",
     promptEn: "Practise taking sincere joy in someone else’s success.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "yoga-counterthought",
-    titleHi: "वितर्क पर प्रतिपक्षभावना",
+    referenceHi: "योगसूत्र 2.33",
+    titleHi: "क्रोध उठे तो दिशा बदलें",
     titleEn: "Meet harmful thoughts thoughtfully",
     bodyHi:
-        "यम-नियम के अभ्यास में बाधक विचार आने पर पतंजलि प्रतिपक्षभावना बताते हैं। यह नैतिक दिशा याद कर हिंसक या लोभी आग्रह को चुनौती देने का अभ्यास है।",
+        "साधना में हिंसा या लोभ के विचार बाधा डालें तो पतंजलि प्रतिपक्षभावना बताते हैं। मन को याद दिलाएँ कि यह विचार कहाँ ले जाएगा और इसके स्थान पर कौन-सा शुभ भाव रख सकते हैं।",
     bodyEn:
         "When thoughts obstruct ethical discipline, Patanjali advises cultivating their opposite. This challenges harmful impulses through deliberate ethical reflection.",
     source: "Yoga Sutras · Rama Prasada",
@@ -665,17 +695,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Yoga Sutra 2.33",
     section: "spiritual",
     group: "patanjali",
-    promptHi: "क्रोध आए तो पूछें: अहिंसक और स्पष्ट उत्तर कैसा होगा?",
+    promptHi: "क्रोध में उत्तर देने से पहले अहिंसा और विवेक याद करें।",
     promptEn:
         "When anger rises, ask what a clear, non-harming response would be.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "yoga-svadhyaya",
-    titleHi: "स्वाध्याय: पढ़ना और साधना",
+    referenceHi: "योगसूत्र 2.32",
+    titleHi: "स्वाध्याय की छोटी शुरुआत",
     titleEn: "Svadhyaya as a discipline",
     bodyHi:
-        "शौच, संतोष, तप, स्वाध्याय और ईश्वरप्रणिधान योग के नियम हैं। स्वाध्याय यहाँ आध्यात्मिक अध्ययन और पाठ की साधना के संदर्भ में आता है।",
+        "पतंजलि के नियमों में स्वाध्याय का भी स्थान है। श्रद्धा से शास्त्र पढ़ना और उसके अर्थ को समझना साधना है। थोड़ा पढ़ें, पर मन लगाकर पढ़ें।",
     bodyEn:
         "The niyamas include purity, contentment, discipline, sacred study and dedication to Ishvara. Svadhyaya belongs to this setting of spiritual practice.",
     source: "Yoga Sutras · Rama Prasada",
@@ -686,17 +717,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Yoga Sutra 2.32",
     section: "spiritual",
     group: "patanjali",
-    promptHi: "किसी प्रामाणिक ग्रंथ का छोटा अंश अर्थ समझकर पढ़ें।",
+    promptHi: "आज किसी शास्त्र का एक छोटा अंश अर्थ सहित पढ़ें।",
     promptEn:
         "Read a short passage from a trusted text with attention to its meaning.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kabir-musk",
-    titleHi: "कस्तूरी की खोज",
+    referenceHi: "टैगोर-संग्रह · पद 6",
+    titleHi: "कस्तूरी भीतर, खोज बाहर",
     titleEn: "The search for musk",
     bodyHi:
-        "टैगोर के कबीर-संग्रह में मृग अपनी ही कस्तूरी की सुगंध बाहर खोजता है। यह बिंब साधक को भीतर की आध्यात्मिक खोज की ओर मोड़ता है।",
+        "कबीर के इस पद में हिरन अपनी ही कस्तूरी की सुगंध बाहर खोजता फिरता है। यह बिंब साधक से कहता है—जिसे ढूँढ़ रहे हो, उसकी खोज अपने भीतर भी करो।",
     bodyEn:
         "In Tagore’s Kabir collection, a deer searches outside for its own musk. The image turns the seeker toward inward spiritual inquiry.",
     source: "One Hundred Poems by Kabir · Rabindranath Tagore",
@@ -706,17 +738,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tagore collection, poem 6",
     section: "spiritual",
     group: "kabir",
-    promptHi: "बाहरी व्यस्तता से दो मिनट हटकर अपने मन की दिशा देखें।",
+    promptHi: "कुछ देर बाहरी भागदौड़ रोककर मन के पास बैठें।",
     promptEn:
         "Step away from busyness for two minutes and notice your inner direction.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kabir-mine",
-    titleHi: "मैं और मेरा का पर्दा",
+    referenceHi: "टैगोर-संग्रह · पद 6",
+    titleHi: "मैं और मेरा थोड़ा कम हो",
     titleEn: "The veil of mine",
     bodyHi:
-        "इसी कविता में मैं और मेरा छोड़ने की पुकार आती है। कबीर की भक्ति में अहं का आग्रह प्रेम और व्यापक दृष्टि के बीच बाधा बन सकता है।",
+        "कबीर की भक्ति में “मैं” और “मेरा” का आग्रह प्रेम की राह रोकता है। मन जितना अपने अहं में उलझेगा, उतना ही दूसरों के लिए जगह कम होगी।",
     bodyEn:
         "The same poem urges release from possessiveness. In this devotional vision, insistence on mine can obstruct love and a wider outlook.",
     source: "One Hundred Poems by Kabir · Rabindranath Tagore",
@@ -726,16 +759,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tagore collection, poem 6",
     section: "spiritual",
     group: "kabir",
-    promptHi: "किस साझा काम में श्रेय बाँटना अधिक उचित होगा?",
+    promptHi: "आज किसी साझा काम का श्रेय भी साझा करें।",
     promptEn: "Where could you share credit in a common effort?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kabir-nearness",
-    titleHi: "साधक के पास ही",
+    referenceHi: "टैगोर-संग्रह · पद 1",
+    titleHi: "प्रभु दूर कहाँ हैं?",
     titleEn: "Near the seeker",
     bodyHi:
-        "कबीर का काव्य ईश्वर की खोज को दूर की जगहों तक सीमित नहीं रखता। टैगोर के पहले चयन में निकटता और अंतर्मुखी खोज का स्वर प्रमुख है।",
+        "कबीर का यह पद साधक को भीतर झाँकने को कहता है। प्रभु की खोज में दूर भटकते हुए अपने पास की उपस्थिति न भूलें। भक्ति में मन का जुड़ना सबसे जरूरी है।",
     bodyEn:
         "The first poem in Tagore’s selection locates the divine close to the seeker. Its devotional invitation is to search with inward attention.",
     source: "One Hundred Poems by Kabir · Rabindranath Tagore",
@@ -745,17 +779,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tagore collection, poem 1",
     section: "spiritual",
     group: "kabir",
-    promptHi: "आज पूजा या प्रार्थना में कुछ क्षण पूरी उपस्थिति रखें।",
+    promptHi: "आज प्रार्थना के समय कुछ क्षण पूरे मन से उपस्थित रहें।",
     promptEn:
         "Bring a few moments of full attention to prayer or worship today.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "kabir-dignity",
-    titleHi: "भक्ति की पहचान क्या है?",
+    referenceHi: "टैगोर-संग्रह · पद 2",
+    titleHi: "भक्ति को जाति से क्यों तौलें?",
     titleEn: "What identifies a devotee?",
     bodyHi:
-        "टैगोर के दूसरे चयन में कबीर संत को जाति से परखने पर प्रश्न उठाते हैं। विविध काम करने वाले साधकों का उल्लेख भक्ति की गरिमा पर ध्यान दिलाता है।",
+        "कबीर इस पद में संत को जाति के आधार पर परखने पर प्रश्न उठाते हैं। अलग-अलग काम करने वाले भक्तों का स्मरण कर वे साधना और सच्चे भाव की गरिमा सामने रखते हैं।",
     bodyEn:
         "The second selection questions judging a saint by caste. Its range of working devotees directs attention toward spiritual sincerity.",
     source: "One Hundred Poems by Kabir · Rabindranath Tagore",
@@ -765,16 +800,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tagore collection, poem 2",
     section: "spiritual",
     group: "kabir",
-    promptHi: "किस व्यक्ति को उसके पद के बजाय आचरण से समझ सकते हैं?",
+    promptHi: "किसी व्यक्ति को उसके पद से नहीं, व्यवहार से पहचानें।",
     promptEn: "Whom could you understand through conduct rather than status?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vivekananda-self-trust",
-    titleHi: "स्वयं पर विश्वास की शुरुआत",
+    referenceHi: "कर्मयोग · अपने-अपने कार्यक्षेत्र में कोई छोटा नहीं",
+    titleHi: "अपने भीतर के बल को पहचानें",
     titleEn: "Begin with self-trust",
     bodyHi:
-        "विवेकानंद स्वयं से घृणा करने के बजाय अपने प्रति विश्वास का आग्रह करते हैं। उनके कर्मयोग में आत्मसम्मान प्रयास और आध्यात्मिक विकास का आधार बनता है।",
+        "विवेकानंद स्वयं को तुच्छ समझने के बजाय अपने ऊपर विश्वास करना सिखाते हैं। उठने और आगे बढ़ने के लिए पहला सहारा अपने भीतर का भरोसा भी है।",
     bodyEn:
         "Vivekananda urges self-trust rather than self-contempt. In Karma Yoga, self-respect supports effort and spiritual development.",
     source: "Complete Works, volume 1 · Karma Yoga",
@@ -785,16 +821,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Karma Yoga · Each Is Great",
     section: "philosophy",
     group: "vivekananda",
-    promptHi: "अपनी एक क्षमता पहचानें और उससे आज उपयोगी काम करें।",
+    promptHi: "अपनी एक क्षमता को आज किसी अच्छे काम में लगाएँ।",
     promptEn: "Name one ability and use it for something helpful today.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vivekananda-different-paths",
-    titleHi: "अलग मार्गों का सम्मान",
+    referenceHi: "कर्मयोग · अपने-अपने कार्यक्षेत्र में कोई छोटा नहीं",
+    titleHi: "अपनी राह, अपना कर्तव्य",
     titleEn: "Respect different paths",
     bodyHi:
-        "विवेकानंद गृहस्थ और संन्यासी के कर्तव्यों की भिन्नता समझाते हैं। किसी जीवन-पथ की कसौटी उठाकर दूसरे को तुच्छ मानना उचित तुलना नहीं बनती।",
+        "विवेकानंद गृहस्थ और संन्यासी, दोनों के कर्तव्य समझाते हैं। अलग परिस्थितियों में जी रहे लोगों को एक ही माप से तौलना ठीक नहीं। अपनी जिम्मेदारी निष्ठा से निभाना भी साधना है।",
     bodyEn:
         "Vivekananda distinguishes the duties of householder and renunciant. A standard suited to one life cannot simply be used to belittle another.",
     source: "Complete Works, volume 1 · Karma Yoga",
@@ -805,17 +842,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Karma Yoga · Each Is Great",
     section: "philosophy",
     group: "vivekananda",
-    promptHi: "किसी की परिस्थिति समझे बिना किए निर्णय पर फिर विचार करें।",
+    promptHi: "किसी पर राय बनाने से पहले उसकी परिस्थिति समझें।",
     promptEn:
         "Reconsider a judgment made without understanding someone’s circumstances.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vivekananda-work-spirit",
-    titleHi: "काम की गरिमा कैसे तय हो?",
+    referenceHi: "कर्मयोग · कर्तव्य क्या है",
+    titleHi: "छोटा काम, बड़ी निष्ठा",
     titleEn: "What gives work dignity?",
     bodyHi:
-        "विवेकानंद काम की बाहरी श्रेणी से अधिक उसे निभाने की भावना पर ध्यान देते हैं। छोटा दिखने वाला काम भी निष्ठा से किया जा सकता है।",
+        "विवेकानंद काम की ऊँच-नीच से अधिक उसे करने के भाव को महत्त्व देते हैं। साधारण काम भी पूरी निष्ठा से हो तो उसमें गरिमा है।",
     bodyEn:
         "Vivekananda emphasizes the spirit in which work is done over its outward rank. An apparently small duty can be carried out with dedication.",
     source: "Complete Works, volume 1 · Karma Yoga",
@@ -826,16 +864,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Karma Yoga · What Is Duty",
     section: "philosophy",
     group: "vivekananda",
-    promptHi: "आज के साधारण काम को पूरा ध्यान देकर करें।",
+    promptHi: "आज का कोई रोजमर्रा का काम पूरी लगन से करें।",
     promptEn: "Give full attention to an ordinary duty today.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "vivekananda-cultural-humility",
-    titleHi: "दूसरे की दृष्टि से देखना",
+    referenceHi: "कर्मयोग · कर्तव्य क्या है",
+    titleHi: "समझने से पहले ठहरें",
     titleEn: "See through another’s eyes",
     bodyHi:
-        "विवेकानंद दूसरी जातियों और समाजों के रीति-रिवाज को उन्हीं की दृष्टि से समझने को कहते हैं। अपना मानक हर जगह थोपने से समझ सीमित होती है।",
+        "विवेकानंद दूसरे समाजों की रीति को उन्हीं की दृष्टि से समझने की सीख देते हैं। अपना तरीका ही सबके लिए सही मान लें तो दूसरों का जीवन समझना कठिन हो जाता है।",
     bodyEn:
         "Vivekananda asks readers to understand other peoples’ customs through their own perspective. Treating one’s own standard as universal limits understanding.",
     source: "Complete Works, volume 1 · Karma Yoga",
@@ -846,17 +885,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Karma Yoga · What Is Duty",
     section: "philosophy",
     group: "vivekananda",
-    promptHi: "किस अपरिचित परंपरा का अर्थ उसके मानने वाले से पूछेंगे?",
+    promptHi: "किसी अपरिचित परंपरा का अर्थ उसे मानने वाले से पूछें।",
     promptEn:
         "Which unfamiliar custom could you ask a practitioner to explain?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "dhamma-hatred",
-    titleHi: "वैर की श्रृंखला रोकना",
+    referenceHi: "धम्मपद 5",
+    titleHi: "वैर से वैर नहीं मिटता",
     titleEn: "Interrupt the cycle of hostility",
     bodyHi:
-        "धम्मपद वैर का अंत फिर वैर से करने की सीमा दिखाता है। बौद्ध शिक्षा शत्रुता को आगे न बढ़ाने का मार्ग सुझाती है।",
+        "धम्मपद सिखाता है कि शत्रुता का उत्तर फिर शत्रुता से देने पर उसकी गाँठ और कसती है। उसे आगे बढ़ने से रोकना भी साहस का काम है।",
     bodyEn:
         "The Dhammapada teaches that answering hatred with hatred does not end it. The practice is to stop carrying hostility forward.",
     source: "Dhammapada · Acharya Buddharakkhita",
@@ -866,16 +906,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Dhammapada 5",
     section: "philosophy",
     group: "buddhist",
-    promptHi: "किस असहमति में कठोरता बढ़ाए बिना सीमा रख सकते हैं?",
+    promptHi: "बिना अपमान किए अपनी असहमति जताएँ।",
     promptEn: "Where can you keep a boundary without escalating hostility?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "dhamma-cowherd",
-    titleHi: "गाय गिनने वाला रूपक",
+    referenceHi: "धम्मपद 19–20",
+    titleHi: "पाठ के साथ आचरण भी",
     titleEn: "Counting another’s cattle",
     bodyHi:
-        "बहुत पाठ करने पर भी आचरण न बदलना दूसरे की गाय गिनने जैसा बताया गया है। धम्मपद अध्ययन के साथ जी हुई साधना पर बल देता है।",
+        "धम्मपद में बिना आचरण बदले बहुत पाठ करने की तुलना दूसरे की गायें गिनने से की गई है। पढ़ी हुई सीख अपने जीवन में उतरे, तभी उसका लाभ मिलता है।",
     bodyEn:
         "Reciting much without practising is compared to counting someone else’s cattle. The Dhammapada joins study to lived discipline.",
     source: "Dhammapada · Acharya Buddharakkhita",
@@ -885,16 +926,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Dhammapada 19–20",
     section: "philosophy",
     group: "buddhist",
-    promptHi: "एक पढ़ी हुई सीख चुनें और आज उसे करके देखें।",
+    promptHi: "आज किसी पढ़ी हुई सीख को करके देखें।",
     promptEn: "Choose one teaching you have read and practise it today.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "dhamma-walk",
-    titleHi: "मार्ग दिखाना, मार्ग चलना",
+    referenceHi: "धम्मपद 276",
+    titleHi: "राह अपनी चाल से कटेगी",
     titleEn: "A teacher points the way",
     bodyHi:
-        "धम्मपद में बुद्ध मार्ग बताते हैं, पर साधक को स्वयं प्रयत्न करना होता है। मार्गदर्शन व्यक्तिगत अभ्यास की जगह नहीं लेता।",
+        "धम्मपद के अनुसार शिक्षक मार्ग दिखाते हैं, पर चलना साधक को स्वयं पड़ता है। अच्छी सलाह तभी फलती है, जब उसके बाद अपना प्रयत्न भी हो।",
     bodyEn:
         "In the Dhammapada, awakened teachers point out the path, while practitioners must make the effort. Guidance does not replace practice.",
     source: "Dhammapada · Acharya Buddharakkhita",
@@ -904,16 +946,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Dhammapada 276",
     section: "philosophy",
     group: "buddhist",
-    promptHi: "किस सलाह पर अब आपका अपना छोटा कदम जरूरी है?",
+    promptHi: "जिस अच्छी सलाह को टाल रहे हैं, उस पर पहला कदम रखें।",
     promptEn: "Which advice now needs a small step of your own?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "dhamma-impermanence",
-    titleHi: "बदलती वस्तुओं को समझना",
+    referenceHi: "धम्मपद 277",
+    titleHi: "जो बदल रहा है, उसे देखें",
     titleEn: "Notice conditioned change",
     bodyHi:
-        "धम्मपद संस्कारित वस्तुओं की अनित्यता पर विचार कराता है। यह बौद्ध चिंतन परिवर्तनशील अनुभवों से चिपके रहने की आदत को जांचता है।",
+        "धम्मपद संस्कारित वस्तुओं की अनित्यता समझाता है। अनुभव बदलते रहते हैं; उन्हें सदा एक जैसा बनाए रखने की चाह भी दुःख दे सकती है।",
     bodyEn:
         "The Dhammapada reflects on the impermanence of conditioned things. This Buddhist teaching examines clinging to changing experiences.",
     source: "Dhammapada · Acharya Buddharakkhita",
@@ -923,17 +966,18 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Dhammapada 277",
     section: "philosophy",
     group: "buddhist",
-    promptHi: "आज हुए एक परिवर्तन को बिना तुरंत अच्छा-बुरा कहे देखें।",
+    promptHi: "आज किसी परिवर्तन को शांत मन से देखिए।",
     promptEn:
         "Notice one change today before immediately judging it good or bad.",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "jain-mutual-support",
-    titleHi: "परस्पर सहारे का जीवन",
+    referenceHi: "तत्त्वार्थसूत्र 5.21",
+    titleHi: "जीवन एक-दूसरे से जुड़ा है",
     titleEn: "Lives supporting one another",
     bodyHi:
-        "तत्त्वार्थसूत्र जीवों के परस्पर उपकार की बात करता है। जैन दर्शन का यह सूत्र जीवन को केवल अलग-अलग व्यक्तियों की कहानी मानने से आगे ले जाता है।",
+        "तत्त्वार्थसूत्र जीवों के परस्पर उपकार की बात करता है। हमारा जीवन अकेले नहीं चलता; अनगिनत लोगों और जीवों के सहारे से दिन बनता है।",
     bodyEn:
         "The Tattvartha Sutra describes living beings as supporting one another. This Jain teaching draws attention to interdependence.",
     source: "Tattvartha Sutra · Vijay K. Jain",
@@ -944,16 +988,17 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tattvartha Sutra 5.21",
     section: "philosophy",
     group: "jain",
-    promptHi: "आज की सुविधा के पीछे किन लोगों और जीवों का योगदान है?",
+    promptHi: "आज की किसी सुविधा के पीछे जिनका श्रम है, उन्हें याद करें।",
     promptEn: "Whose work and which living beings support an everyday comfort?",
     kind: "teaching",
   ),
   DailyDiscovery(
     id: "jain-carefulness",
-    titleHi: "अहिंसा में सावधानी",
+    referenceHi: "तत्त्वार्थसूत्र 7.13",
+    titleHi: "अहिंसा में सजगता भी",
     titleEn: "Carefulness within non-harming",
     bodyHi:
-        "जैन सूत्र प्रमाद से प्राणों को हानि पहुंचाने को हिंसा से जोड़ता है। केवल अच्छे इरादे नहीं, काम करते समय सजगता भी महत्त्वपूर्ण होती है।",
+        "जैन सूत्र प्रमाद से होने वाली प्राणहानि को हिंसा से जोड़ता है। अच्छा इरादा रखते हुए भी लापरवाही से हानि हो सकती है। इसलिए व्यवहार में सावधानी जरूरी है।",
     bodyEn:
         "This Jain sutra connects injury with careless conduct. Non-harming calls for attention in action as well as good intentions.",
     source: "Tattvartha Sutra · Vijay K. Jain",
@@ -964,7 +1009,7 @@ const wisdomReadings = <DailyDiscovery>[
     reference: "Tattvartha Sutra 7.13",
     section: "philosophy",
     group: "jain",
-    promptHi: "रोज के किसी काम में अनावश्यक हानि कैसे घटाएँगे?",
+    promptHi: "अपने रोज के किसी काम में अनावश्यक हानि घटाएँ।",
     promptEn: "How could you reduce avoidable harm in an everyday action?",
     kind: "teaching",
   ),

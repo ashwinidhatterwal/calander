@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../core/localization.dart';
 import '../data/daily_discoveries.dart';
+import '../data/discovery_share_service.dart';
+import 'discovery_share_preview.dart';
 import '../domain/festival_engine.dart';
 import '../domain/panchang_engine.dart';
 import '../domain/models.dart';
@@ -131,6 +133,24 @@ class _DiscoverScreenState extends State<DiscoverScreen>
     super.dispose();
   }
 
+  void _previewShare(DailyDiscovery entry) {
+    final location = widget.location;
+    final l = L10n(widget.language);
+    if (location == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l.pick('पंचांग जोड़ने के लिए पहले अपना स्थान चुनें।',
+              'Choose your location first to include the Panchang.'))));
+      return;
+    }
+    final data = DiscoveryPosterData.forDay(
+        entry: entry,
+        language: widget.language,
+        date: _date,
+        location: location);
+    Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => DiscoverySharePreview(data: data)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L10n(widget.language);
@@ -242,13 +262,14 @@ class _DiscoverScreenState extends State<DiscoverScreen>
             l.pick('अध्यात्म और अच्छी आदतें', 'Spirituality & good practices')),
         const SizedBox(height: 4),
         Text(
-            l.pick('मन को शांत करें, जीवन में अपनाएँ',
+            l.pick('शास्त्रों से साधना की ओर',
                 'A quiet moment. A meaningful practice.'),
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: scheme.onSurfaceVariant)),
         const SizedBox(height: 10),
         _DiscoveryCard(
             entry: sections.spiritual,
+            onShare: () => _previewShare(sections.spiritual),
             language: widget.language,
             promptTitle:
                 l.pick('आज का छोटा अभ्यास', 'A small practice for today'),
@@ -267,8 +288,9 @@ class _DiscoverScreenState extends State<DiscoverScreen>
         const SizedBox(height: 10),
         _DiscoveryCard(
             entry: sections.philosophy,
+            onShare: () => _previewShare(sections.philosophy),
             language: widget.language,
-            promptTitle: l.pick('खुद से पूछें', 'Ask yourself'),
+            promptTitle: l.pick('आज मनन करें', 'Reflect today'),
             prompt: sections.philosophy.promptHi.isNotEmpty
                 ? l.pick(
                     sections.philosophy.promptHi, sections.philosophy.promptEn)
@@ -285,7 +307,10 @@ class _DiscoverScreenState extends State<DiscoverScreen>
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: scheme.onSurfaceVariant)),
         const SizedBox(height: 10),
-        _DiscoveryCard(entry: sections.fact, language: widget.language),
+        _DiscoveryCard(
+            entry: sections.fact,
+            onShare: () => _previewShare(sections.fact),
+            language: widget.language),
       ],
     );
   }
@@ -353,8 +378,10 @@ class _DiscoveryCard extends StatelessWidget {
       {required this.entry,
       required this.language,
       this.promptTitle,
-      this.prompt});
+      this.prompt,
+      required this.onShare});
   final String? promptTitle, prompt;
+  final VoidCallback onShare;
   final DailyDiscovery entry;
   final AppLanguage language;
 
@@ -398,10 +425,25 @@ class _DiscoveryCard extends StatelessWidget {
             if (entry.reference.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                  '${entry.reference} · ${entry.kind == 'story' ? l.pick('कथा-सार', 'Story retelling') : l.pick('भावार्थ', 'Paraphrase')}',
+                  '${l.isHindi && entry.referenceHi.isNotEmpty ? entry.referenceHi : entry.reference} · ${entry.kind == 'story' ? l.pick('कथा-सार', 'Story retelling') : l.pick('भावार्थ', 'Paraphrase')}',
                   style: theme.textTheme.bodySmall?.copyWith(height: 1.5)),
             ],
             const SizedBox(height: 12),
+            if (entry.quote.isNotEmpty) ...[
+              Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withAlpha(90),
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Text(entry.quote,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 18,
+                          height: 1.65,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.primary))),
+              const SizedBox(height: 14),
+            ],
             Text(
               body,
               style: theme.textTheme.bodyLarge?.copyWith(
@@ -433,6 +475,15 @@ class _DiscoveryCard extends StatelessWidget {
             if (prompt != null) const SizedBox(height: 12),
             Text(entry.source, style: theme.textTheme.bodySmall),
             const Divider(),
+            SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                    onPressed: onShare,
+                    icon: const Icon(Icons.image_outlined, size: 20),
+                    label: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(l.pick('पंचांग के साथ फोटो साझा करें',
+                            'Share image with Panchang'))))),
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -450,7 +501,7 @@ class _DiscoveryCard extends StatelessWidget {
                     await Clipboard.setData(
                       ClipboardData(
                         text:
-                            '$title\n${l.pick(entry.teacherHi, entry.teacherEn)}\n${entry.reference}\n\n$body${prompt == null ? '' : '\n\n$promptTitle: $prompt'}\n\n${entry.source}: ${entry.url}',
+                            '$title\n${l.pick(entry.teacherHi, entry.teacherEn)}\n${l.isHindi && entry.referenceHi.isNotEmpty ? entry.referenceHi : entry.reference}\n\n${entry.quote.isEmpty ? '' : '${entry.quote}\n\n'}$body${prompt == null ? '' : '\n\n$promptTitle: $prompt'}\n\n${entry.source}: ${entry.url}',
                       ),
                     );
                     if (!context.mounted) return;

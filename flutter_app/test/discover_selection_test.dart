@@ -5,7 +5,7 @@ void main() {
   test(
       'three daily sections remain distinct and rotate with specific wisdom readings',
       () {
-    expect(DailyDiscoveries.entries.length, 137);
+    expect(DailyDiscoveries.entries.length, 155);
     String? previousPhilosophy, previousFact;
     for (var i = 0; i < 365; i++) {
       final date = DateTime(2026, 1, 1).add(Duration(days: i));
@@ -20,6 +20,7 @@ void main() {
               sections.philosophy.section == 'philosophy',
           isTrue);
       expect(sections.philosophy.id, isNot(previousPhilosophy));
+      expect(sections.philosophy.group, isNot(anyOf('buddhist', 'jain')));
       if (sections.anniversary) {
         expect(sections.fact.month, date.month);
         expect(sections.fact.day, date.day);
@@ -34,9 +35,9 @@ void main() {
 
   test('every new reading is reachable and attributed, with varied teachers',
       () {
-    final expected =
-        DailyDiscoveries.entries.where((e) => e.section.isNotEmpty);
-    expect(expected.length, 48);
+    final expected = DailyDiscoveries.entries.where((e) =>
+        e.section.isNotEmpty && e.group != 'buddhist' && e.group != 'jain');
+    expect(expected.length, 64);
     final seen = <String>{};
     String? previousGroup;
     for (var i = 0; i < 360; i++) {

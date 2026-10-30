@@ -1,6 +1,6 @@
-# Build 32: specific Indian teachings and stories
+# Build 33: natural Hindi, Sanatan wisdom and shareable Panchang images
 
-Version 1.0.0+32. See [release and validation notes](docs/CHECKPOINT_32.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
+Version 1.0.0+33. See [release and validation notes](docs/CHECKPOINT_33.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
 
 Local Flutter analysis is clean and all 84 Flutter tests passed. Previous feature checkpoints remain below as history.
 

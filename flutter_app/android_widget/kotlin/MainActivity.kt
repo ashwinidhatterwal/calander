@@ -37,6 +37,19 @@ class MainActivity : FlutterActivity() {
     private var permissionReply: MethodChannel.Result? = null
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        MethodChannel(engine.dartExecutor.binaryMessenger, "in.hinducalendar/discovery_share").setMethodCallHandler { call, reply ->
+            if (call.method != "shareImage") {
+                reply.notImplemented()
+            } else try {
+                DiscoveryImageShare.share(this,
+                    requireNotNull(call.argument<ByteArray>("bytes")),
+                    requireNotNull(call.argument<String>("filename")),
+                    call.argument<String>("caption") ?: "")
+                reply.success(null)
+            } catch (error: Exception) {
+                reply.error("image_share_failed", error.message, null)
+            }
+        }
         MethodChannel(engine.dartExecutor.binaryMessenger, "in.hinducalendar/calendar_pdf").setMethodCallHandler { call, reply ->
             when (call.method) {
                 "buildVector" -> {
