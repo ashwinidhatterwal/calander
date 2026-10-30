@@ -1,7 +1,8 @@
-# Build 26: festival rules and visible tithi transitions
+# Build 30: Hindu discoveries and clear day details
 
-See [README-FIX.txt](README-FIX.txt) and [validation](docs/CHECKPOINT_26.md)
-for the current release. Previous feature checkpoints remain below as history.
+Version 1.0.0+30. See [release and validation notes](docs/CHECKPOINT_30.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).
+
+Local Flutter analysis is clean and all 83 Flutter tests passed. Previous feature checkpoints remain below as history.
 
 # Hindu Calendar — Checkpoint 15 Notification Settings
 

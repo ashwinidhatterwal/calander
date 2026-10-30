@@ -383,7 +383,7 @@ class _HinduCalendarAppState extends State<HinduCalendarApp> {
                 onUpsert: _upsertEvent,
                 onDelete: _deleteEvent,
               ),
-              DiscoverScreen(language: language, active: tab == 3),
+              DiscoverScreen(language: language, active: tab == 3, location: location, festival: festival),
             ],
           ),
         ),
