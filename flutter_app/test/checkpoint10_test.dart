@@ -70,7 +70,7 @@ void main() {
         DateTime.utc(2026, 3, 4));
   });
   test(
-      'offline notification content has date tithi festival and personal event',
+      'offline notification includes Samvat, Hindu month, tithi, festival and personal event',
       () {
     const event = PersonalEvent(
         id: 'test',
@@ -92,8 +92,11 @@ void main() {
     final day = result['2026-11-11']!;
     expect(day['title'], 'Shukla Paksha Dwitiya');
     expect(day['date'], '11 November 2026');
-    expect(day['body']!.split('\n').first, contains('Bhai Dooj'));
-    expect(day['body']!.split('\n').last, day['date']);
+    final lines = day['body']!.split('\n');
+    expect(day['summary'], 'Vikram Samvat 2083 · Kartika');
+    expect(lines.first, day['summary']);
+    expect(lines[1], contains('Bhai Dooj'));
+    expect(lines.last, day['date']);
     expect(day['events'], 'Family puja');
   });
 }
