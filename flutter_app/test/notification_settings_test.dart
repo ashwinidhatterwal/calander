@@ -50,6 +50,7 @@ void main() {
   ) async {
     await open(tester, AppLanguage.hi);
     expect(find.text('6:15 पु.'), findsOneWidget);
+    expect(find.text('7:00 पु.'), findsOneWidget);
     expect(find.text('7:05 अप.'), findsOneWidget);
     await tester.tap(find.byType(SwitchListTile).first);
     await tester.pumpAndSettle();
@@ -58,18 +59,24 @@ void main() {
     expect(configured['morningMinute'], 375);
     expect(configured['eventsMinute'], 1145);
     expect(configured['events'], true);
+    expect(configured['festivals'], true);
+    expect(configured['festivalsMinute'], 420);
   });
-  test('configure transports both user-selected minutes', () async {
+  test('configure transports independently selected reminder times', () async {
     await NotificationService.configure(
       true,
       false,
       true,
       morningMinute: 0,
       eventsMinute: 720,
+      festivals: false,
+      festivalsMinute: 480,
     );
     final args = calls.single.arguments as Map;
     expect(args['morningMinute'], 0);
     expect(args['eventsMinute'], 720);
+    expect(args['festivals'], false);
+    expect(args['festivalsMinute'], 480);
   });
   test('default configuration uses six AM for both reminders', () async {
     await NotificationService.configure(true, true, true);

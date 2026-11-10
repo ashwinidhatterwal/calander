@@ -1,3 +1,7 @@
+# Build 36: resizable widgets and festival alerts
+
+Version 1.0.0+36. The two home screen widgets use compact and expanded layouts. Daily Panchang includes Vikram Samvat, Hindu month, tithi and observances. A separate festival alert is enabled by default at 7:00 AM and can be turned off or rescheduled under Notifications.
+
 # Build 35: reading context, gentle ratings and developer details
 
 Version 1.0.0+35. See [release and validation notes](docs/CHECKPOINT_35.md), [content inventory](docs/DISCOVER_CONTENT_CATALOG.md), and [selection behavior](docs/DISCOVER_REVIEW.md).

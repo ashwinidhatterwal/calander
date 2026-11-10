@@ -133,16 +133,18 @@ class MainActivity : FlutterActivity() {
                     val prefs = CalendarAlerts.prefs(this)
                     val saved = prefs.edit().putBoolean("morning", call.argument<Boolean>("morning") ?: true)
                         .putBoolean("events", call.argument<Boolean>("events") ?: true)
+                        .putBoolean("festivals", call.argument<Boolean>("festivals") ?: prefs.getBoolean("festivals", true))
                         .putBoolean("sound", call.argument<Boolean>("sound") ?: true)
                         .putInt("morningMinute", ReminderPolicy.minute(call.argument<Int>("morningMinute") ?: prefs.getInt("morningMinute", CalendarAlerts.DEFAULT_MINUTE)))
-                        .putInt("eventsMinute", ReminderPolicy.minute(call.argument<Int>("eventsMinute") ?: prefs.getInt("eventsMinute", CalendarAlerts.DEFAULT_MINUTE))).commit()
+                        .putInt("eventsMinute", ReminderPolicy.minute(call.argument<Int>("eventsMinute") ?: prefs.getInt("eventsMinute", CalendarAlerts.DEFAULT_MINUTE)))
+                        .putInt("festivalsMinute", ReminderPolicy.minute(call.argument<Int>("festivalsMinute") ?: prefs.getInt("festivalsMinute", CalendarAlerts.DEFAULT_FESTIVAL_MINUTE))).commit()
                     if (!saved) {
                         reply.error("settings_write_failed", "Could not save reminder settings", null)
                         return@setMethodCallHandler
                     }
                     CalendarAlerts.schedule(this)
                     if (Build.VERSION.SDK_INT >= 33 && !CalendarAlerts.permitted(this) &&
-                        (prefs.getBoolean("morning", true) || prefs.getBoolean("events", true))) {
+                        CalendarAlerts.anyEnabled(prefs)) {
                         permissionReply = reply
                         requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 510)
                     } else { CalendarAlerts.deliverDue(this); reply.success(null) }
@@ -152,7 +154,7 @@ class MainActivity : FlutterActivity() {
                     // No key means the user never chose a preference. Preserve explicit opt-outs.
                     if (!prefs.contains("morning")) prefs.edit().putBoolean("morning", true).apply()
                     if (!prefs.contains("events")) prefs.edit().putBoolean("events", true).apply()
-                    if (!prefs.getBoolean("notificationPrompted", false) && (prefs.getBoolean("morning", true) || prefs.getBoolean("events", true))) {
+                    if (!prefs.getBoolean("notificationPrompted", false) && CalendarAlerts.anyEnabled(prefs)) {
                         prefs.edit().putBoolean("notificationPrompted", true).apply()
                         if (Build.VERSION.SDK_INT >= 33 && !CalendarAlerts.permitted(this)) {
                             permissionReply = reply

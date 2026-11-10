@@ -77,6 +77,13 @@ Map<String, String> _widgetPayload(
   final now = DateTime.now();
   final start = DateTime.utc(now.year, now.month, now.day);
   final data = <String, String>{};
+  final hi = language == AppLanguage.hi;
+  String time(DateTime value) => panchang.time12(
+        value,
+        location,
+        amLabel: hi ? 'पु.' : 'AM',
+        pmLabel: hi ? 'अप.' : 'PM',
+      );
 
   for (var i = 0; i < 14; i++) {
     final date = start.add(Duration(days: i));
@@ -117,8 +124,10 @@ Map<String, String> _widgetPayload(
     data['day_${i}_date'] = '${date.day} $monthName';
     data['day_${i}_tithi'] = '$paksha $tithi';
     data['day_${i}_month'] = '$adhik$lunarMonth $monthSuffix';
-    data['day_${i}_sunrise'] = panchang.hhmm(ss[0], location);
-    data['day_${i}_sunset'] = panchang.hhmm(ss[1], location);
+    final samvat = panchang.vikramSamvatYear(date, location);
+    data['day_${i}_samvat'] = hi ? 'संवत् $samvat' : 'VS $samvat';
+    data['day_${i}_sunrise'] = time(ss[0]);
+    data['day_${i}_sunset'] = time(ss[1]);
   }
 
   final upcoming = <_WidgetOccurrence>[];
@@ -174,6 +183,10 @@ Map<String, String> _widgetPayload(
       : 'No upcoming event';
   data['widget_open_app'] =
       language == AppLanguage.hi ? 'कैलेंडर खोलें' : 'Open calendar';
+  data['widget_app_name'] = hi ? 'हिन्दू कैलेंडर' : 'Hindu Calendar';
+  data['widget_next'] = hi ? 'इसके बाद' : 'Then';
+  data['widget_sunrise'] = hi ? 'सूर्योदय' : 'Sunrise';
+  data['widget_sunset'] = hi ? 'सूर्यास्त' : 'Sunset';
 
   return data;
 }

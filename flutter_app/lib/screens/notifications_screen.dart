@@ -60,7 +60,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     if (state == AppLifecycleState.resumed) _load();
   }
 
-  int _minute(String key) => (settings[key] as num?)?.toInt() ?? 360;
+  int _minute(String key) =>
+      (settings[key] as num?)?.toInt() ?? (key == 'festivalsMinute' ? 420 : 360);
   String _time(int minute) {
     final hour = minute ~/ 60;
     final suffix = hour < 12 ? l.pick('पु.', 'AM') : l.pick('अप.', 'PM');
@@ -79,6 +80,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         settings['sound'] != false,
         morningMinute: _minute('morningMinute'),
         eventsMinute: _minute('eventsMinute'),
+        festivals: settings['festivals'] != false,
+        festivalsMinute: _minute('festivalsMinute'),
       );
       await widget.onRefresh();
     } catch (_) {
@@ -132,8 +135,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             title: Text(l.pick('दैनिक पंचांग', 'Daily Panchang')),
             subtitle: Text(
               l.pick(
-                'तारीख, तिथि, पर्व और आज के कार्यक्रम',
-                'Date, tithi, festivals and today’s events',
+                'विक्रम संवत्, हिन्दू मास, तिथि और आज के पर्व',
+                'Vikram Samvat, Hindu month, tithi and today’s festivals',
               ),
             ),
             value: settings['morning'] == true,
@@ -144,6 +147,23 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             title: Text(l.pick('पंचांग का समय', 'Panchang reminder time')),
             trailing: Text(_time(_minute('morningMinute'))),
             onTap: busy ? null : () => _chooseTime('morningMinute'),
+          ),
+          SwitchListTile(
+            title: Text(l.pick('पर्व की विशेष सूचना', 'Festival alerts')),
+            subtitle: Text(
+              l.pick('त्योहार के दिन अलग से याद दिलाएँ',
+                  'Get a separate reminder on festival days'),
+            ),
+            value: settings['festivals'] != false,
+            onChanged: busy ? null : (v) => _save('festivals', v),
+          ),
+          ListTile(
+            leading: const Icon(Icons.celebration_outlined),
+            title: Text(l.pick('पर्व सूचना का समय', 'Festival alert time')),
+            trailing: Text(_time(_minute('festivalsMinute'))),
+            onTap: busy || settings['festivals'] == false
+                ? null
+                : () => _chooseTime('festivalsMinute'),
           ),
           SwitchListTile(
             title: Text(l.pick('मेरे कार्यक्रम', 'Personal events')),

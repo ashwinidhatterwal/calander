@@ -27,7 +27,7 @@ import java.io.File
 @Config(sdk = [28, 35])
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class WidgetLayoutTest {
-    @Test fun compactAndResizedWidgetsKeepAllThreeRowsVisible() {
+    @Test fun compactAndResizedWidgetsKeepTheirRowsVisible() {
         try {
             for (scale in listOf(1f, 1.3f, 1.6f)) {
                 // Update the entire application, including contexts RemoteViews
@@ -42,14 +42,26 @@ class WidgetLayoutTest {
                                 val context: Context = activity
                                 val density = context.resources.displayMetrics.density
                                 val layoutId = if (upcoming) R.layout.widget_upcoming else R.layout.widget_today
-                                val ids = if (upcoming) listOf(R.id.widget_upcoming_kind, R.id.widget_upcoming_title, R.id.widget_upcoming_date)
+                                val baseIds = if (upcoming) listOf(R.id.widget_upcoming_kind, R.id.widget_upcoming_title, R.id.widget_upcoming_date)
                                     else listOf(R.id.widget_today_date, R.id.widget_today_tithi, R.id.widget_today_sun)
                                 val texts = if (english && upcoming) listOf("Festival / Vrat", "Chaitra Durga Ashtami", "18 October 2026")
-                                    else if (english) listOf("Sunday • 18 October", "Shukla Paksha Chaturdashi", "☀ 06:25   ◒ 18:25")
+                                    else if (english) listOf("Sun • 18 October", "Shukla Paksha Chaturdashi", "↑ 6:25 AM   ↓ 6:25 PM")
                                     else if (upcoming) listOf("पर्व / व्रत", "शारदीय नवरात्रि आरम्भ", "18 अक्टूबर 2026")
-                                    else listOf("रवि • 18 अक्टूबर", "शुक्ल पक्ष चतुर्दशी", "☀ 06:25   ◒ 18:25")
+                                    else listOf("रवि • 18 अक्टूबर", "शुक्ल पक्ष चतुर्दशी", "↑ 6:25 पु.   ↓ 6:25 अप.")
+                                val expanded = height >= 128
+                                val extra = if (upcoming) R.id.widget_upcoming_next else R.id.widget_today_details
+                                val ids = if (expanded) baseIds.toMutableList().apply {
+                                    add(if (upcoming) size else 2, extra)
+                                } else baseIds
                                 val remote = RemoteViews(context.packageName, layoutId)
-                                ids.zip(texts).forEach { (id, value) -> remote.setTextViewText(id, value) }
+                                baseIds.zip(texts).forEach { (id, value) -> remote.setTextViewText(id, value) }
+                                remote.setTextViewText(extra, when {
+                                    upcoming && english -> "Then: Govardhan Puja • 10 November 2026"
+                                    upcoming -> "इसके बाद: गोवर्धन पूजा • 10 नवंबर 2026"
+                                    english -> "Adhik Jyeshtha month • VS 2083"
+                                    else -> "अधिक ज्येष्ठ मास • संवत् 2083"
+                                })
+                                remote.setViewVisibility(extra, if (expanded) View.VISIBLE else View.GONE)
                                 val host = FrameLayout(activity)
                                 activity.setContentView(host)
                                 val view = remote.apply(context, host)
@@ -66,6 +78,8 @@ class WidgetLayoutTest {
                                 }
                                 shadowOf(Looper.getMainLooper()).idle()
                                 val scenario = "API ${Build.VERSION.SDK_INT} / ${if (upcoming) "upcoming" else "today"} / ${if (english) "en" else "hi"} / $width x $height / font $scale"
+                                assertEquals(scenario, if (expanded) View.VISIBLE else View.GONE,
+                                    view.findViewById<TextView>(extra).visibility)
                                 var previousBottom = 0
                                 for (id in ids) {
                                     val text = view.findViewById<TextView>(id)

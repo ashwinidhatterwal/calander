@@ -36,12 +36,16 @@ class NotificationService {
     bool sound, {
     int morningMinute = 360,
     int eventsMinute = 360,
+    bool? festivals,
+    int? festivalsMinute,
   }) async => channel.invokeMethod('configure', {
     'morning': morning,
     'events': events,
     'sound': sound,
     'morningMinute': morningMinute,
     'eventsMinute': eventsMinute,
+    if (festivals != null) 'festivals': festivals,
+    if (festivalsMinute != null) 'festivalsMinute': festivalsMinute,
   });
 
   static Future<void> openSettings(String method) async =>
@@ -69,7 +73,11 @@ class NotificationService {
   }) async {
     final generation = ++_generation;
     final settings = await status();
-    if (settings['morning'] != true && settings['events'] != true) return;
+    if (settings['morning'] != true &&
+        settings['events'] != true &&
+        settings['festivals'] != true) {
+      return;
+    }
     final now = DateTime.now();
     final payload = await compute(notificationPayload, (
       DateTime.utc(now.year, now.month, now.day),
@@ -111,25 +119,37 @@ Map<String, Map<String, String>> notificationPayload(
     final date = start.add(Duration(days: i));
     final cell = panchang.monthCell(date, location);
     final hi = language == AppLanguage.hi;
-    final names = festival
-        .lightweightForDate(
-          date,
-          location,
-          major: festival.majorFestivalsForYear(date.year, location),
-        )
-        .map((f) => hi ? f.nameHi : f.nameEn)
-        .join(' · ');
+    final observances = festival.lightweightForDate(
+      date,
+      location,
+      major: festival.majorFestivalsForYear(date.year, location),
+    );
+    String namesOf(Iterable<FestivalObservance> entries) =>
+        entries.map((f) => hi ? f.nameHi : f.nameEn).toSet().join(' · ');
+    final names = namesOf(observances);
+    final festivals = namesOf(observances.where((f) => f.category == 'festival'));
     final personal = matcher
         .eventsOnDate(events, date, location)
         .map((e) => e.title)
         .join(' · ');
     final month = (hi ? monthNamesHi : monthNamesEn)[date.month - 1];
     final dateLabel = '${date.day} $month ${date.year}';
+    final tithi =
+        '${hi ? cell.pakshaHi : cell.pakshaEn} ${hi ? cell.tithi.hi : cell.tithi.en}';
+    final samvat = panchang.vikramSamvatYear(date, location);
+    final lunarMonth = hi ? cell.month.hi : cell.month.en;
+    final adhik = cell.adhik ? (hi ? 'अधिक ' : 'Adhik ') : '';
+    final hinduDate = hi
+        ? 'विक्रम संवत् $samvat · $adhik$lunarMonth मास'
+        : 'Vikram Samvat $samvat · $adhik$lunarMonth';
     result[date.toIso8601String().substring(0, 10)] = {
-      'title': '${hi ? cell.pakshaHi : cell.pakshaEn} ${hi ? cell.tithi.hi : cell.tithi.en}',
-      'body': [if (names.isNotEmpty) names, dateLabel].join('\n'),
+      'title': tithi,
+      'summary': hinduDate,
+      'body': [hinduDate, if (names.isNotEmpty) names, dateLabel].join('\n'),
       'date': dateLabel,
       'events': personal,
+      'festivalTitle': festivals,
+      'festivalBody': [hinduDate, tithi, dateLabel].join('\n'),
     };
   }
   return result;

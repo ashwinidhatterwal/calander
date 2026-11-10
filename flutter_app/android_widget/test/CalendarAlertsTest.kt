@@ -36,12 +36,15 @@ class CalendarAlertsTest {
         seed()
     }
     private fun seed() {
-        val item = JSONObject().put("title", "Today").put("body", "Panchang").put("events", "Birthday")
+        val item = JSONObject().put("title", "Today").put("body", "Panchang")
+            .put("summary", "Vikram Samvat 2083").put("festivalTitle", "").put("events", "Birthday")
         CalendarAlerts.storeCache(context, JSONObject().put(iso(), item).toString(), true)
     }
     @Test fun morningUsesTithiTitleAndEventsKeepTheirDateTitle() {
         val item = JSONObject().put("title", "Shukla Paksha Ashtami")
-            .put("body", "Durga Ashtami\n19 October 2026")
+            .put("summary", "Vikram Samvat 2083 · Ashwin")
+            .put("body", "Vikram Samvat 2083 · Ashwin\nDurga Ashtami\n19 October 2026")
+            .put("festivalTitle", "Durga Ashtami")
             .put("date", "19 October 2026").put("events", "Birthday")
         CalendarAlerts.storeCache(context, JSONObject().put(iso(), item).toString(), true)
         CalendarAlerts.deliverDue(context)
@@ -49,9 +52,53 @@ class CalendarAlertsTest {
         val morning = manager.getNotification(500)
         val events = manager.getNotification(501)
         assertEquals("Shukla Paksha Ashtami", morning.extras.getCharSequence("android.title").toString())
-        assertEquals("Durga Ashtami\n19 October 2026\nBirthday", morning.extras.getCharSequence("android.bigText").toString())
+        assertEquals("Vikram Samvat 2083 · Ashwin", morning.extras.getCharSequence("android.text").toString())
+        assertEquals("Vikram Samvat 2083 · Ashwin\nDurga Ashtami\n19 October 2026\nBirthday",
+            morning.extras.getCharSequence("android.bigText").toString())
         assertEquals("19 October 2026", events.extras.getCharSequence("android.title").toString())
         assertEquals("Birthday", events.extras.getCharSequence("android.text").toString())
+    }
+
+    @Test fun festivalAlertWorksWithOtherRemindersOffAndPostsOnlyOnce() {
+        val prefs = CalendarAlerts.prefs(context)
+        prefs.edit().putBoolean("morning", false).putBoolean("events", false)
+            .putInt("festivalsMinute", 0).commit()
+        val manager = Shadows.shadowOf(context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+        CalendarAlerts.deliverDue(context)
+        assertNull(manager.getNotification(504))
+        assertFalse(prefs.contains("festivalsDelivered"))
+
+        val item = JSONObject().put("festivalTitle", "Diwali")
+            .put("festivalBody", "Vikram Samvat 2083 · Kartik\nKrishna Paksha Chaturdashi\n8 November 2026")
+        CalendarAlerts.storeCache(context, JSONObject().put(iso(), item).toString(), true)
+        CalendarAlerts.deliverDue(context)
+        val alert = requireNotNull(manager.getNotification(504))
+        assertEquals("Diwali", alert.extras.getCharSequence("android.title").toString())
+        assertEquals(iso(), prefs.getString("festivalsDelivered", ""))
+        assertNull(manager.getNotification(500))
+        assertNull(manager.getNotification(501))
+        val posted = prefs.getLong("lastPosted", 0)
+        CalendarAlerts.deliverDue(context)
+        assertEquals(posted, prefs.getLong("lastPosted", 0))
+    }
+
+    @Test fun festivalAlarmSkipsKnownOrdinaryDaysAndCancelsOnOptOut() {
+        val prefs = CalendarAlerts.prefs(context)
+        prefs.edit().putBoolean("morning", false).putBoolean("events", false).commit()
+        val first = ReminderPolicy.next(System.currentTimeMillis(), 420)
+        val date = Calendar.getInstance().apply { timeInMillis = first }
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val ordinary = format.format(date.time)
+        date.add(Calendar.DAY_OF_YEAR, 1)
+        val festival = format.format(date.time)
+        CalendarAlerts.storeCache(context, JSONObject()
+            .put(ordinary, JSONObject().put("festivalTitle", ""))
+            .put(festival, JSONObject().put("festivalTitle", "Holi")).toString(), true)
+        CalendarAlerts.schedule(context)
+        assertEquals(date.timeInMillis, prefs.getLong("nextFestivals", 0))
+        prefs.edit().putBoolean("festivals", false).commit()
+        CalendarAlerts.schedule(context)
+        assertEquals(0L, prefs.getLong("nextFestivals", -1))
     }
 
     @Test fun blockedPermissionDoesNotConsumeEitherReminder() {
@@ -122,8 +169,10 @@ class CalendarAlertsTest {
         var status = CalendarAlerts.status(context)
         assertEquals(true, status["morning"])
         assertEquals(true, status["events"])
+        assertEquals(true, status["festivals"])
         assertEquals(360, status["morningMinute"])
         assertEquals(360, status["eventsMinute"])
+        assertEquals(420, status["festivalsMinute"])
         p.edit().putBoolean("events", false).putInt("eventsMinute", 720).commit()
         status = CalendarAlerts.status(context)
         assertEquals(false, status["events"])

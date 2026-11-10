@@ -6,7 +6,7 @@ import 'package:hindu_calendar/data/notification_service.dart';
 void main() {
   final delhi = locations.firstWhere((x) => x.id == 'delhi');
   for (final language in AppLanguage.values) {
-    test('$language reminder places tithi in title, festival before date', () {
+    test('$language reminder includes Samvat, Hindu month, tithi and festival', () {
       final day = notificationPayload((
         DateTime.utc(2026, 10, 19),
         delhi,
@@ -17,8 +17,12 @@ void main() {
       final hi = language == AppLanguage.hi;
       expect(day['title'], hi ? 'शुक्ल पक्ष अष्टमी' : 'Shukla Paksha Ashtami');
       expect(day['title'], isNot(contains('2026')));
-      expect(day['body']!.split('\n').first,
+      expect(day['summary'], hi ? 'विक्रम संवत् 2083 · आश्विन मास' : 'Vikram Samvat 2083 · Ashwin');
+      expect(day['body']!.split('\n').first, day['summary']);
+      expect(day['body']!.split('\n')[1],
           contains(hi ? 'दुर्गा अष्टमी' : 'Durga Ashtami'));
+      expect(day['festivalTitle'], contains(hi ? 'दुर्गा अष्टमी' : 'Durga Ashtami'));
+      expect(day['festivalBody'], contains(day['title']));
       expect(day['body']!.split('\n').last, day['date']);
       expect(day['body'],
           isNot(contains(hi ? 'मासिक दुर्गाष्टमी' : 'Masik Durgashtami')));
@@ -32,7 +36,8 @@ void main() {
         []
       ))['2026-10-05']!;
       expect(day['title'], isNotEmpty);
-      expect(day['body'], day['date']);
+      expect(day['body'], '${day['summary']}\n${day['date']}');
+      expect(day['festivalTitle'], '');
       expect(day['events'], '');
     });
   }

@@ -21,7 +21,7 @@ calendar = source('flutter_app/lib/screens/calendar_screen.dart')
 main = source('flutter_app/lib/main.dart')
 holidays = source('flutter_app/lib/domain/state_holidays_2026.dart')
 festival_ui = source('flutter_app/lib/screens/festivals_screen.dart')
-check('version: 1.0.0+35' in pubspec, 'version is 1.0.0+35')
+check('version: 1.0.0+36' in pubspec, 'version is 1.0.0+36')
 check('assets/data/district_boundaries.json' in pubspec, 'district geometry is bundled')
 check('compute(findDistrict' in lookup, 'district parsing and geometry run in a background isolate')
 check('repairSavedDistrict' in main and 'repairSavedDistrict' in location, 'old saved division labels are repaired without GPS')
@@ -145,7 +145,7 @@ check(all("'" + name + "'" in festival for name in ['durga_ashtami', 'chaitra_du
       'Main Navratri Durga Ashtami rules present')
 check('sunriseObservances(' in source('flutter_app/lib/screens/calendar_screen.dart') and 'sunriseObservances(' in festival,
       'calendar and notification/detail engine share recurring labels')
-check("'date': dateLabel" in payload and "[if (names.isNotEmpty) names, dateLabel]" in payload,
+check("'date': dateLabel" in payload and "[hinduDate, if (names.isNotEmpty) names, dateLabel]" in payload,
       'festival lines precede notification date')
 check('item.optString("date", item.optString("title"))' in alerts,
       'event reminder retains date title and supports old cache')

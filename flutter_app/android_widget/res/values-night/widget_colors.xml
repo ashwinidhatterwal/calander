@@ -2,7 +2,8 @@
 <resources>
     <color name="widget_background">#99211A17</color>
     <color name="widget_text">#FFF5EE</color>
-    <color name="widget_subtext">#D9C9BF</color>
-    <color name="widget_accent">#F0A17C</color>
+    <color name="widget_subtext">#F6E9E0</color>
+    <color name="widget_accent">#FFD2BA</color>
     <color name="widget_chip">#4A3025</color>
+    <color name="widget_outline">#99735B4E</color>
 </resources>

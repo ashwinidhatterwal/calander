@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CalendarWidgetHeader" parent="CalendarWidgetText">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/widget_accent</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">8dp</item>
+        <item name="android:autoSizeMaxTextSize">14sp</item>
+        <item name="android:autoSizeStepGranularity">1px</item>
+    </style>
+
+    <style name="CalendarWidgetTitle" parent="CalendarWidgetText">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/widget_text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">9dp</item>
+        <item name="android:autoSizeMaxTextSize">23sp</item>
+        <item name="android:autoSizeStepGranularity">1px</item>
+    </style>
+
+    <style name="CalendarWidgetDetail" parent="CalendarWidgetText">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/widget_subtext</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">8dp</item>
+        <item name="android:autoSizeMaxTextSize">14sp</item>
+        <item name="android:autoSizeStepGranularity">1px</item>
+    </style>
+
+    <style name="CalendarWidgetFooter" parent="CalendarWidgetDetail">
+        <item name="android:background">@drawable/widget_chip_background</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:textColor">@color/widget_text</item>
+    </style>
+</resources>
