@@ -55,8 +55,10 @@ class TodayPanchangWidgetProvider : HomeWidgetProvider() {
                     setTextViewText(R.id.widget_today_details, details)
                     setViewVisibility(R.id.widget_today_details, if (expanded && details.isNotBlank()) View.VISIBLE else View.GONE)
                     val hasSunTimes = sunrise.isNotBlank() && sunset.isNotBlank()
-                    setTextViewText(R.id.widget_today_sun, "↑ $sunrise    ↓ $sunset")
-                    setContentDescription(R.id.widget_today_sun, "$sunriseLabel $sunrise, $sunsetLabel $sunset")
+                    setTextViewText(R.id.widget_today_sunrise, sunrise)
+                    setTextViewText(R.id.widget_today_sunset, sunset)
+                    setContentDescription(R.id.widget_today_sunrise, "$sunriseLabel $sunrise")
+                    setContentDescription(R.id.widget_today_sunset, "$sunsetLabel $sunset")
                     setViewVisibility(R.id.widget_today_sun, if (hasSunTimes) View.VISIBLE else View.GONE)
                     setOnClickPendingIntent(R.id.widget_root, launch)
                 }

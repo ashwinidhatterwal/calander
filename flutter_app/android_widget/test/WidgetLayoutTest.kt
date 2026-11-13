@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
 import android.os.Looper
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -43,11 +44,11 @@ class WidgetLayoutTest {
                                 val density = context.resources.displayMetrics.density
                                 val layoutId = if (upcoming) R.layout.widget_upcoming else R.layout.widget_today
                                 val baseIds = if (upcoming) listOf(R.id.widget_upcoming_kind, R.id.widget_upcoming_title, R.id.widget_upcoming_date)
-                                    else listOf(R.id.widget_today_date, R.id.widget_today_tithi, R.id.widget_today_sun)
+                                    else listOf(R.id.widget_today_date, R.id.widget_today_tithi)
                                 val texts = if (english && upcoming) listOf("Festival / Vrat", "Chaitra Durga Ashtami", "18 October 2026")
-                                    else if (english) listOf("Sun • 18 October", "Shukla Paksha Chaturdashi", "↑ 6:25 AM   ↓ 6:25 PM")
+                                    else if (english) listOf("Sun • 18 October", "Shukla Paksha Chaturdashi")
                                     else if (upcoming) listOf("पर्व / व्रत", "शारदीय नवरात्रि आरम्भ", "18 अक्टूबर 2026")
-                                    else listOf("रवि • 18 अक्टूबर", "शुक्ल पक्ष चतुर्दशी", "↑ 6:25 पु.   ↓ 6:25 अप.")
+                                    else listOf("रवि • 18 अक्टूबर", "शुक्ल पक्ष चतुर्दशी")
                                 val expanded = height >= 128
                                 val extra = if (upcoming) R.id.widget_upcoming_next else R.id.widget_today_details
                                 val ids = if (expanded) baseIds.toMutableList().apply {
@@ -55,6 +56,10 @@ class WidgetLayoutTest {
                                 } else baseIds
                                 val remote = RemoteViews(context.packageName, layoutId)
                                 baseIds.zip(texts).forEach { (id, value) -> remote.setTextViewText(id, value) }
+                                if (!upcoming) {
+                                    remote.setTextViewText(R.id.widget_today_sunrise, if (english) "6:25 AM" else "6:25 पु.")
+                                    remote.setTextViewText(R.id.widget_today_sunset, if (english) "6:25 PM" else "6:25 अप.")
+                                }
                                 remote.setTextViewText(extra, when {
                                     upcoming && english -> "Then: Govardhan Puja • 10 November 2026"
                                     upcoming -> "इसके बाद: गोवर्धन पूजा • 10 नवंबर 2026"
@@ -86,6 +91,7 @@ class WidgetLayoutTest {
                                     val available = text.height - text.compoundPaddingTop - text.compoundPaddingBottom
                                     val label = "$scenario / ${context.resources.getResourceEntryName(id)} / text ${text.textSize}px / layout ${text.layout?.height}px / available ${available}px"
                                     assertTrue(label, text.height > 0)
+                                    assertEquals(label, Gravity.CENTER_HORIZONTAL, text.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
                                     // Window coordinates are undefined for detached
                                     // views; compare descendant bounds in root space.
                                     val bounds = Rect(0, 0, text.width, text.height)
@@ -97,6 +103,23 @@ class WidgetLayoutTest {
                                     assertTrue(label, text.layout.height <= available)
                                     for (line in 0 until text.layout.lineCount) {
                                         assertEquals(label, 0, text.layout.getEllipsisCount(line))
+                                    }
+                                }
+                                if (!upcoming) {
+                                    val sun = view.findViewById<ViewGroup>(R.id.widget_today_sun)
+                                    val sunBounds = Rect(0, 0, sun.width, sun.height)
+                                    (view as ViewGroup).offsetDescendantRectToMyCoords(sun, sunBounds)
+                                    assertTrue(scenario, sunBounds.top >= previousBottom)
+                                    previousBottom = sunBounds.bottom
+                                    val sunrise = sun.findViewById<TextView>(R.id.widget_today_sunrise)
+                                    val sunset = sun.findViewById<TextView>(R.id.widget_today_sunset)
+                                    assertTrue(scenario, kotlin.math.abs((sunrise.parent as View).width - (sunset.parent as View).width) <= 1)
+                                    for (time in listOf(sunrise, sunset)) {
+                                        assertNotNull(scenario, time.compoundDrawablesRelative[0])
+                                        assertEquals(scenario, Gravity.CENTER_HORIZONTAL, time.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
+                                        assertTrue(scenario, time.layout.height <= time.height - time.compoundPaddingTop - time.compoundPaddingBottom)
+                                        assertEquals(scenario, 0, time.layout.getEllipsisCount(0))
+                                        assertTrue(scenario, kotlin.math.abs(time.left - ((time.parent as View).width - time.right)) <= 1)
                                     }
                                 }
                                 assertTrue(scenario, previousBottom <= view.height)

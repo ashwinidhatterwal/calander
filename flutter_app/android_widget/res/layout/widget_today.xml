@@ -20,8 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:layout_weight="1"
-            android:drawableStart="@drawable/widget_ic_calendar"
-            android:drawablePadding="6dp"
             android:text="रवि • 8 नवंबर" />
         <TextView
             android:id="@+id/widget_today_tithi"
@@ -37,12 +35,42 @@
             android:layout_height="18dp"
             android:layout_weight="1"
             android:visibility="gone" />
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_today_sun"
-            style="@style/CalendarWidgetFooter"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:layout_weight="1"
-            android:text="↑ 6:51 पु.    ↓ 5:41 अप." />
+            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="3dp"
+                android:background="@drawable/widget_chip_background">
+                <TextView
+                    android:id="@+id/widget_today_sunrise"
+                    style="@style/CalendarWidgetSunTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:drawableStart="@drawable/widget_ic_sunrise"
+                    android:text="6:51 पु." />
+            </FrameLayout>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="3dp"
+                android:background="@drawable/widget_chip_background">
+                <TextView
+                    android:id="@+id/widget_today_sunset"
+                    style="@style/CalendarWidgetSunTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:drawableStart="@drawable/widget_ic_sunset"
+                    android:text="5:41 अप." />
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
